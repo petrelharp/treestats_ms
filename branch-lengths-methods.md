@@ -510,14 +510,10 @@ after prepending $z_0$ as the root, and $a_0$ the ancestral allele.
 2. Also compute the *parent* vector, so that mutation $p_i$ is the parent of mutation $i$ --
     so, $0 \le p_i \le k$ and $p_0 = -1$.
 
-3. Then, subtract from each $U_i$ the sum of all $X(z_i)$ *below* $z_i$.
-    We can do this by, for each $1 \le j \le k$, subtracting $X(z_j)$ from $U_m$ for each parent $m$ back up the tree.
+3. Then, subtract from each $U_i$ the sum of all $X(z_i)$ at child mutations of $z_i$.
+    We can do this in one pass by, for each $1 \le j \le k$, subtracting $X(z_j)$ from $U_{p_j}$.
+    This works because $X$ is *cumulative*, including everything below it.
 
 4. Add these up by allele, so that $V_a = \sum_{i : a_i = a} U_i$.
 
 5. Add $\sum_a f(V_a)$ to the running total.
-
-
-Note that in step 3, subtracting all $X$ from lower nodes in the tree could be done more efficiently,
-but at the cost of some preprocessing that I suspect is not worth it for these very small mutation-trees.
-

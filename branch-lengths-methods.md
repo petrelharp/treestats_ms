@@ -12,7 +12,7 @@ $$
    L(T) = \sum_{z} f(X(z)) t(z)
 $$
 
-Now, let $L$ be the sum of these along the tree sequence: if $T_i$ extends for length $u_i$ along the genome, then we want
+Now, we want the sum of these along the tree sequence: if $T_i$ extends for length $u_i$ along the genome, then we want
 $$
    S = \sum_i u_i L(T_i) .
 $$
@@ -29,7 +29,7 @@ and update these as we move along the tree sequence
  2) move to the next tree and update $X$.
 
 As for updating $X$, note that $X$ is additive: 
-if node $z$ has children $y_1, ..., y_m$ then $X(z) = \sum_j X(Y_j)$.
+if node $z$ has children $y_1, ..., y_m$ then $X(z) = \sum_j X(y_j)$.
 So, to update we just need to propagate changes up from any node that has changed.
 Concretely, we can do this by:
 
@@ -451,6 +451,8 @@ Here is an algorithm to obtian genotypes at this site. For each $k$ beginning fr
     for any $j$ that $i_k$ inherits from $i_j$, update $D(i_j) \mapsto D(i_j) \setdiff D(i_k)$.
 3. At the end, assign anyone without an allele to the ancestral state.
 
+Note that this only works if you move all the way back to the root, not just stopping at the parent mutation.
+
 As for computing statistics: the key is producing, for a given subset $A$ of samples and for each allele $x$ at the site, 
 how many individuals in $A$ have allele $x$. Now instead of (c) above suppose we know
 (c') for each node $i$, the number of individuals in $A$ inherited from that node, denoted $N(i)$.
@@ -488,3 +490,34 @@ Your point about the number of comparisons between mutations is probably better,
 3.  Next, check that 16 is not an ancestor of 13, but 20 is, so set f[C] = 2 + 2 = 4 (two more leaves below 16) and f[T] = 6 - 2 = 4; and S=[20,13].
 4.  Then, since 14 is not descended from 20 or 14, set f[G] = 2.
 5.  Finally, set f[A] = n - sum(f).
+
+
+## The site statistics algorithm
+
+Assume that as above we have maintained $X$ so that for each node $u$,
+$X(z)$ is a vector giving the number of samples inheriting from node $z$
+for each of the sets of samples.
+For each tree, we then have the Sites and Mutations occurring on this tree,
+and wish to compute $f(\cdot)$ appropriately for each mutation.
+We will do each Site separately.
+Suppose that the mutations at this site occur at nodes $z_0, z_1, \ldots, z_k$,
+and the derived allele from these are $a_0, \ldots, a_k$ --
+after prepending $z_0$ as the root, and $a_0$ the ancestral allele.
+*Note:* do we need to check if there is a mutation on the root already?
+
+1. First, let $U_i = X(z_i)$ for $0 \le i \le k$.
+
+2. Also compute the *parent* vector, so that mutation $p_i$ is the parent of mutation $i$ --
+    so, $0 \le p_i \le k$ and $p_0 = -1$.
+
+3. Then, subtract from each $U_i$ the sum of all $X(z_i)$ *below* $z_i$.
+    We can do this by, for each $1 \le j \le k$, subtracting $X(z_j)$ from $U_m$ for each parent $m$ back up the tree.
+
+4. Add these up by allele, so that $V_a = \sum_{i : a_i = a} U_i$.
+
+5. Add $\sum_a f(V_a)$ to the running total.
+
+
+Note that in step 3, subtracting all $X$ from lower nodes in the tree could be done more efficiently,
+but at the cost of some preprocessing that I suspect is not worth it for these very small mutation-trees.
+

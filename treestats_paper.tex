@@ -187,21 +187,16 @@ and making use of the association of each mutation with a particular node in the
 
 \paragraph{Total site weight algorithm}
 This works as the \emph{total branch length weight algorithm} except that steps (5--6) are replaced with:
+\plr{gah this is terrible}
 \begin{itemize}
     \item[5'] \emph{Find allele weights} for each mutated site in the tree:
-        \begin{itemize}
-            \item Find mutation weights: 
-                    set $u[-1]$ to be the value of $x$ at the root,
-                    and then for each mutated node $e$,
-                \begin{itemize}
-                    \item Set $u[e] = x[e]$ 
-                    \item Find $p(e)$, the parent mutation of $e$
-                        and update $u[p(e)] -= x[e]$.
-                \end{itemize}
-            \item Find allele weights: for each unique allele $a$ seen,
-                set $v[a]$ to the sum of $u[e]$ across all $e$ with allele $a$.
-                Then add $w(v)$ to $T$.
-        \end{itemize}
+        if $a$ is the ancestral allele,
+        set $u[a]$ to be the value of $x$ at the root; and then,
+        for each mutation at node $e$ with derived allele $b$ 
+        and parent mutation occurring at node $p$ with derived allele $c$,
+        add $x[e]$ to $u[b]$, and subtract $x[p]$ from $u[c]$.
+    \item[6'] For each unique allele $a$ seen,
+        add $w(v[a])$ to $T$.
 \end{itemize}
 \plr{check that algorithm deals correctly with more than one mut per node}
 

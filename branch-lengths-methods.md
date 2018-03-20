@@ -448,7 +448,7 @@ Here is an algorithm to obtian genotypes at this site. For each $k$ beginning fr
 
 1. Assign everyone in $D(i_k)$ the allele $x_k$.
 2. Move back up through the tree from $i_k$, checking to see if we pass through any other $i_j$ along the way (easy as they are ordered by time); 
-    for any $j$ that $i_k$ inherits from $i_j$, update $D(i_j) \mapsto D(i_j) \setdiff D(i_k)$.
+    for any $j$ that $i_k$ inherits from $i_j$, update $D(i_j) \mapsto D(i_j) \setminus D(i_k)$.
 3. At the end, assign anyone without an allele to the ancestral state.
 
 Note that this only works if you move all the way back to the root, not just stopping at the parent mutation.
@@ -458,7 +458,7 @@ how many individuals in $A$ have allele $x$. Now instead of (c) above suppose we
 (c') for each node $i$, the number of individuals in $A$ inherited from that node, denoted $N(i)$.
 To produce the required numbers, say, $N(x)$, the algorithm above can be used, but updating $N(i_j) \mapsto N(i_j) - N(i_k)$ instead. 
 We'll also need to check if the allele $x_k=x_j$ 
-for some $j \lt k$, in which case we update $N(i_j) += N(i_k)$.
+for some $j < k$, in which case we update $N(i_j) += N(i_k)$.
 
 
 ## Algorithm 2: From root to leaves

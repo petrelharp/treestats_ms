@@ -31,3 +31,17 @@ clean:
 %.pdf : %.ink.svg
 	inkscape $< --export-pdf=$@
 
+
+LATEX_MACROS = macros.tex
+PANDOC_OPTS = 
+PANDOC_HTML_OPTS = -c resources/pandoc.css --mathjax=https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML
+PANDOC_PDF_OPTS = 
+ifeq ($(wildcard $(LATEX_MACROS)),)
+	# LATEX_MACROS doesn't exist
+else
+	PANDOC_HTML_OPTS += -H <(echo '\['; cat $(LATEX_MACROS); echo '\]')
+	PANDOC_PDF_OPTS += -H $(LATEX_MACROS)
+endif
+
+%.pdf : %.md
+	pandoc $(PANDOC_OPTS) $(PANDOC_PDF_OPTS) -f markdown -o $@ $<

@@ -1,4 +1,34 @@
 
+# Overview
+
+The statistics we compute are defined in terms of
+
+1. a collection of groups of samples, and a number of samples to draw without replacement (but possibly nonuniformly) from each, that adds up to $n$;
+2. and a weighting of each possible bipartition of $n$ samples.
+
+In words, we average over weighted choices of samples ($n$ in total),
+for each choice constructing the gene tree relating them,
+and for each internal edge multiply the weight corresponding to the split (bipartition) it induces by its length.
+(Here "length" is either in units of time or number of mutations.)
+
+If the samples from each group are unweighted,
+these are equivalent to polynomials of allele frequencies
+(under the assumption of at most one mutation per site).
+*(write out equivalence)*
+
+We restrict ourselves to *single site* statistics,
+that under the assumption of at-most-one-mutation-per-site,
+can only tell us about distributions of bipartitions induced by the trees.
+This is *less* information that the distribution of trees
+(which linkage could tell us about):
+for more than five tips, the distribution on trees is nonidentifiable from the distribution on bipartitions
+(except in certain cases; e.g., there is only one tree).
+(Since: for five tips, there are 15 unrooted trees; and also fifteen bipartitions,
+but five of these are noninformative singletons.
+Null vectors of the incidence matrix will have positives and negatives,
+so in general a vector must lie in the interior to be nonidentifiable.)
+
+
 # Number of statistics
 
 ## Genotype patterns

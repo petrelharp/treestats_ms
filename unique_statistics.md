@@ -126,15 +126,31 @@ Furthermore requiring (as above) that $f(0) = f(1) = 0$ reduces the dimension by
 Define provisionally $S_{k_1, \ldots, k_m}$ to be the class of statistics 
 that are defined by polynomials $f$ of $m$ allele frequencies,
 $$\begin{aligned}
-    f(p_1, \ldots, p_m$) = f(1-p_1, \ldots, 1-p_m$) .
+    f(p_1, \ldots, p_m) = f(1-p_1, \ldots, 1-p_m) .
 \end{aligned}$$
 As above, any such function can be written as
 $$\begin{aligned}
-    f(p_1, \ldots, p_m$) = \sum_{\ell_1=0}^{k_1} \cdots \sum_{\ell_m=0}^{k_m} a_{\ell_1, \ldots,\ell_m} p_1^{\ell_1} (1-p_1)^{k_1-\ell_1} \cdots p_m^{\ell_1} (1-p_m)^{k_1-\ell_1},
+    f(p_1, \ldots, p_m) = \sum_{\ell_1=0}^{k_1} \cdots \sum_{\ell_m=0}^{k_m} a_{\ell_1, \ldots,\ell_m} p_1^{\ell_1} (1-p_1)^{k_1-\ell_1} \cdots p_m^{\ell_1} (1-p_m)^{k_1-\ell_1},
 \end{aligned}$$
 with $a_{\ell_1, \ldots, \ell_m} = a_{k_1-\ell_1, \ldots, k_m-\ell_m}$.
 Therefore, $S_{k_1, \ldots, k_m}$ has dimension $\prod_{i=1}^m (k_i + 1)$,
 unless all $k_i$ are odd, in which case the dimension is one less
 (since only in that case is there a fixed point of the symmetry of the $a$s).
 
+# $F$ statistics
 
+Note that Patterson's $F_4$, which is
+$$\begin{aligned}
+    F_4(p_1,p_2;p_3,p_4) 
+    &:= (p_1 - p_2)(p_3 - p_4)
+\end{aligned}$$
+is of order *two*, although it is a statistic of four groups.
+This means it can be written as a linear combination of divergences,
+and indeed, writing $d(a,b) = a(1-b) + (1-a)b$,
+$$\begin{aligned}
+    F_4(p_1,p_2;p_3,p_4)
+    &=
+    \frac{1}{2} \left( d(p_1,p_4) + d(p_2,p_3) - d(p_1, p_3) - d(p_2, p_4) \right) .
+\end{aligned}$$
+This is counter-intuitive, because the divergences in the $F_4$ cancel in such a way that singletons do not contribute,
+only sites for which it is not the case that either three populations are lost or are fixed.

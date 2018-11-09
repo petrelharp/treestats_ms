@@ -97,7 +97,7 @@ between \emph{individuals} that previously had to be roughly estimated
 averaging over populations.
 For instance, XXX estimated $F_{ST}$ between XX from allozyme sequence,
 but now we know that $F_{ST}$ can be viewed as $1 - t_{within}/t_{total}$ \citep{slatkin_fst}
-which can therefore be estimated precisely by $1 - \pi_{\within}/\pi_{total}$.
+which can therefore be estimated precisely by $1 - \pi_{within}/\pi_{total}$.
 
 % {computational challenges}
 Computation is beginning to be a major problem:
@@ -321,6 +321,64 @@ mutations.
 
 %%%%%%%%%%%%%%%%%%
 \subsection*{Genomic PCA}
+
+Let $G$ denote the genotype matrix, so that $G_{ja} \in \{0,1\}$ 
+is the genotype of the $a^\text{th}$ individual
+at the $j^\text{th}$ site, with `1` denoting the derived state
+(we assume here biallelic markers).
+Also let $P_j = (1/n) \sum_a G{ja}$ denote the vector of allele frequencies.
+Then the \emph{genetic covariance} between samples $a$ and $b$ is
+\begin{align*}
+    C_{ab} 
+        &= \frac{1}{L} \sum_j (G_{ja} - P_j) (G_{jb} - P_j) . %  \\
+        % &= \frac{1}{L} \left( (G - P \bone^T)^T (G - P \bone^T) \right)_{ab} .
+\end{align*}
+This can be computed by letting
+$\iw_a = \delta_a$ and $\iw_b = \delta_b$ 
+(these weights mark nodes above $a$ and $b$ respectively)
+and $\iw_t = \bone / n$
+(this weight gives the proportion of samples below each node).
+Then, with 
+$F(\nw_a, \nw_b, \nw_t) = (\nw_a - \nw_t) (\nw_b - \nw_t)$,
+we can compute the covariance as
+\begin{align*}
+    C_{ab} = \frac{1}{2} \bar \site(F, (\iw_a, \iw_b, \iw_t)) .
+\end{align*}
+This follows, including the factor of two, 
+because the summary function applied to the ancestral allele
+at a site with derived allele frequencies $p_a$, $p_b$, and $p_t$
+in sample $a$, sample $b$, and total, respectively, is
+$F(1 - p_a, 1 - p_b, 1 - p_t) = F(p_a, p_b, p_t)$.
+
+Computing the full covariance matrix for a large number of samples may be infeasible.
+However, we can efficiently find $y^T C z$ for arbitrary vectors $y$ and $z$.
+This works because if we set the initial weights to $y$,
+then each allele's weight is equal to the sum of the entries of $y$
+corresponding to samples carrying that allele.
+Then, if we define 
+$F_{yz}(u, v, t) = (u - (\sum_a y_a) t) (v - (\sum_b z_b) t)$,
+then
+\begin{align} \label{eqn:yCz}
+    \frac{1}{2} \bar \site(F_{yz}, (y, z, \iw_t))
+        &= \frac{1}{L} \sum_j (\sum_a y_a G_{ja} - (\sum_a y_a) P_j) 
+                    (\sum_b z_b G_{jb} - (\sum_b z_b) P_j) \\
+        &= y^T C z .
+\end{align}
+
+\plr{Hmph: to actually compute $Cz$ we need one weight vector for each sample, again.
+    TODO: look up if you can do Krylov just by computing $y^t C z$ for a reasonable number of vectors.  
+    We could compute $Cz$ quickly if we could propagate down the tree:
+    we'd have $(Cz)_a$ equal to the sum of the weights at all nodes \emph{above} $a$. }
+
+Where does the signal from an eigenvector come from?
+Let $y$ be an eigenvector of $C$ with eigenvalue $\lambda$, normalized so that $\|y\|^2 = 1$.
+Since $Cy = \lambda y$,
+we can write $1 = \sum_a y_a^2 = (1/\lambda) y^T C y$.
+However, equation \eqref{eqn:yCz} gives $y^T C y$ as a sum over \emph{sites},
+and thus distributes the variance in $G$ associated with $y$
+across the tree sequence.
+(This is true because of the singular value decomposition of $G$.)
+
 
 
 %%%%%%%%%%%%%%%%%%

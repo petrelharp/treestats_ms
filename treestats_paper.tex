@@ -18,7 +18,8 @@
 \newcommand{\aw}{{\bar w}} % allele weights
 \newcommand{\Tw}{{W}} % allele weights
 
-\newcommand{\plr}[1]{{\color{blue} \it #1}}
+\newcommand{\plr}[1]{{\color{blue}\textbf{plr:} \it #1}}
+\newcommand{\jk}[1]{{\color{red}\textbf{jk:} \it #1}}
 
 
 \begin{document}
@@ -135,7 +136,7 @@ are often shared across relatively long distances,
 which manifest as shared \emph{edges} across many adjacent trees in the tree sequence.
 This redundancy can be used
 to both store genome sequence and the associated genealogical relationships extremely compactly,
-as well as to compute statistics highly efficiently~\citet{kelleher2016efficient}.
+as well as to compute statistics highly efficiently~\citep{kelleher2016efficient}.
 This paper generalizes the latter strategy to a much broader class of statistics.
 
 \plr{Review of tree shape stuff in phylogenetics}
@@ -155,8 +156,7 @@ This perspective turns out to both suggest efficient algorithms
 for computing these statistics on tree sequences,
 and allows us to treat single-site genetic statistics in a more general framework
 of summaries of tree shape and inheritance.
-The methods are implemented in the python package \tskit.
-
+The methods are implemented in the \tskit\ library.
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \section*{Framework and algorithms}
@@ -175,6 +175,7 @@ Haplotype-based statistics may require a different class of algorithms.
 
 Suppose we have genotyped a collection of $N$ (homologous) chromosomes
 at a sequence of $L$ loci along the genome.
+\jk{Maybe use $n$ here? We use it below}
 Suppose first that we wish to compute an additive function of the allele frequency spectrum.
 In other words, suppose that the frequency of allele $a$ at a given site is $p_i(a)$,
 and that the allele frequency spectrum
@@ -186,20 +187,26 @@ $\sum_p f(p) h(p) = (1/L) \sum_{i=1}^L \sum_a h(p_i(a))$.
 This definition applies to multiallelic sites by assuming that for each allele
 we can only see how many samples carry that allele,
 not how the remaining samples are partitioned between one or more other alleles.
+\jk{Not clear to me here if we're talking about frequency $0 \leq p \leq 1$ or
+`prevalance`, $0 \leq p \leq N$.}
 (Note also that this does not differentiate ancestral and derived alleles,
 and so is a function of the \emph{folded} allele frequency spectrum.)
 If we know where each mutation has occurred on the genealogy,
 we can easily find the frequency of the corresponding allele by counting how many samples
 occur below that mutation in the tree (and removing those that subsequently mutate).
 
+\jk{Big jump here. I don't see the connection between the previous paragraph
+and the bitstring representation of haplotype statistics}
 There are $2^n$ possible genotype patterns for $n$ haploid samples genotyped at a biallelic locus,
 and so a general statistic of biallelic genotypes could be represented by a vector of length $2^n$.
 A more convenient way to parameterize many functions of genotype patterns
 uses three ingredients:
 \begin{itemize}
 
-    \item[(a)] A list of $K$ vectors of \emph{initial node weights}, $(\iw_1, \ldots, \iw_k)$,
+    \item[(a)] A list of $k$ vectors of \emph{initial node weights}, $(\iw_1, \ldots, \iw_k)$,
         where $\iw_i(j)$ is the ``initial'' value of the $i^\text{th}$ weight assigned to node $j$.
+        \jk{Maybe referring to nodes with variables $u, v, w$ and keeping $i,
+        j, k$ for general indexes would help here separate the concepts here?}
 
     \item[(b)] The \emph{weight} $\nw$ of a node in a tree
         is a $k$-vector of weights is $\nw = (\nw_1, \ldots, \nw_k)$,
@@ -207,9 +214,21 @@ uses three ingredients:
         (including itself).
 
     \item[(c)] A \emph{summary function} $F : \R^k \to \R$ so that
-        $F(\nw)$ is the ``summary'' statistic we compute
+        $F(\nw)$ is the ``summary'' statistic we compute \jk{I'd find it more
+        intuitive to use $f$ as the notation for a summary function. We can use
+        something else to define the site frequency spectrum above, right? Big
+        $F$ says ``set" to me.}
 
 \end{itemize}
+
+\jk{This formulation of a $k$-vector associated with each node is very
+reminiscent of classical phlogenetics algorithms. Eg the Sankoff algorithm
+for counting the number of mutations needed to explain a set of genotypes
+under parsimony and with arbitrary weighting matrices. See
+\citep[pg.13]{felsenstein2004inferring}. We should emphasise this connection.
+Perhaps a diagram would help here also, showing a tree and a $k$-vector on each
+node?}
+
 Roughly speaking, we use these to compute a statistic
 by first propagating the initial weights up the trees,
 and then evaluate the summary function on the resulting vectors of weights

@@ -18,7 +18,8 @@
 \newcommand{\aw}{{\bar w}} % allele weights
 \newcommand{\Tw}{{W}} % allele weights
 
-\newcommand{\plr}[1]{{\color{blue} \it #1}}
+\newcommand{\plr}[1]{{\color{blue}\textbf{plr:} \it #1}}
+\newcommand{\jk}[1]{{\color{red}\textbf{jk:} \it #1}}
 
 
 \begin{document}
@@ -38,8 +39,8 @@ Theory and computation of single-site statistics of DNA sequences
 %%%%%%%%%%
 \paragraph{Abstract}
 Here we describe how to efficiently compute single-site statistics
-from population genetic data
-using efficient methods on tree sequences as implemented in msprime.
+from population genetic data using the succinct tree sequence
+encoding for correlated genealogies.
 The method is general enough to compute any currently-defined statistic,
 and we use this general framework to suggest a number of new statistics.
 \plr{say what method is: sthg about weighting fns}
@@ -51,36 +52,36 @@ the same methods can be used to quickly compute these quantities.
 
 %%% OUTLINE
 % 1. Framework and algorithms for computing general stats
-% 
+%
 %     * Framework:
-% 
+%
 %         - single-site stats are functions of the genotype vector
 %         - in infinite sites, the genotype vector of a mutation is determined by the nodes below it
 %         - ex: divergence as a sum over trees and branches
 %         - ex: ancestry proportions
 %         - general definition, using summary function of weights propagated up the tree
 %             * recursion relating weights on nodes of two forests that differ by a branch
-% 
+%
 %     * Review of tree sequences (quick)
-% 
+%
 %     * Algorithms:
-% 
+%
 %         - weight propagation across tree differences
 %         - count by node length ("Node Statistics")
 %         - count by branch area ("Branch Statistics")
 %         - count by site ("Site Statistics")
 %         - note on outputs (by node, by site, in windows)
-% 
+%
 % 2. Examples: in sections, one of each type of output
-% 
+%
 %     - ancestry proportions
 %     - list of standard summary statistics: divergence, Fst, f4, covariance
 %         * performance for one of these
 %     - PCA: Krylov method
 %         * performance
-% 
+%
 % 3. Correspondence to tree statistics
-% 
+%
 %     - math: in infinite sites, neutral model, E[site] = branch
 %     - plot from simulation showing branch stats are less noisy versions of the site stats
 %     - show time profile of PC1 as computed from rare variants and common variants
@@ -96,6 +97,7 @@ makes it possible to confidently measure quantities
 between \emph{individuals} that previously had to be roughly estimated
 averaging over populations.
 For instance, XXX estimated $F_{ST}$ between XX from allozyme sequence,
+% JK: FIXME what's the slatkin ref here?
 but now we know that $F_{ST}$ can be viewed as $1 - t_{within}/t_{total}$ \citep{slatkin_fst}
 which can therefore be estimated precisely by $1 - \pi_{within}/\pi_{total}$.
 
@@ -111,48 +113,55 @@ but for many applications we are now interested in computing a large number of s
 Indeed, many sorts of modern inference machinery, such as deep learning,
 depend on being able to compute enough statistics that this becomes a serious bottleneck in practice.
 
-The \emph{succinct tree sequence} is a data structure that efficiently encodes
-the genealogical trees that describe how a set of individuals are related to each other
-at each point along their genome.
-The data structure was introduced for coalescent simulation by \citet{kelleher2016efficient},
-and refined for forwards simulation by \citet{kelleher2018efficient}.
-These genealogical trees change as one looks across the genome
+The \emph{succinct tree sequence} (or tree sequence, for brevity) is a data
+structure that efficiently encodes the genealogical trees describing how a set of
+individuals are related to each other at each point along their genome. The
+data structure was introduced in the context of coalescent
+simulation~\citep{kelleher2016efficient}, and lead to scalability increases of
+several orders of magnitude over existing methods. It was subsequently extended
+and refined for forwards-time simulations~\citep{kelleher2018efficient,haller2018tree}
+where similar efficiency gains were made. Recent
+work~\citep{kelleher2018inferring} has shown that tree sequence algorithms can
+also be used to massively increase the scalability of methods for inferring
+genome-wide genealogies, and shown that it is feasible to infer trees for
+millions of whole genome samples.
+
+The key to the remarkable scalability and efficiency of tree sequence
+algorithms is the way in which the shared structure in adjacent trees along
+the genome is encoded. As one looks across the genome the genealogies change
 because of the results of recombination in ancestors.
-However, nearby genealogical trees tend to share a lot of common structure,
+However, nearby trees tend to share a lot of common structure,
 and single genealogical relationships (e.g., individual $x$ inherits from individual $y$)
 are often shared across relatively long distances,
 which manifest as shared \emph{edges} across many adjacent trees in the tree sequence.
-\citet{kelleher2016efficient}
-showed how this this redundancy can be used
+This redundancy can be used
 to both store genome sequence and the associated genealogical relationships extremely compactly,
-as well as to compute statistics extremely efficiently.
-This paper generalizes the latter strategy
-to a much broader class of statistics.
+as well as to compute statistics highly efficiently~\citep{kelleher2016efficient}.
+This paper generalizes the latter strategy to a much broader class of statistics.
 
 \plr{Review of tree shape stuff in phylogenetics}
-a good review of theoretical properties \citet{semple_and_steel}.
+a good review of theoretical properties \citet{semple2003phylogenetics}.
 
 % summary
 In this paper, we present a general framework for defining and efficiently computing
 ``single-site'' genetic statistics,
 i.e., statistics of aligned genome sequence that can be expressed as averages over values computed
 separately for each site.
-Patterns of genetic polymorphism in a population 
+Patterns of genetic polymorphism in a population
 are determined by the population's history of Mendelian inheritance,
 as summarized by the underlying genealogical trees,
 and so it is natural (and helpful) to express these statistics
 in terms of the structure of the trees themselves.
-This perspective turns out to both suggest efficient algorithms 
+This perspective turns out to both suggest efficient algorithms
 for computing these statistics on tree sequences,
 and allows us to treat single-site genetic statistics in a more general framework
 of summaries of tree shape and inheritance.
-The methods are implemented in the python package \tskit.
-
+The methods are implemented in the \tskit\ library.
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \section*{Framework and algorithms}
 
-In this paper, 
+In this paper,
 we consider only so-called \emph{single site} statistics
 (which we will define concretely shortly).
 Extensions to statistics involving the pairwise joint distribution of genotypes across sites,
@@ -166,52 +175,71 @@ Haplotype-based statistics may require a different class of algorithms.
 
 Suppose we have genotyped a collection of $N$ (homologous) chromosomes
 at a sequence of $L$ loci along the genome.
+\jk{Maybe use $n$ here? We use it below}
 Suppose first that we wish to compute an additive function of the allele frequency spectrum.
 In other words, suppose that the frequency of allele $a$ at a given site is $p_i(a)$,
-and that the allele frequency spectrum 
+and that the allele frequency spectrum
 -- i.e., the proportion of alleles whose frequency is $p$ in our sample -- is $f(p)$,
 and for some function $h()$ we want to compute $\sum_p f(p) h(p)$.
 Since this is a simple average over sites,
-we can compute this, summing over the $L$ sites, as 
+we can compute this, summing over the $L$ sites, as
 $\sum_p f(p) h(p) = (1/L) \sum_{i=1}^L \sum_a h(p_i(a))$.
 This definition applies to multiallelic sites by assuming that for each allele
 we can only see how many samples carry that allele,
 not how the remaining samples are partitioned between one or more other alleles.
+\jk{Not clear to me here if we're talking about frequency $0 \leq p \leq 1$ or
+`prevalance`, $0 \leq p \leq N$.}
 (Note also that this does not differentiate ancestral and derived alleles,
 and so is a function of the \emph{folded} allele frequency spectrum.)
 If we know where each mutation has occurred on the genealogy,
 we can easily find the frequency of the corresponding allele by counting how many samples
 occur below that mutation in the tree (and removing those that subsequently mutate).
 
+\jk{Big jump here. I don't see the connection between the previous paragraph
+and the bitstring representation of haplotype statistics}
 There are $2^n$ possible genotype patterns for $n$ haploid samples genotyped at a biallelic locus,
 and so a general statistic of biallelic genotypes could be represented by a vector of length $2^n$.
 A more convenient way to parameterize many functions of genotype patterns
 uses three ingredients:
 \begin{itemize}
 
-    \item[(a)] A list of $K$ vectors of \emph{initial node weights}, $(\iw_1, \ldots, \iw_k)$, 
+    \item[(a)] A list of $k$ vectors of \emph{initial node weights}, $(\iw_1, \ldots, \iw_k)$,
         where $\iw_i(j)$ is the ``initial'' value of the $i^\text{th}$ weight assigned to node $j$.
+        \jk{Maybe referring to nodes with variables $u, v, w$ and keeping $i,
+        j, k$ for general indexes would help here separate the concepts here?}
 
     \item[(b)] The \emph{weight} $\nw$ of a node in a tree
         is a $k$-vector of weights is $\nw = (\nw_1, \ldots, \nw_k)$,
         and is equal to the sum of initial weights of all nodes below it in the tree
         (including itself).
 
-    \item[(c)] A \emph{summary function} $F : \R^k \to \R$ so that 
-        $F(\nw)$ is the ``summary'' statistic we compute 
+    \item[(c)] A \emph{summary function} $F : \R^k \to \R$ so that
+        $F(\nw)$ is the ``summary'' statistic we compute \jk{I'd find it more
+        intuitive to use $f$ as the notation for a summary function. We can use
+        something else to define the site frequency spectrum above, right? Big
+        $F$ says ``set" to me.}
 
 \end{itemize}
+
+\jk{This formulation of a $k$-vector associated with each node is very
+reminiscent of classical phlogenetics algorithms. Eg the Sankoff algorithm
+for counting the number of mutations needed to explain a set of genotypes
+under parsimony and with arbitrary weighting matrices. See
+\citep[pg.13]{felsenstein2004inferring}. We should emphasise this connection.
+Perhaps a diagram would help here also, showing a tree and a $k$-vector on each
+node?}
+
 Roughly speaking, we use these to compute a statistic
 by first propagating the initial weights up the trees,
 and then evaluate the summary function on the resulting vectors of weights
 for each allele.
-    
+
 % Sum weights for each allele.
 Concretely, to compute the statistic at a given site $j$,
 for each allele $a$ seen at this site,
 let $\aw_j(a)$, the weight associated with this allele,
 be the sum of the initial weights over all nodes who inherit allele $a$.
-If the site has only one mutation, which produced allele $a$ 
+If the site has only one mutation, which produced allele $a$
 at node $i$, then $\aw_j(a) = \nw(i)$.
 Then, the statistic computed at site $j$ is
 \begin{align}
@@ -240,7 +268,7 @@ In the same framework we can do ancestry proportions.
 \plr{EXPLAIN, DEFINE NODE STATS}
 
 \plr{Introduce branch stats.}
-The \textbf{branch statistic} associated with the branch of length $t$ 
+The \textbf{branch statistic} associated with the branch of length $t$
 above node $n$ on a tree of length $\ell$,
 with total weight $\Tw = \sum_j \iw(j)$
 and node weights $\nw$,
@@ -250,30 +278,30 @@ is
     &=
     \ell t ( F(\Tw - \nw(n)) + F(\nw(n)) ) .
 \end{align}
-This is the summary value that would be added to a site statistic 
+This is the summary value that would be added to a site statistic
 if a single mutation occurred on this branch:
-we must apply the summary function 
+we must apply the summary function
 to both the weight below $n$ as well as the weight \emph{not} below $n$
 to account for both derived and ancestral alleles.
 
 \paragraph{Summary}
 We have defined three types of statistic using the same weighting scheme:
 \begin{enumerate}
-    \item \textbf{Site statistics} 
+    \item \textbf{Site statistics}
         -- summarizes weights below each allele at each polymorphic site.
-    \item \textbf{Node statistics} 
+    \item \textbf{Node statistics}
         -- summarizes total weight below each node.
     \item \textbf{Branch statistics}
         -- summarizes total weight below each branch, multiplied by branch length.
 \end{enumerate}
 
 
-\plr{TO-DO:} 
+\plr{TO-DO:}
 \begin{itemize}
 
-    \item How will polarization work? 
+    \item How will polarization work?
         Right now, Site and Branch stats are polarized but Node statistics are not.
-        (To make Node statistics unpolarized, we need to also add $F(\Tw - w)$ 
+        (To make Node statistics unpolarized, we need to also add $F(\Tw - w)$
         to the weight of each node.)
         Perhaps this is OK -- Site and Branch stats should correspond to each other,
         but Node statistics are different, so could have different behavior.
@@ -284,7 +312,7 @@ We have defined three types of statistic using the same weighting scheme:
         In the initial implementation, Node statistics were divided by the length
         for which the node was an ancestor to any sample, rather than just total sequence length
         To make these more analogous to the other stats, we think we want to remove this.
-        The denominator for the original case is easily computable, by using 
+        The denominator for the original case is easily computable, by using
         $F(x) = 1$ if $x>0$ and $F(x)=0$ otherwise, with appropriate (positive) weights.
 
 \end{itemize}
@@ -322,29 +350,29 @@ mutations.
 %%%%%%%%%%%%%%%%%%
 \subsection*{Genomic PCA}
 
-Let $G$ denote the genotype matrix, so that $G_{ja} \in \{0,1\}$ 
+Let $G$ denote the genotype matrix, so that $G_{ja} \in \{0,1\}$
 is the genotype of the $a^\text{th}$ individual
 at the $j^\text{th}$ site, with `1` denoting the derived state
 (we assume here biallelic markers).
 Also let $P_j = (1/n) \sum_a G{ja}$ denote the vector of allele frequencies.
 Then the \emph{genetic covariance} between samples $a$ and $b$ is
 \begin{align*}
-    C_{ab} 
+    C_{ab}
         &= \frac{1}{L} \sum_j (G_{ja} - P_j) (G_{jb} - P_j) . %  \\
         % &= \frac{1}{L} \left( (G - P \bone^T)^T (G - P \bone^T) \right)_{ab} .
 \end{align*}
 This can be computed by letting
-$\iw_a = \delta_a$ and $\iw_b = \delta_b$ 
+$\iw_a = \delta_a$ and $\iw_b = \delta_b$
 (these weights mark nodes above $a$ and $b$ respectively)
 and $\iw_t = \bone / n$
 (this weight gives the proportion of samples below each node).
-Then, with 
+Then, with
 $F(\nw_a, \nw_b, \nw_t) = (\nw_a - \nw_t) (\nw_b - \nw_t)$,
 we can compute the covariance as
 \begin{align*}
     C_{ab} = \frac{1}{2} \bar \site(F, (\iw_a, \iw_b, \iw_t)) .
 \end{align*}
-This follows, including the factor of two, 
+This follows, including the factor of two,
 because the summary function applied to the ancestral allele
 at a site with derived allele frequencies $p_a$, $p_b$, and $p_t$
 in sample $a$, sample $b$, and total, respectively, is
@@ -355,18 +383,18 @@ However, we can efficiently find $y^T C z$ for arbitrary vectors $y$ and $z$.
 This works because if we set the initial weights to $y$,
 then each allele's weight is equal to the sum of the entries of $y$
 corresponding to samples carrying that allele.
-Then, if we define 
+Then, if we define
 $F_{yz}(u, v, t) = (u - (\sum_a y_a) t) (v - (\sum_b z_b) t)$,
 then
 \begin{align} \label{eqn:yCz}
     \frac{1}{2} \bar \site(F_{yz}, (y, z, \iw_t))
-        &= \frac{1}{L} \sum_j (\sum_a y_a G_{ja} - (\sum_a y_a) P_j) 
+        &= \frac{1}{L} \sum_j (\sum_a y_a G_{ja} - (\sum_a y_a) P_j)
                     (\sum_b z_b G_{jb} - (\sum_b z_b) P_j) \\
         &= y^T C z .
 \end{align}
 
 \plr{Hmph: to actually compute $Cz$ we need one weight vector for each sample, again.
-    TODO: look up if you can do Krylov just by computing $y^t C z$ for a reasonable number of vectors.  
+    TODO: look up if you can do Krylov just by computing $y^t C z$ for a reasonable number of vectors.
     We could compute $Cz$ quickly if we could propagate down the tree:
     we'd have $(Cz)_a$ equal to the sum of the weights at all nodes \emph{above} $a$. }
 
@@ -425,7 +453,7 @@ for a list $(I_1, \ldots, I_N)$ of pairs of nodes,
 and two vectors $w^{(1)}$ and $w^{(2)}$ of weights of length $N$,
 add weight $w^{(1)}_i$ to each node on the path between the two nodes of $I_i$,
 and weight $w^{(2)}_i$ to each node on the path from the MRCA of $I_i$ to the root.
-With $k$ such weighting schemes, we would then need the summary function $F$ 
+With $k$ such weighting schemes, we would then need the summary function $F$
 to take $k \times 2$ values as input.
 Efficiently updating these ``diploid'' weights on the nodes should be possible,
 but is not a straightforward extension of our current method.
@@ -484,7 +512,7 @@ and $x_j(e)$ is the number of individuals in $A_j$ that fall below $e$.
 
 \emph{Note:} somewhat more generally,
 we could assign a set of weights to the individuals in each group,
-and let $x_j$ denote the total weight of the individuals in $A_j$ 
+and let $x_j$ denote the total weight of the individuals in $A_j$
 inheriting from that allele or edge.
 For simplicity we do not pursue this here.
 \plr{this is a good use of the word ``weight'' (although these could also be negative)}
@@ -495,7 +523,7 @@ The \emph{tree differences} encoded by a tree sequence allow us to efficiently u
 As it is more straightforward, we first describe the algorithm
 to compute the branch length version.
 
-\plr{Rework these into three algorithms: one to maintain the node weights $x$ 
+\plr{Rework these into three algorithms: one to maintain the node weights $x$
     (basically already described as `tracked nodes' in msprime)
     and the other two that use this.}
 
@@ -536,7 +564,7 @@ This works as the \emph{total branch length weight algorithm} except that steps 
     \item[5'] \emph{Find allele weights} for each mutated site in the tree:
         if $a$ is the ancestral allele,
         set $u[a]$ to be the value of $x$ at the root; and then,
-        for each mutation at node $e$ with derived allele $b$ 
+        for each mutation at node $e$ with derived allele $b$
         and parent mutation occurring at node $p$ with derived allele $c$,
         add $x[e]$ to $u[b]$, and subtract $x[p]$ from $u[c]$.
     \item[6'] For each unique allele $a$ seen,

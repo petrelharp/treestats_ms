@@ -1,11 +1,11 @@
 .PHONY: all, clean
 
-all: problem_statement.pdf forwards_paper.pdf
+all: treestats_paper.pdf
 
-problem_statement.pdf: problem_statement.tex
-	latexmk -pdf problem_statement
+# problem_statement.pdf: problem_statement.tex
+# 	latexmk -pdf problem_statement
 
-forwards_paper.pdf : method_diagram.pdf references.bib
+treestats_paper.pdf : references.bib
 
 clean: 
 	rm problem_statement-1_0.pdf problem_statement-1.asy problem_statement-1.pre problem_statement-1.tex problem_statement.aux problem_statement.fdb_latexmk problem_statement.fls problem_statement.log problem_statement.pdf problem_statement.pre

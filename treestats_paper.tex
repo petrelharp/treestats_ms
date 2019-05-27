@@ -13,8 +13,8 @@
 \newcommand{\site}{\mathcal{S}} % site stat
 \newcommand{\node}{\mathcal{N}} % node stat
 
-\newcommand{\nw}{{w}} % node weights
-\newcommand{\iw}{{\tilde w}} % initial weights
+\newcommand{\nw}{x} % node weights
+\newcommand{\iw}{w} % initial weights
 \newcommand{\aw}{{\bar w}} % allele weights
 \newcommand{\Tw}{{W}} % allele weights
 
@@ -170,9 +170,6 @@ are straightforward, and are planned for future work.
 Haplotype-based statistics may require a different class of algorithms.
 
 
-%%%%%%%%%%%%%%%%%%
-\subsection*{Theoretical framework}
-
 Suppose we have genotyped a collection of $N$ (homologous) chromosomes
 at a sequence of $L$ loci along the genome.
 \jk{Maybe use $n$ here? We use it below}
@@ -194,13 +191,11 @@ and so is a function of the \emph{folded} allele frequency spectrum.)
 If we know where each mutation has occurred on the genealogy,
 we can easily find the frequency of the corresponding allele by counting how many samples
 occur below that mutation in the tree (and removing those that subsequently mutate).
+What we do next is a generalization of this idea.
 
-\jk{Big jump here. I don't see the connection between the previous paragraph
-and the bitstring representation of haplotype statistics}
-There are $2^n$ possible genotype patterns for $n$ haploid samples genotyped at a biallelic locus,
-and so a general statistic of biallelic genotypes could be represented by a vector of length $2^n$.
 A more convenient way to parameterize many functions of genotype patterns
 uses three ingredients:
+\plr{MODIFY and SHORTEN THIS}
 \begin{itemize}
 
     \item[(a)] A list of $k$ vectors of \emph{initial node weights}, $(\iw_1, \ldots, \iw_k)$,
@@ -213,11 +208,8 @@ uses three ingredients:
         and is equal to the sum of initial weights of all nodes below it in the tree
         (including itself).
 
-    \item[(c)] A \emph{summary function} $F : \R^k \to \R$ so that
-        $F(\nw)$ is the ``summary'' statistic we compute \jk{I'd find it more
-        intuitive to use $f$ as the notation for a summary function. We can use
-        something else to define the site frequency spectrum above, right? Big
-        $F$ says ``set" to me.}
+    \item[(c)] A \emph{summary function} $f : \R^k \to \R$ so that
+        $f(\nw)$ is the ``summary'' statistic we compute \jk
 
 \end{itemize}
 
@@ -234,26 +226,120 @@ by first propagating the initial weights up the trees,
 and then evaluate the summary function on the resulting vectors of weights
 for each allele.
 
-% Sum weights for each allele.
-Concretely, to compute the statistic at a given site $j$,
+
+%%%%%%%%%%%%%%%%%%
+\subsection*{Subtree weights}
+
+We could calculate for a given tree how many of 
+a certain set of ``target'' samples are below each of its edges
+by (a) assigning each of those samples weight 1, and other nodes weight zero, then
+(b) finding the total weight of all nodes in the subtree below each edge.
+This total weight is equal to the number of target samples below that edge,
+and it can be calculated efficiently by propagating weights up the tree.
+It turns out to be useful to allow more general weights.
+
+\begin{definition}[Subtree weights]
+    Given a list of \emph{node weights} $w$, and a tree $T$,
+    define the \emph{subtree weight} $x_u$ for each node $u$ to be the sum of all node weights
+    of every node below $u$ in the tree (including $u$ itself):
+    \begin{align*}
+        \nw_u = \sum_{v \,:\, v \le_T u} \iw_v ,
+    \end{align*}
+    where $v \le_T u$ if $u$ is on the path from $v$ back to the root of $T$.
+\end{definition}
+
+We can easily update the vector $x$ as we move along the genome
+XXX as follows or described later.
+
+Next, we will describe several ways to summarize these subtree weights.
+
+%%%%%%%%%%%%%%%%%%
+\subsection*{Site statistics}
+
+The first method of summarizing uses subtree weights
+to compute a summary for each variant site in the genome.
+To compute the statistic at site $j$,
 for each allele $a$ seen at this site,
 let $\aw_j(a)$, the weight associated with this allele,
 be the sum of the initial weights over all nodes who inherit allele $a$.
+Note that if there has been only one mutation at the site,
+then $\aw_j(a)$ is equal to the subtree weight of the node that the mutation producing $a$
+appeared above, 
+while more generally $\aw$ is not necessarily a subtree weight 
+but is easily computable from them.
 If the site has only one mutation, which produced allele $a$
 at node $i$, then $\aw_j(a) = \nw(i)$.
 Then, the statistic computed at site $j$ is
 \begin{align}
-    \site(F, \iw)_j
+    \site(f, \iw)_j
     &=
-    \sum_a \aw_j(a) ,
+    \sum_{a \in D_j} \aw_j(a) ,
 \end{align}
-and a summary statistic across $L$ sites is
+where the sum is over the \emph{derived} alleles $D_j$ at site $j$.
+A summary statistic across $L$ sites is
 \begin{align}
-    \bar \site(F, \iw)
+    \bar \site(f, \iw)
     &=
     \frac{1}{L} \sum_{j=1}^L \sum_a \aw_j(a) .
 \end{align}
-We call this the \textbf{site statistic} associated with $\iw$ and $F$.
+We call this the \textbf{site statistic} associated with $\iw$ and $f$.
+
+\paragraph{Why the derived alleles?}
+We have defined the statistic to sum over only derived alleles,
+i.e., alleles not shared with the root of the tree.
+At a biallelic site, this is equivalent to knowing the derived allele frequency
+among any group of samples,
+and such a statistic will be unchanged under recoding
+if the summary function is unchanged after exchanging $p$ for $1-p$.
+(XXX what is $p$)
+
+\begin{example}[Nucleotide diversity]
+    Suppose we want to compute the mean density of nucleotide differences
+    in a group $S$ of $n$ sequences.
+    To do this, let $\iw_u = 1$ for $u \in S$ and $\iw_v = 0$ otherwise,
+    so that $\nw_u$ gives the number of nodes in $S$ below $u$,
+    and define
+    \begin{align*}
+        f(x) = \frac{2 x (n - x)}{n (n-1)} .
+    \end{align*}
+    Then $\bar \site(f, \iw)$ is mean nucleotide diversity in the region.
+\end{example}
+
+\plr{note LATER about what this does with triallelic sites}
+
+\begin{example}[Nucleotide divergence]
+    Now Suppose we want to compute the mean density of nucleotide differences
+    \emph{between} two nonoverlapping groups of samples, $S_1$ and $S_2$,
+    with $n_1$ and $n_2$ samples, respectively.
+    As before, let $\iw_{ju} = 1$ for $u \in S_j$ and $\iw_{jv} = 0$ otherwise,
+    so that $\nw_{ju}$ gives the number of nodes in $S_j$ below $u$.
+    Then we define
+    \begin{align*}
+        f(x_1, x_2) = \frac{x_1 (n_2 - x_2) + (n_1 - x_1) x_2}{n_1 n_2} .
+    \end{align*}
+    Then $\bar \site(f, \iw)$ is mean nucleotide divergence between the two in the region.
+\end{example}
+
+\begin{example}[Phenotypic correlations]
+    Suppose that each sample has a phenotypic value, denoted $p_u$ for $u \in S$,
+    and we want to compute for each site the correlation of phenotype and genotype.
+    Suppose we have normalized $p$ so that $\sum_u p_u = 0$ and $\sum_u p_u^2 = 1$.
+    Then, if $g$ is a vector of binary genotypes (so $g_u = 1$ if $u$ carries the derived allele),
+    then the covariance of $p$ with $g$ is just $\sum_u p_u g_u = \sum_{u \st g_u = 1} p_u$,
+    i.e., the sum of the phenotypes of all samples carrying the derived allele.
+    This means that if we define $\iw_{1u} = p_u$, and $\iw_{2u} = 1$ for $u \in S$ and zero otherwise,
+    and $f(x_1, x_2) = x_1 / x_2$,
+    then $\site(\iw, f)_j$ is the correlation between $p$ and the allele at site $j$.
+\end{example}
+
+\begin{example}[Patterson's $f_4$]
+    Given four disjoint groups of samples, $S_1$, $S_2$, $S_3$, and $S_4$,
+    Patterson's $f_4(S_1, S_2; S_3, S_4)$ statistic for an allele with frequency $p_i$ in group $S_i$
+    is $(p_1 - p_2)(p_3 - p_4)$ (and then this is typically averaged over sites).
+    Therefore, if as before we let $\iw_{ju} = 1$ if $u \in S_j$,
+    and $f(x_1, x_2, x_3, x_4) = (x_1 n_2 - x_2 n_1) (x_3 n_4 - x_4 n_3) / n_1 n_2 n_3 n_4$,
+    then $\bar \site(\iw, f)$ gives Patterson's $f_4$ across the region.
+\end{example}
 
 \plr{Figure: example of propagating weights and labeling nodes with weights,
     in the case that weights are number of samples you are ancestor of.
@@ -261,30 +347,78 @@ We call this the \textbf{site statistic} associated with $\iw$ and $F$.
 
 \plr{Figure: example of branch and site statistics}
 
+%%%%%%%%%%%%%%%%%%
+\subsection*{Branch statistics}
+
+\plr{Introduce branch stats.}
+
+The \textbf{branch statistic} associated with the branch of length $t$
+above node $u$ on a tree of length $\ell$,
+with subtree weights $x$,
+is
+\begin{align}
+    \branch(f, \iw)_u
+    &=
+    \ell t  f(\nw(u))  .
+\end{align}
+This is the summary value that would be added to a site statistic
+if a single mutation occurred on this branch,
+multiplied by the expected number of mutations 
+(up to an overall constant related to mutation rate).
+
+\begin{example}[Mean TMRCA]
+    If we take $\iw$ and $f$ exactly as in the ``Nucleotide diversity'' example above,
+    then $f(u)$ gives the probability that the branch above $u$
+    lies on the path from two randomly chosen samples from $S$
+    on the path up to their most recent common ancestor (MRCA).
+    Therefore, $\bar \branch(f, \iw)$ for these choices
+    gives the mean total distance in the tree between two samples from $S$,
+    averaged across the sequence.
+    (This is twice the TMRCA if the samples are all from the same time.)
+\end{example}
+
+\begin{example}[Phenotypic correlation with pedigree]
+    If we take $\iw$ and $f$ as in the ``Phenotypic correlations'' example above,
+    what does $\branch(f, \iw)$ tell us?
+    The statistic tells us the \emph{expected} correlation between phenotype and any mutations
+    appearing on the tree, which is a summary of who much local relatedness
+    aligns with similarity in phenotype.
+\end{example}
+
+
+\begin{example}[Patterson's $f_4$]
+    Suppose that the four subsets each consist of only a single sample.
+    The summary function $f(x_1, x_2, x_3, x_4)$ for the $f_4$ statistic
+    then assigns weight 1 to any branch that separates $x_1$ and $x_3$ from $x_2$ and $x_4$,
+    and weight -1 to any branch that separates $x_1$ and $x_4$ from $x_2$ and $x_3$.
+    The statistic $\branch(f, \iw)$ therefore 
+    gives the difference in averages of these two types of branch,
+    averaged over choices of samples from the sample sets and averaged across the genome.
+\end{example}
+
+
+%%%%%%%%%%%%%%%%%%
+\subsection*{Node statistics}
+
+\textbf{Suppose we output per node.}
+
 This same framework can be used to compute other properties of interest.
 For instance, suppse that we'd like to compute
 what proportion of the genomes of the final generation were contributed by each ancestor.
 In the same framework we can do ancestry proportions.
 \plr{EXPLAIN, DEFINE NODE STATS}
 
-\plr{Introduce branch stats.}
-The \textbf{branch statistic} associated with the branch of length $t$
-above node $n$ on a tree of length $\ell$,
-with total weight $\Tw = \sum_j \iw(j)$
-and node weights $\nw$,
-is
-\begin{align}
-    \branch(F, \iw)_n
-    &=
-    \ell t ( F(\Tw - \nw(n)) + F(\nw(n)) ) .
-\end{align}
-This is the summary value that would be added to a site statistic
-if a single mutation occurred on this branch:
-we must apply the summary function
-to both the weight below $n$ as well as the weight \emph{not} below $n$
-to account for both derived and ancestral alleles.
+\begin{example}[Ancestry proportions]
+    If $\iw$ are the indicator weights of the set $S$ of $n$ samples,
+    and then $\nw_u / n$ is the proportion of the samples in $S$ that lie below $u$.
+    Therefore, if $f(x) = x / n$,
+    then $\node(f, \iw)_u$ is the proportion of the genomes of $S$
+    that are inherited from (ancestor) $u$.
+\end{example}
 
-\paragraph{Summary}
+
+%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Summary}
 We have defined three types of statistic using the same weighting scheme:
 \begin{enumerate}
     \item \textbf{Site statistics}
@@ -299,21 +433,12 @@ We have defined three types of statistic using the same weighting scheme:
 \plr{TO-DO:}
 \begin{itemize}
 
-    \item How will polarization work?
-        Right now, Site and Branch stats are polarized but Node statistics are not.
-        (To make Node statistics unpolarized, we need to also add $F(\Tw - w)$
-        to the weight of each node.)
-        Perhaps this is OK -- Site and Branch stats should correspond to each other,
-        but Node statistics are different, so could have different behavior.
-        BUT, people will need to compute polarized Site and Branch stats;
-        we need to make it easy for them somewhere.
-
     \item What about normalization?
         In the initial implementation, Node statistics were divided by the length
         for which the node was an ancestor to any sample, rather than just total sequence length
         To make these more analogous to the other stats, we think we want to remove this.
         The denominator for the original case is easily computable, by using
-        $F(x) = 1$ if $x>0$ and $F(x)=0$ otherwise, with appropriate (positive) weights.
+        $f(x) = 1$ if $x>0$ and $f(x)=0$ otherwise, with appropriate (positive) weights.
 
 \end{itemize}
 
@@ -367,16 +492,16 @@ $\iw_a = \delta_a$ and $\iw_b = \delta_b$
 and $\iw_t = \bone / n$
 (this weight gives the proportion of samples below each node).
 Then, with
-$F(\nw_a, \nw_b, \nw_t) = (\nw_a - \nw_t) (\nw_b - \nw_t)$,
+$f(\nw_a, \nw_b, \nw_t) = (\nw_a - \nw_t) (\nw_b - \nw_t)$,
 we can compute the covariance as
 \begin{align*}
-    C_{ab} = \frac{1}{2} \bar \site(F, (\iw_a, \iw_b, \iw_t)) .
+    C_{ab} = \frac{1}{2} \bar \site(f, (\iw_a, \iw_b, \iw_t)) .
 \end{align*}
 This follows, including the factor of two,
 because the summary function applied to the ancestral allele
 at a site with derived allele frequencies $p_a$, $p_b$, and $p_t$
 in sample $a$, sample $b$, and total, respectively, is
-$F(1 - p_a, 1 - p_b, 1 - p_t) = F(p_a, p_b, p_t)$.
+$f(1 - p_a, 1 - p_b, 1 - p_t) = f(p_a, p_b, p_t)$.
 
 Computing the full covariance matrix for a large number of samples may be infeasible.
 However, we can efficiently find $y^T C z$ for arbitrary vectors $y$ and $z$.
@@ -384,10 +509,10 @@ This works because if we set the initial weights to $y$,
 then each allele's weight is equal to the sum of the entries of $y$
 corresponding to samples carrying that allele.
 Then, if we define
-$F_{yz}(u, v, t) = (u - (\sum_a y_a) t) (v - (\sum_b z_b) t)$,
+$f_{yz}(u, v, t) = (u - (\sum_a y_a) t) (v - (\sum_b z_b) t)$,
 then
 \begin{align} \label{eqn:yCz}
-    \frac{1}{2} \bar \site(F_{yz}, (y, z, \iw_t))
+    \frac{1}{2} \bar \site(f_{yz}, (y, z, \iw_t))
         &= \frac{1}{L} \sum_j (\sum_a y_a G_{ja} - (\sum_a y_a) P_j)
                     (\sum_b z_b G_{jb} - (\sum_b z_b) P_j) \\
         &= y^T C z .

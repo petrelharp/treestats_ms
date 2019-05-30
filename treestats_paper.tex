@@ -177,7 +177,7 @@ then for some function $f()$, we want to compute $\sum_p h(p) f(p)$.
 Since this is a simple average over sites, and monomorphic sites do not contribute,
 we can compute this, summing over the $L$ loci, as
 $$\sum_p h(p) f(p) = (1/L) \sum_{i=1}^L \sum_a f(p_i(a)).$$
-(Note that since the ancestral allele is included, this is a function of the 
+(Note that since the ancestral allele is included, this is a function of the
 \emph{folded} frequency spectrum, so is invariant to relabeling of alleles.)
 If we know where each mutation has occurred on the genealogy,
 we can easily find the frequency of the corresponding allele by counting how many samples
@@ -188,7 +188,7 @@ What we do here is a generalization of this idea.
 \jk{Perhaps a diagram would help here also, showing a tree and a $k$-vector on each
 node?}
 
-Roughly speaking, we will 
+Roughly speaking, we will
 (a) propagate ``weights'' additively up each tree,
 (b) summarize these weights on each branch with a ``summary function'',
 and (c) aggregate these summaries to produce statistics
@@ -227,7 +227,7 @@ can cause the precise set of samples that lie below that edge to differ in diffe
 
 The basic ingredients that we use to summarize tree shape and genotype patterns
 are a set of values associated with each sampled node, which we call the ``weights''.
-For instance, we could calculate how many of a certain set $A$ of samples 
+For instance, we could calculate how many of a certain set $A$ of samples
 are below a particular edge in a tree
 by (a) assigning each of these samples weight 1 (and other nodes weight zero), then
 (b) finding the total weight of all nodes in the subtree below that edge.
@@ -315,8 +315,8 @@ defined simply to be the total weight of all nodes who have inherited that allel
 
 If there has been only one mutation at the site,
 then $\aw_j(a)$ is equal to the subtree weight of the node that the mutation producing $a$
-appeared above, 
-while more generally $\aw$ is not necessarily equal to a subtree weight 
+appeared above,
+while more generally $\aw$ is not necessarily equal to a subtree weight
 but is easily computable from them.
 
 We then define the \textbf{site statistic} of site $j$ computed using a summary function $f()$
@@ -344,7 +344,7 @@ so that the sum will be only over polymorphic sites
 
 \paragraph{What about polarization?}
 In the definition above we simply sum over all alleles at each site.
-However, sometimes it is useful to distinguish the \emph{ancestral} allele 
+However, sometimes it is useful to distinguish the \emph{ancestral} allele
 (i.e., the allele at the root of the tree) from the remaining derived alleles.
 This allows statistics in principle to differentiate ancestral from derived alleles,
 information which is available in practice (albeit noisily).
@@ -367,7 +367,7 @@ they are relatively rare in practice.
 \begin{example}[Nucleotide diversity] \label{ex:site_diversity}
     Suppose we want to compute the mean density of nucleotide differences
     in a group $S$ of $n$ sequences.
-    To do this, 
+    To do this,
     % let $\iw_u = 1$ for $u \in S$ and $\iw_v = 0$ otherwise,
     let $\iw = \bone_S$,
     so that $\nw(u)$ gives the number of nodes in $S$ below $u$,
@@ -382,7 +382,7 @@ they are relatively rare in practice.
     Now suppose we want to compute the mean density of nucleotide differences
     \emph{between} two nonoverlapping groups of samples, $S_1$ and $S_2$,
     with $n_1$ and $n_2$ samples, respectively.
-    As before, 
+    As before,
     let $\iw_j = \bone_{S_j}$,
     so that $\nw_{j}(u)$ gives the number of nodes in $S_j$ below $u$.
     Then we define
@@ -401,13 +401,13 @@ they are relatively rare in practice.
     Then, if $g_j$ is a vector of binary genotypes (so $g_j(u) = 1$ if $u$ carries the derived allele),
     then the covariance of $z$ with $g_j$ is just $\sum_u z(u) g_j(u) = \sum_{u \st g_j(u) = 1} z(u)$,
     i.e., the sum of the phenotypes of all samples carrying the derived allele.
-    Since the phenotypes sum to zero, this is also equal to 
+    Since the phenotypes sum to zero, this is also equal to
     $- \sum_{u \st g_j(u) = 0} z(u)$.
     Therefore, if we write $p_j = \sum_u g_j(u)$ for the derived allele frequency,
     we can write the squared correlation as the sum across alleles as
     \begin{align*}
         r_j^2 =
-        \frac{\left( \frac{1}{n} \sum_{u \st g_j(u) = 0} z(u)\right)^2}{2p(1-p)} 
+        \frac{\left( \frac{1}{n} \sum_{u \st g_j(u) = 0} z(u)\right)^2}{2p(1-p)}
         + \frac{\left( \frac{1}{n} \sum_{u \st g_j(u) = 1} z(u)\right)^2}{2p(1-p)}  .
     \end{align*}
     We can compute this as a site statistic by defining $\iw_{1}(u) = z(u)$, and $\iw_{2}(u) = 1$,
@@ -419,12 +419,12 @@ they are relatively rare in practice.
     Given four disjoint groups of samples, $S_1$, $S_2$, $S_3$, and $S_4$,
     Patterson's $f_4(S_1, S_2; S_3, S_4)$ statistic for an allele with frequency $p_i$ in group $S_i$
     is $(p_1 - p_2)(p_3 - p_4)$ (and then this is typically averaged over sites).
-    To rewrite this as a sum over alleles, note that 
+    To rewrite this as a sum over alleles, note that
     $p_1 - p_2 = p_1 (1 - p_2) - (1 - p_1) p_2$,
     and so the statistic counts with positive weight
     alleles that split $S_1$ and $S_3$ from $S_2$ and $S_4$,
     and negative weight ones that split $S_1$ and $S_4$ from $S_2$ and $S_3$.
-    Therefore, if as before we 
+    Therefore, if as before we
     let $\iw_j = \bone_{S_j}$
     % let $\iw_{ju} = 1$ if $u \in S_j$
     (so that $\iw_{ju}$ tells us the number of samples in $S_j$ descended from $u$),
@@ -448,7 +448,7 @@ they are relatively rare in practice.
 
 \paragraph{Polyallelic sites}
 The statistics defined above map exactly onto those standard in population genetics
-when all sites are biallelic. 
+when all sites are biallelic.
 If there is a consensus in the field
 for how to use sites with more than two alleles,
 it is to reduce to biallelic data, by either discarding other sites
@@ -493,7 +493,7 @@ then this gives us an isometry --
 measuring tree distances in branch lengths versus in numbers of mutations
 are equal in expectation, up to a constant.
 
-This makes it natural to define 
+This makes it natural to define
 a statistic of tree shape by summing these expected contributions across its branches.
 Concretely, the \textbf{branch statistic} of a tree $T$
 obtained from summary function $f()$
@@ -532,7 +532,7 @@ then $\ell_T(a,b) = \max(0.0, \min(b,d) - \max(a,c))$).
 The ``unpolarized'' version of this statistic, corresponding to equation \ref{eqn:site_unpolarized},
 omits the second term:
 \begin{align} \label{eqn:branch_unpolarized}
-    \branch_+(f, \iw)_T 
+    \branch_+(f, \iw)_T
     &=
     \sum_{k=1}^{n(T)} L_k f(\nw_{T_k}(u)) .
 \end{align}
@@ -565,7 +565,7 @@ than for the polarized ones.
     The summary function $f(x_1, x_2, x_3, x_4)$ for the $f_4$ statistic
     then assigns weight 1 to any branch that separates $x_1$ and $x_3$ from $x_2$ and $x_4$,
     and weight -1 to any branch that separates $x_1$ and $x_4$ from $x_2$ and $x_3$.
-    The statistic $\branch(f, \iw)$ therefore 
+    The statistic $\branch(f, \iw)$ therefore
     gives the difference in averages of these two types of branch,
     averaged over choices of samples from the sample sets and averaged across the genome.
 \end{example}
@@ -582,9 +582,9 @@ and the branch statistic of Example \ref{ex:branch_diversity} (mean TMRCA)
 use the same summary function $f(x) = x(n-x)/n(n-1)$.
 These are closely related because under an infinite-sites model of mutation,
 two sequences differ at a site only if there has been a mutation somewhere on the branches going back
-to their most recent common ancestor, 
-and so if mutations occur with constant rate, 
-the expected value of genetic diversity, 
+to their most recent common ancestor,
+and so if mutations occur with constant rate,
+the expected value of genetic diversity,
 averaging over mutational noise give the tree sequence,
 is equal to the mutation rate multiplied by the average distance between the two in the trees.
 
@@ -609,14 +609,14 @@ Second, we are assuming that the probability of per-site mutation is low enough
 that no two mutations occur at the same site
 -- the fact that they do, occasionally, means that this is an approximation.
 Third, we are assuming that mutation rates are constant through time and across the genome.
-Of course, the statement remains true if we can measure distance along the genome and time 
+Of course, the statement remains true if we can measure distance along the genome and time
 in a way that mutation rates are constant, but how these vary is generally unknown.
 
 Note that the expected product of two site statistics,
 $\E[\site(f, \iw) \site(g, \iw')]$
 is not equal to $\branch(f, \iw) \branch(g, \iw')$,
 because they are not independent.
-However, it is always possible to define a branch statistic that 
+However, it is always possible to define a branch statistic that
 gives the expected value of the product.
 How to do this is described in \citet{ralph2019empirical}.
 

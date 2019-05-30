@@ -142,11 +142,6 @@ This paper generalizes the latter strategy to a much broader class of statistics
 
 \plr{Review of tree shape stuff in phylogenetics}
 a good review of theoretical properties \citet{semple2003phylogenetics}.
-\jk{This formulation of a $k$-vector associated with each node is very
-reminiscent of classical phlogenetics algorithms. Eg the Sankoff algorithm
-for counting the number of mutations needed to explain a set of genotypes
-under parsimony and with arbitrary weighting matrices. See
-\citep[pg.13]{felsenstein2004inferring}. We should emphasise this connection.}
 
 % summary
 In this paper, we present a general framework for defining and efficiently computing
@@ -176,7 +171,7 @@ and the allele frequency spectrum
 then for some function $f()$, we want to compute $\sum_p h(p) f(p)$.
 Since this is a simple average over sites, and monomorphic sites do not contribute,
 we can compute this, summing over the $L$ loci, as
-$$\sum_p h(p) f(p) = (1/L) \sum_{i=1}^L \sum_a f(p_i(a)).$$
+$$\sum_p h(p) f(p) = \frac{1}{L} \sum_{i=1}^L \sum_a f(p_i(a)).$$
 (Note that since the ancestral allele is included, this is a function of the
 \emph{folded} frequency spectrum, so is invariant to relabeling of alleles.)
 If we know where each mutation has occurred on the genealogy,
@@ -184,9 +179,6 @@ we can easily find the frequency of the corresponding allele by counting how man
 occur below that mutation in the tree (and accounting for those that subsequently mutate).
 What we do here is a generalization of this idea.
 
-
-\jk{Perhaps a diagram would help here also, showing a tree and a $k$-vector on each
-node?}
 
 Roughly speaking, we will
 (a) propagate ``weights'' additively up each tree,
@@ -199,18 +191,18 @@ and (c) aggregate these summaries to produce statistics
 \subsection*{Tree sequences}
 
 A tree sequence describes how a set of $n$ sampled chromosomes
-are related to each other along a (linear) genome \citep{kelleher2016efficient}.
+are related to each other along a (linear) genome of length $L$ \citep{kelleher2016efficient}.
 These trees are highly correlated,
 a fact which allows them to be stored and processed very efficiently,
 as described in \citet{kelleher2018efficient}.
-This is encoded as a sequence of trees, $\treeseq = (T_1, T_2, \ldots, T_{n(T)})$
-and a sequence of breakpoints $0 = a_0 < a_1 < \cdots < a_{n(T)} = G$,
-where $G$ is the length of the genome
-and $T_k$ describes the genealogical relationships of the samples
+This is encoded as a sequence of trees, $\treeseq = (T_1, T_2, \ldots,
+T_{n(\treeseq)})$
+and a sequence of breakpoints $0 = a_0 < a_1 < \cdots < a_{n(T)} = L$,
+where $T_k$ describes the genealogical relationships of the samples
 over the segment of genome betwen $a_{k-1}$ (inclusive) and $a_k$ (exclusive).
 We say that tree $T_k$ \emph{covers} the (half-open) segment $[a_{k-1}, a_k)$,
 and call the length of this segment its \emph{span}, denoted $L_k = a_k - a_{k-1}$.
-We refer to the branches in each tree using the node at the bottom,
+We refer to the branches in each tree using the most recent node,
 so for instance the branch describing a relationship where $u$ is the child of $v$
 is associated with $u$.
 The length of this branch -- i.e., the difference in birth times of $v$ and $u$ --
@@ -218,12 +210,17 @@ we denote $t_T(u)$ (dropping $T$ if it is clear from context).
 Note that although the same parent-child relationship may exist across many adjacent trees
 (this is called an ``edge''),
 rearrangements of genealogical relationships
-can cause the precise set of samples that lie below that edge to differ in different trees.
-
+can cause the precise set of samples that lie below that edge to differ across
+trees.
 
 
 %%%%%%%%%%%%%%%%%%
-\subsection*{Subtree weights}
+\subsection*{Defining a statistic}
+
+\jk{I think we're missing an overall overview of how to specify a statistic
+and basic definitions of the framework itself. Before getting into the
+specifics below, it would be good to give an more abstract idea of
+what's happening. Perhaps with reference to a diagram?}
 
 The basic ingredients that we use to summarize tree shape and genotype patterns
 are a set of values associated with each sampled node, which we call the ``weights''.
@@ -242,32 +239,42 @@ the \emph{indicator weights of $A$} are the sample weights $\bone_A$ with
 $\bone_A(u) = 1$ if $u \in A$ and $\bone_A(u) = 0$ otherwise.
 
 \begin{definition}[Subtree weights]
-    Given a list of \emph{sample weights} $w$, and a tree $T$,
+    Given a list of \emph{sample weights} $w$ and a tree $T$,
     define the \emph{subtree weight} $\nw_T(u)$ for each node $u$ to be the sum of all sample weights
-    of every node below $u$ in the tree (including $u$ itself):
+    of every node descending from (and including) $u$ in the tree:
     \begin{align*}
         \nw_T(u) = \sum_{v \,:\, v \le_T u} \iw(v) ,
     \end{align*}
-    where $v \le_T u$ if $u$ is on the path from $v$ back to the root of $T$.
+    where $v \le_T u$ if $u$ is on the path from $v$ to root in $T$.
 \end{definition}
 
 We allow vector-valued weights,
 i.e., $\iw(v)$ may be a vector $(\iw_1(v), \ldots, \iw_m(v))$,
 so that when summarising we have access to more than one aspect of each subtree.
-Below, in section XXX, we describe how to efficiently
-maintain a list of the weights of the subtrees below each node
-as we iterate through the tree sequence.
+% Below, in section XXX, we describe how to efficiently
+% maintain a list of the weights of the subtrees below each node
+% as we iterate through the tree sequence.
 
 Next, we will describe how to use these subtree weights,
 passed through a ``summary function'' in various ways,
 to summarize genetic variation and tree shapes across the tree sequence.
 
+\begin{definition}[Summary function]
+    Given a weight vector $(w_1, \dots, w_k)$, the summary function
+    $f: \mathbb{R}^k \rightarrow \mathbb{R}^m$ computes a vector
+    $(\sigma_1, \dots, \sigma_m)$ summarising these weights.
+\end{definition}
+
+
+\jk{This definition is pretty weak, but wanted something in there.}
+
+
 %%%%%%%%%%%%%%%%%%
 \subsection*{Node statistics}
 
 Propagating indicator weights of a subset of samples up the tree
-lets us easily count the number of those samples that each node in the tree has inherited.
-Averaged across trees,
+lets us easily count the number of those samples that inherit from each node in
+the tree. Averaged across trees,
 this tells us what proportion of the sample's genomes were inherited from each node.
 Other choices of weights would tell us other information about the nodes.
 Motivated by this, we define the
@@ -278,9 +285,8 @@ averaged across the genome:
 \begin{align}
     \node(f, \iw)_u
     =
-    \frac{1}{G} \sum_k L_k f(\nw_{T_k}(u)) ,
+    \frac{1}{L} \sum_{k=1}^{n(\treeseq)} L_k f(\nw_{T_k}(u)).
 \end{align}
-where the sum is over trees, and $L_k$ is the \emph{span} of the $k^\text{th}$ tree.
 % i.e., the length of the segment of genome that the tree extends for.
 % If this is computed over only a ``window'' of the genome
 % then $L_k$ is replaced by the length of the portion of that window
@@ -358,7 +364,7 @@ and so
 \end{align}
 where $D_j$ denotes the set of all alleles at site $j$ except the allele at the root of the tree.
 Note that this may not be quite what is expected,
-for instance, if there has been a backmutation to the ancestral allele at some point in the tree,
+for instance, if there has been a back mutation to the ancestral allele at some point in the tree,
 or if there have been mutations to distinct alleles on different parts of the tree
 such that the ancestral allele is no longer present.
 However, since these situations depend on multiple mutations occurring at a single site,
@@ -502,13 +508,13 @@ is defined to be
 \begin{align}
     \branch(f, \iw)_T
     &=
-    \sum_{k=1}^{n(T)} L_k \left\{ f(\nw_{T_k}(u)) + f(\tiw - \nw_{T_k}(u)) \right\}  ,
+    \sum_{k=1}^{n(\treeseq)} L_k \left\{ f(\nw_{T_k}(u)) + f(\tiw - \nw_{T_k}(u)) \right\}  ,
 \end{align}
 where $t_u$ is the length of the branch above node $u$ in the tree $T$
 and $\nw(u)$ is the total weight of the subtree below $u$ (as defined above).
 The term $\tiw - \nw_{T_k}(u)$ gives the total weight \emph{not} in the subtree of $T_k$ below $u$,
 because the sum of all weights in the tree is always constant,
-and so so $\sum_u \nw_T(u) = \tiw$.
+and so $\sum_u \nw_T(u) = \tiw$.
 The value $f(\nw(u))$ is the summary value that would be added to a site statistic
 if a single mutation occurred on the branch above $u$,
 and $f(\tiw - \nw_{T_k}(u))$ is the value that would be added due to its complementary allele,
@@ -527,7 +533,7 @@ We write this with similar notation:
 \end{align}
 where $\ell_T(a,b)$ is the length of the region in $[a,b)$ that the tree $T$ extends for
 (i.e., if $T$ covers the half-open interval $[c,d)$,
-then $\ell_T(a,b) = \max(0.0, \min(b,d) - \max(a,c))$).
+then $\ell_T(a,b) = \max(0, \min(b,d) - \max(a,c))$).
 
 The ``unpolarized'' version of this statistic, corresponding to equation \ref{eqn:site_unpolarized},
 omits the second term:

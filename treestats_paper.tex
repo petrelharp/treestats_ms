@@ -168,16 +168,15 @@ The methods are implemented in the \tskit{} library.
 \section*{Framework and statistics}
 
 
-Suppose we have genotyped a collection of $N$ (homologous) chromosomes
-at a sequence of $G$ loci along the genome,
-and wish to compute statistic of the allele frequency spectrum.
+Suppose we have sequenced a linear genome of $L$ bases from $n$ (homologous) sampled chromosomes,
+and wish to compute a statistic of the allele frequency spectrum.
 In other words, if the frequency of allele $a$ at a site $i$ is $p_i(a)$,
 and the allele frequency spectrum
--- i.e., the proportion of alleles whose frequency is $p$ in our sample -- is $f(p)$,
-then for some function $h()$ we want to compute $\sum_p f(p) h(p)$.
-Since this is a simple average over sites,
-we can compute this, summing over the $L$ sites, as
-$$\sum_p f(p) h(p) = (1/G) \sum_{i=1}^G \sum_a h(p_i(a)).$$
+-- i.e., the proportion of alleles whose frequency is $p$ in our sample -- is $h(p)$,
+then for some function $f()$, we want to compute $\sum_p h(p) f(p)$.
+Since this is a simple average over sites, and monomorphic sites do not contribute,
+we can compute this, summing over the $L$ loci, as
+$$\sum_p h(p) f(p) = (1/L) \sum_{i=1}^L \sum_a f(p_i(a)).$$
 (Note that since the ancestral allele is included, this is a function of the 
 \emph{folded} frequency spectrum, so is invariant to relabeling of alleles.)
 If we know where each mutation has occurred on the genealogy,

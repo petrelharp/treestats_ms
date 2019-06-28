@@ -406,20 +406,23 @@ they are relatively rare in practice.
     For convenience, suppose $z$ is normalized so that $\sum_u z(u) = 0$ and $\sum_u z(u)^2 = 1$.
     Then, if $g_j$ is a vector of binary genotypes (so $g_j(u) = 1$ if $u$ carries the derived allele),
     then the covariance of $z$ with $g_j$ is just $\sum_u z(u) g_j(u) = \sum_{u \st g_j(u) = 1} z(u)$,
-    i.e., the sum of the phenotypes of all samples carrying the derived allele.
-    Since the phenotypes sum to zero, this is also equal to
+    i.e., the sum of the phenotypes of all samples carrying the derived allele,
+    divided $\sqrt{n - 1}$, where $n$ is the number of samples.
+    Since the phenotypes sum to zero, this is also equal to 
     $- \sum_{u \st g_j(u) = 0} z(u)$.
     Therefore, if we write $p_j = \sum_u g_j(u)$ for the derived allele frequency,
     we can write the squared correlation as the sum across alleles as
     \begin{align*}
         r_j^2 =
-        \frac{\left( \frac{1}{n} \sum_{u \st g_j(u) = 0} z(u)\right)^2}{2p(1-p)}
-        + \frac{\left( \frac{1}{n} \sum_{u \st g_j(u) = 1} z(u)\right)^2}{2p(1-p)}  .
+        \frac{\left( \sum_{u \st g_j(u) = 0} z(u)\right)^2}{2p(1-p)n(n-1)} 
+        + \frac{\left( \sum_{u \st g_j(u) = 1} z(u)\right)^2}{2p(1-p)n(n-1)}  .
     \end{align*}
-    We can compute this as a site statistic by defining $\iw_{1}(u) = z(u)$, and $\iw_{2}(u) = 1$,
-    and $f(x_1, x_2) = x_1^2 / 2 x_2 (n - x_2)$:
+    We can compute this as a site statistic by defining $\iw_{1}(u) = z(u)$, and $\iw_{2}(u) = 1/n$,
+    and $f(x_1, x_2) = x_1^2 / (2 x_2 (1 - x_2) n (n-1))$:
     then $\site(\iw, f)_j = r_j^2$ is the squared correlation between $z$ and the allele at site $j$.
 \end{example}
+
+\textbf{Note:} computing correlations with branches instead of SNPs is like stuff done in \citet{zollner2005coalescent} and \citet{minichiello2006mapping}, maybe.
 
 \begin{example}[Patterson's $f_4$] \label{ex:site_f4}
     Given four disjoint groups of samples, $S_1$, $S_2$, $S_3$, and $S_4$,
@@ -817,6 +820,7 @@ but is not a straightforward extension of our current method.
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Acknowledgements}
+Thanks to Graham Coop for useful suggestions.
 
 
 \bibliography{references}

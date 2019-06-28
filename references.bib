@@ -57,3 +57,44 @@
     year={2004},
     publisher={Sinauer associates Sunderland, MA}
 }
+
+@article{zollner2005coalescent,
+  abstract = {We outline a general coalescent framework for using genotype data in linkage disequilibrium-based mapping studies. Our approach unifies two main goals of gene mapping that have generally been treated separately in the past: detecting association (i.e., significance testing) and estimating the location of the causative variation. To tackle the problem, we separate the inference into two stages. First, we use Markov chain Monte Carlo to sample from the posterior distribution of coalescent genealogies of all the sampled chromosomes without regard to phenotype. Then, averaging across genealogies, we estimate the likelihood of the phenotype data under various models for mutation and penetrance at an unobserved disease locus. The essential signal that these models look for is that in the presence of disease susceptibility variants in a region, there is nonrandom clustering of the chromosomes on the tree according to phenotype. The extent of nonrandom clustering is captured by the likelihood and can be used to construct significance tests or Bayesian posterior distributions for location. A novelty of our framework is that it can naturally accommodate quantitative data. We describe applications of the method to simulated data and to data from a Mendelian locus (CFTR, responsible for cystic fibrosis) and from a proposed complex trait locus (calpain-10, implicated in type 2 diabetes).},
+  added-at = {2019-06-28T21:34:14.000+0200},
+  author = {Z{\"o}llner, S and Pritchard, J K},
+  biburl = {https://www.bibsonomy.org/bibtex/2f64aba5cf8a6a338cad5d9a8e5885793/peter.ralph},
+  doi = {10.1534/genetics.104.031799},
+  interhash = {ecf9a1842634482fef64cbc1bf278275},
+  intrahash = {f64aba5cf8a6a338cad5d9a8e5885793},
+  journal = {Genetics},
+  keywords = {ARG GWAS methods tree_GWAS},
+  month = feb,
+  number = 2,
+  pages = {1071-1092},
+  pmid = {15489534},
+  timestamp = {2019-06-28T21:34:14.000+0200},
+  title = {Coalescent-based association mapping and fine mapping of complex trait loci},
+  url = {https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1449137/},
+  volume = 169,
+  year = 2005
+}
+
+@article{minichiello2006mapping,
+  abstract = {Large-scale association studies are being undertaken with the hope of uncovering the genetic determinants of complex disease. We describe a computationally efficient method for inferring genealogies from population genotype data and show how these genealogies can be used to fine map disease loci and interpret association signals. These genealogies take the form of the ancestral recombination graph (ARG). The ARG defines a genealogical tree for each locus, and, as one moves along the chromosome, the topologies of consecutive trees shift according to the impact of historical recombination events. There are two stages to our analysis. First, we infer plausible ARGs, using a heuristic algorithm, which can handle unphased and missing data and is fast enough to be applied to large-scale studies. Second, we test the genealogical tree at each locus for a clustering of the disease cases beneath a branch, suggesting that a causative mutation occurred on that branch. Since the true ARG is unknown, we average this analysis over an ensemble of inferred ARGs. We have characterized the performance of our method across a wide range of simulated disease models. Compared with simpler tests, our method gives increased accuracy in positioning untyped causative loci and can also be used to estimate the frequencies of untyped causative alleles. We have applied our method to Ueda et al.’s association study of CTLA4 and Graves disease, showing how it can be used to dissect the association signal, giving potentially interesting results of allelic heterogeneity and interaction. Similar approaches analyzing an ensemble of ARGs inferred using our method may be applicable to many other problems of inference from population genotype data.},
+  added-at = {2019-06-28T21:35:53.000+0200},
+  author = {Minichiello, Mark J. and Durbin, Richard},
+  biburl = {https://www.bibsonomy.org/bibtex/2ce54912e2686a743d05bccc63a75fdb9/peter.ralph},
+  doi = {https://doi.org/10.1086/508901},
+  interhash = {b8b41f9b9fb66cf6fd461c4b74b38d14},
+  intrahash = {ce54912e2686a743d05bccc63a75fdb9},
+  issn = {0002-9297},
+  journal = {The American Journal of Human Genetics},
+  keywords = {ARG GWAS methods tree_GWAS},
+  number = 5,
+  pages = {910 - 922},
+  timestamp = {2019-06-28T21:35:53.000+0200},
+  title = {Mapping Trait Loci by Use of Inferred Ancestral Recombination Graphs},
+  url = {http://www.sciencedirect.com/science/article/pii/S0002929707608349},
+  volume = 79,
+  year = 2006
+}

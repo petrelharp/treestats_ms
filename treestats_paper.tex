@@ -955,5 +955,145 @@ The definitions above are made so that for any weighting function,
 $\site_w$ is a moment estimator of $\branch_w$, i.e.,
 that $\E[\site_w] = \branch_w$ for \plr{somehow say continuum of sites here}.
 
+%%%%%%%%%%%
+\appendix
+
+\section{Linear regression}
+
+Let $h$ be a trait, $Z$ be a matrix of covariates, and $g$ be a vector denoting inheritance
+(so, with $n$ samples, $h$ and $g$ are both $n$-vectors and $Z$ is an $n \times k$ matrix).
+We would like to find the coefficient of $g$ in the linear regression of $h$ against $g$ and $Z$,
+without doing full multivariate regression for every new $g$,
+using the fact that $Z$ is always the same.
+Suppose that $Z^T Z = I$ and that the vector of all ones is in the span of the columns of $Z$,
+although in the implementation we post-process $Z$ to make this the case.
+Then, let $a$ be the number and $b$ be the $k$-vector satisfying
+\begin{align*}
+    a, b = \text{argmin}\left\{ \sum_i \left( w_i - a g_i - \sum_j Z_{ij} b_j \right)^2 \right\}
+\end{align*}
+Writing this in block matrix notation, $a$ and $b$ minimise
+\begin{align*}
+    \left\| 
+        \left[ \begin{array}{@{}c@{}} h \end{array}\right]
+            - 
+        \left[ \begin{array}{@{}c|c@{}} g & Z \end{array} \right]
+            \left[ \begin{array}{@{}c@{}} a \\ \hline b \end{array} \right]
+    \right\|^2 .
+\end{align*}
+
+
+Letting $B = [g | Z]$, the solution to this is
+\begin{align*}
+    \left[\begin{array}{@{}c@{}}a\\\hline b\end{array}\right] 
+        = (B^T B)^{-1} B^T h ,
+\end{align*}
+as long as $B^T B$ is invertible (which we assume to be the case).
+Let $p = g^T g$ be the allele frequency, 
+let $u = g^T Z$ be the vector giving sums of the covariates of all samples carrying the allele,
+and
+\begin{align*}
+    \alpha
+    &=
+        (g^T g - g^T Z (Z^T Z)^{-1} Z^T g)^{-1} \\
+    &=
+        \frac{1}{
+            p - \sum_j u_j^2
+        } .
+\end{align*}
+By the inversion formula for a block two-by-two matrix,
+since we have assumed that that $Z^T Z = I$,
+\begin{align*}
+    (B^T B)^{-1}
+    &=
+    \left[
+        \begin{array}{@{}cc@{}}
+            p & u \\
+            u^T & I
+        \end{array}
+    \right]^{-1} \\
+    &=
+    \left[
+        \begin{array}{@{}cc@{}}
+            \alpha
+            &
+            - \alpha u
+            \\
+            - \alpha u^T
+            &
+            p \left(p I - u u^T \right)^{-1}
+        \end{array}
+    \right] .
+\end{align*}
+Now, the regression coefficient we seek is,
+with $h_g = g^T h$,
+\begin{align*}
+    a
+    &=
+    \alpha \left(
+        h_g - u Z^T h
+    \right) .
+\end{align*}
+
+To compute this in the framework above,
+first add a column of 1s to the covariates $Z$,
+then decorrelate the resulting matrix, so that now $Z^T Z = I$.
+Then, put this normalised version of $Z$ 
+into the first $k$ columns of the weight matrix (so that $w_j(u) = Z_{uj}$),
+set the $(k+1)^\text{st}$ column to the trait (so that $w_{k+1}(u) = w_u$),
+and the final column to all $1/n$ (so $w_{k+2}(u) = 1/n$).
+Also let $Z^T h = v$ be precomputed.
+Then the sum of the traits of samples with the focal genotype is $h_g = x_{k+1}$,
+and the allele frequency is $p = x_{k+2}$,
+so that
+\begin{align*}
+    a
+    &=
+    \frac{
+        h_g - \sum_{j=1}^k x_j v_j
+    }{
+        p - \sum_{j=1}^k x_j^2
+    } .
+\end{align*}
+
+In practice we square this and divide by two,
+so that for biallelic loci the two alleles contribute an equal amount.
+For loci with more than two alleles,
+it would be more satisfying to return the proportion of variance in the trait
+that is explained by \emph{all} of the alleles;
+however, this would be more involved
+(it would entail inversion of a $3 \times 3$ matrix for each locus).
+
+% # NUMERICAL CHECK
+% n <- 20
+% k <- 5
+% h <- rnorm(n)
+% g <- rbinom(n, size=1, prob=0.5)
+% oZ <- cbind(matrix(rnorm(n*k), nrow=n), rep(1,n))
+% colnames(oZ) <- c(paste0("oZ", 1:k), "1")
+% Z <- oZ %*% solve(chol(crossprod(oZ)))
+% colnames(Z) <- paste0("Z", 1:(k+1))
+% lm_a <- coef(lm(h ~ g + oZ))[2]
+% hg <- sum(g*h)
+% hZ <- crossprod(Z, h)
+% u <- crossprod(Z, g)
+% p <- sum(g)
+% alpha <- 1/(p - sum(u^2))
+% a <- alpha * (hg - crossprod(u, hZ))
+% 
+% # check formula for regression coefs
+% # and that coefficient of g doesn't change on linear transform of Z
+% B <- cbind(g, Z)
+% H <- cbind(solve(crossprod(B), crossprod(B, h)),
+%            coef(lm(h ~ g + Z + 0)),
+%            coef(lm(h ~ g + oZ + 0)))
+% stopifnot(all(abs(diff(H[1,])) < 2e-15))
+% # check for alpha, an other bits
+% stopifnot(all(abs(crossprod(B, h) - c(hg, hZ)) < 2e-15))
+% stopifnot(all(abs(- alpha * u - solve(crossprod(B))[1,-1]) < 2e-15))
+% stopifnot(abs(solve(crossprod(B))[1,1] - alpha) < 2e-15)
+% stopifnot(all(abs(p*solve(p*diag(k+1) - tcrossprod(u)) - solve(crossprod(B))[-1,-1]) < 2e-15))
+% # and the final answer
+% stopifnot(abs(a - lm_a) < 2e-15)
+
 
 \end{document}

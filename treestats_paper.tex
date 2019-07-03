@@ -988,39 +988,40 @@ Letting $B = [g | Z]$, the solution to this is
         = (B^T B)^{-1} B^T h ,
 \end{align*}
 as long as $B^T B$ is invertible (which we assume to be the case).
-Let $p = g^T g$ be the allele frequency, 
+Let $m = g^T g$ be the number of alleles in the sample coded 1,
 let $u = g^T Z$ be the vector giving sums of the covariates of all samples carrying the allele,
 and
 \begin{align*}
     \alpha
     &=
-        (g^T g - g^T Z (Z^T Z)^{-1} Z^T g)^{-1} \\
+        (g^T g - g^T Z (Z^T Z)^{-1} Z^T g) \\
     &=
-        \frac{1}{
-            p - \sum_j u_j^2
-        } .
+        m - \sum_j u_j^2 .
 \end{align*}
-By the inversion formula for a block two-by-two matrix,
+$\alpha$ is the norm of the component of $g$ not in the subspace spanned by the columns of $Z$,
+so if $\alpha = 0$ then we want to return $a=0$.
+
+Otherwise, by the inversion formula for a block two-by-two matrix,
 since we have assumed that that $Z^T Z = I$,
 \begin{align*}
     (B^T B)^{-1}
     &=
     \left[
         \begin{array}{@{}cc@{}}
-            p & u \\
+            m & u \\
             u^T & I
         \end{array}
     \right]^{-1} \\
     &=
     \left[
         \begin{array}{@{}cc@{}}
-            \alpha
+            1/\alpha
             &
-            - \alpha u
+            - u / \alpha
             \\
-            - \alpha u^T
+            - u^T / \alpha
             &
-            p \left(p I - u u^T \right)^{-1}
+            m \left(m I - u u^T \right)^{-1}
         \end{array}
     \right] .
 \end{align*}
@@ -1029,7 +1030,7 @@ with $h_g = g^T h$,
 \begin{align*}
     a
     &=
-    \alpha \left(
+    \frac{1}{\alpha} \left(
         h_g - u Z^T h
     \right) .
 \end{align*}
@@ -1040,10 +1041,10 @@ then decorrelate the resulting matrix, so that now $Z^T Z = I$.
 Then, put this normalised version of $Z$ 
 into the first $k$ columns of the weight matrix (so that $w_j(u) = Z_{uj}$),
 set the $(k+1)^\text{st}$ column to the trait (so that $w_{k+1}(u) = w_u$),
-and the final column to all $1/n$ (so $w_{k+2}(u) = 1/n$).
+and the final column to all $1$s (so $w_{k+2}(u) = 1$).
 Also let $Z^T h = v$ be precomputed.
 Then the sum of the traits of samples with the focal genotype is $h_g = x_{k+1}$,
-and the allele frequency is $p = x_{k+2}$,
+and the allele count is $m = x_{k+2}$,
 so that
 \begin{align*}
     a
@@ -1051,8 +1052,7 @@ so that
     \frac{
         h_g - \sum_{j=1}^k x_j v_j
     }{
-        p - \sum_{j=1}^k x_j^2
-    } .
+        m - \sum_{j=1}^k x_j^2 } .
 \end{align*}
 
 In practice we square this and divide by two,
@@ -1077,8 +1077,8 @@ however, this would be more involved
 % hZ <- crossprod(Z, h)
 % u <- crossprod(Z, g)
 % p <- sum(g)
-% alpha <- 1/(p - sum(u^2))
-% a <- alpha * (hg - crossprod(u, hZ))
+% alpha <- (p - sum(u^2))
+% a <- (1/alpha) * (hg - crossprod(u, hZ))
 % 
 % # check formula for regression coefs
 % # and that coefficient of g doesn't change on linear transform of Z
@@ -1089,8 +1089,8 @@ however, this would be more involved
 % stopifnot(all(abs(diff(H[1,])) < 2e-15))
 % # check for alpha, an other bits
 % stopifnot(all(abs(crossprod(B, h) - c(hg, hZ)) < 2e-15))
-% stopifnot(all(abs(- alpha * u - solve(crossprod(B))[1,-1]) < 2e-15))
-% stopifnot(abs(solve(crossprod(B))[1,1] - alpha) < 2e-15)
+% stopifnot(all(abs(- (1/alpha) * u - solve(crossprod(B))[1,-1]) < 2e-15))
+% stopifnot(abs(solve(crossprod(B))[1,1] - (1/alpha)) < 2e-15)
 % stopifnot(all(abs(p*solve(p*diag(k+1) - tcrossprod(u)) - solve(crossprod(B))[-1,-1]) < 2e-15))
 % # and the final answer
 % stopifnot(abs(a - lm_a) < 2e-15)

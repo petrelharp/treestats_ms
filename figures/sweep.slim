@@ -1,0 +1,27 @@
+// We'll want a few sweeps to happen somewhere on
+// a 1e8-bp chromosome, that take tens of generations to sweep
+// and hence hit percents of the chromosome; so 
+//   s = 0.1 to take tens of generations
+// and we want 2 * N * mu * 1e8 * 2 * s = 0.05 so
+//   mu = 1e-10 / N
+
+initialize()
+{
+    initializeTreeSeq();
+    setSeed(seed);
+    initializeMutationRate(1e-9 / N);
+    initializeMutationType("m1", 0.5, "e", 0.1);
+    initializeGenomicElementType("g1", m1, 1.0);
+    initializeGenomicElement(g1, 0, 1e8-1);
+    initializeRecombinationRate(1e-8);
+}
+
+1 { 
+    sim.addSubpop("p1", N);
+}
+
+1000 {
+    sim.treeSeqOutput("swept." + N + "." + seed + ".trees");
+    catn("Done!");
+    sim.simulationFinished();
+}

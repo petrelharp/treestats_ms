@@ -34,6 +34,9 @@ except:
 # get swept mutations and selection coefficients
 s = np.array([mut.metadata[0].selection_coeff for mut in ts.mutations()])
 spos = np.array([ts.site(mut.site).position for mut in ts.mutations()])
+freqs = np.array([ts.at(ts.site(mut.site).position).num_samples(mut.node) for mut in ts.mutations()])
+spos = spos[freqs > 0.5 * ts.num_samples]
+s = s[freqs > 0.5 * ts.num_samples]
 
 windows = np.arange(0, ts.sequence_length, 5e5)
 windows[-1] = ts.sequence_length
@@ -70,9 +73,7 @@ sample_sets = []
 for k in range(nreps):
     sample_sets.append(sord[k * sample_size + np.arange(sample_size)])
 
-subts = ts.simplify([x for y in sample_sets for x in y])
-
-mts = pyslim.SlimTreeSequence(msprime.mutate(subts, rate=mut_rate, keep=True))
+mts = pyslim.SlimTreeSequence(msprime.mutate(ts, rate=mut_rate, keep=True))
 sub_branch_div = ts.diversity(sample_sets, windows=windows, mode='branch')
 sub_site_div = (1/mut_rate) * mts.diversity(sample_sets, windows=windows, mode='site')
 
@@ -105,7 +106,7 @@ for k, (pos, sval) in enumerate(zip(spos, s)):
     # at = ax.text(pos, 0.95*maxy, "s={:.2}".format(sval))
 
 ax.set_xlabel("chromosome position (bp)")
-ax.set_ylabel("mean diversity (π)")
+ax.set_ylabel("mean TMRCA (π/μ)")
 leg = ax.legend(
          loc = "upper left",
          bbox_to_anchor = (1.01, 1.01),
@@ -137,7 +138,7 @@ for k, (pos, sval) in enumerate(zip(spos, s)):
     # at = ax.text(pos, 0.95*maxy, "s={:.2}".format(sval))
 
 ax.set_xlabel("chromosome position (bp)")
-ax.set_ylabel("mean diversity (π)")
+ax.set_ylabel("mean TMRCA (π/μ)")
 leg = ax.legend(
          loc = "upper left",
          bbox_to_anchor = (1.01, 1.01),
@@ -173,7 +174,7 @@ for k, (pos, sval) in enumerate(zip(spos, s)):
     # at = ax.text(pos, 0.95*maxy, "s={:.2}".format(sval))
 
 ax.set_xlabel("chromosome position (bp)")
-ax.set_ylabel("mean diversity (pi)")
+ax.set_ylabel("mean TMRCA (π/μ)")
 leg = ax.legend(
          loc = "upper left",
          bbox_to_anchor = (1.01, 1.01),

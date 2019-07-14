@@ -1,5 +1,9 @@
+.PHONY: figs
 
-all : swept.1000.999.1e-09.diversity.pdf 
+figs : swept.1000.999.1e-09.diversity.pdf 
+
+# ones that take a long time
+bigfigs : swept.10000.765.1e-09.diversity.pdf 
 
 %.1e-09.diversity.pdf : %.trees
 	python3 plot_sweep.py $< 1000

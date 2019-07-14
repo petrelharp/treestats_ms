@@ -1,6 +1,7 @@
 .PHONY: all, clean
 
 all: treestats_paper.pdf
+	$(MAKE) -C figures
 
 # problem_statement.pdf: problem_statement.tex
 # 	latexmk -pdf problem_statement

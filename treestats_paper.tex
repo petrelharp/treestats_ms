@@ -654,6 +654,8 @@ Neither site or branch diversity vary much between these samples,
 implying that the subsample gives us a good estimate of the whole-population values of each.
 However, as we see in the top figure,
 whole-population site diversity is itself only a quite noisy estimator of branch diversity.
+The same things are shown in Supplementary Figure \ref{sfig:sweep_duality_10K}
+for a simulation with 10,000 individuals.
 
 
 \begin{figure}
@@ -1145,6 +1147,16 @@ however, this would be more involved
 % stopifnot(all(abs(p*solve(p*diag(k+1) - tcrossprod(u)) - solve(crossprod(B))[-1,-1]) < 2e-15))
 % # and the final answer
 % stopifnot(abs(a - lm_a) < 2e-15)
+
+\section*{Supplementary figures}
+
+\begin{figure}
+    \includegraphics{{figures/swept.10000.765.1e-09.diversity}.pdf}
+    \caption{
+        As in Figure~\ref{fig:sweep_duality}, but in a population of size 10,000.
+        \label{sfig:sweep_duality_10K}
+    }
+\end{figure}
 
 
 \end{document}

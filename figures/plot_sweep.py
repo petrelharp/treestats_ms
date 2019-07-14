@@ -8,16 +8,16 @@ import matplotlib.pyplot as plt
 
 usage = """
 Usage:
-    {} treefile Ne
+    {} treefile Ne mut_rate
 """.format(sys.argv[0])
 
-if len(sys.argv) != 3:
+if len(sys.argv) != 4:
     raise ValueError(usage)
 
 treefile = sys.argv[1]
 Ne = int(sys.argv[2])
+mut_rate = float(sys.argv[3])
 
-mut_rate = 1e-9
 nreps = 20
 
 outbase = ".".join(treefile.split(".")[:-1])
@@ -52,7 +52,7 @@ all_branch_div = ts.diversity([ts.samples()], windows=windows, mode='branch')
 low_mut_rate = mut_rate
 all_site_div = np.zeros((len(windows) - 1, nreps))
 for k in range(nreps):
-    mts = pyslim.SlimTreeSequence(msprime.mutate(ts, rate=low_mut_rate, keep=True))
+    mts = msprime.mutate(ts, rate=low_mut_rate, keep=True)
     all_site_div[:, k] = (1/low_mut_rate) * mts.diversity([ts.samples()], windows=windows, mode='site')[:, 0]
 
 # and independent versions of the same rate, high
@@ -60,7 +60,7 @@ for k in range(nreps):
 high_mut_rate = mut_rate * 10
 all_site_div_high = np.zeros((len(windows) - 1, nreps))
 for k in range(nreps):
-    mts = pyslim.SlimTreeSequence(msprime.mutate(ts, rate=high_mut_rate, keep=True))
+    mts = msprime.mutate(ts, rate=high_mut_rate, keep=True)
     all_site_div_high[:, k] = (1/high_mut_rate) * mts.diversity([ts.samples()], windows=windows, mode='site')[:, 0]
 
 # and for independent subsamples
@@ -73,7 +73,7 @@ sample_sets = []
 for k in range(nreps):
     sample_sets.append(sord[k * sample_size + np.arange(sample_size)])
 
-mts = pyslim.SlimTreeSequence(msprime.mutate(ts, rate=mut_rate, keep=True))
+mts = msprime.mutate(ts, rate=mut_rate, keep=True)
 sub_branch_div = ts.diversity(sample_sets, windows=windows, mode='branch')
 sub_site_div = (1/mut_rate) * mts.diversity(sample_sets, windows=windows, mode='site')
 
@@ -199,7 +199,7 @@ if False:
     for k in range(len(mut_rates)):
         rate = mut_rates[k]
         drate = rate - ([0.0] + mut_rates)[k]
-        mts = pyslim.SlimTreeSequence(msprime.mutate(ts, rate=drate, keep=True))
+        mts = msprime.mutate(ts, rate=drate, keep=True)
         mut_site_div[:, k] = (1/rate) * mts.diversity([ts.samples()], windows=windows, mode='site')[:, 0]
 
     # diff mut rates

@@ -13,11 +13,11 @@
 
 \newcommand{\tskit}{{\texttt{tskit}}}
 \newcommand{\branch}{\mbox{Branch}} % branch stat
-\newcommand{\branchp}{\mbox{Branch}_+} % polarized
+\newcommand{\branchp}{\mbox{Branch}_+} % polarised
 \newcommand{\site}{\mbox{Site}} % site stat
-\newcommand{\sitep}{\mbox{Site}_+} % polarized
+\newcommand{\sitep}{\mbox{Site}_+} % polarised
 \newcommand{\node}{\mbox{Node}} % node stat
-\newcommand{\nodep}{\mbox{Node}_+} % polarized
+\newcommand{\nodep}{\mbox{Node}_+} % polarised
 
 \newcommand{\treeseq}{\mathbb{T}} % tree sequence
 \newcommand{\iw}{w} % sample (initial) weights
@@ -112,7 +112,7 @@ of the many genetic relationships between the individuals of a sample,
 e.g., to estimate $F_{ST}$ between two populations using a dozen allozymes.
 Today's vast quantity of whole-genome sequence
 makes it possible to confidently estimate many more properties of genealogical relationships
-in local regions of genomes \citep{fst_landscapes},
+in local regions of genomes \citep{stankowski2019widespread,fst_landscapes},
 or between individuals rather than populations \citep{individual_stats}.
 Computation is beginning to be a major problem:
 whole-genome sequence on the scale of the UK Biobank,
@@ -166,6 +166,10 @@ is proportional to the length of that branch,
 thus establishing a duality between genealogical and genetic summaries,
 under the infinite-sites model of mutation \citep{ralph2019empirical}.
 
+\plr{previous work stuff here}
+Computing correlations with branches instead of SNPs is like stuff done in \citet{zollner2005coalescent} and \citet{minichiello2006mapping}, maybe.
+Cite dynamic graph algorithm something something.
+
 % summary
 In this paper, we study only ``single-site'' genetic statistics,
 i.e., statistics of aligned genome sequence that can be expressed as averages over values computed
@@ -212,37 +216,17 @@ Figure \ref{fig:divergence_diagram} shows a simple example of these procedures
 of propagating weights up a tree and summarising them,
 used to calculate mean sequence divergence over a short sequence spanned by a single tree.
 
-\begin{figure}
-    \centering
-    \includegraphics{figures/divergence_diagram}
-    \caption{
-        An example of computing sequence divergence between red nodes and blue nodes
-        from seven mutations at distinct sites in a sequence of length 10 using the tree.
-        The summary function, $f(a,b) = (a/3)(1-b/2)$ gives the probability that
-        an allele found in $a$ of the red nodes and $b$ of the blue nodes is present in
-        a randomly chosen red node but not in a randomly chosen blue node.
-        \textbf{(a)} Weights are propagated up the tree by adding together the weights of any children,
-        plus the weight of the node itself, if it is a sample.
-        \textbf{(b)} In this example, weights $(a,b)$ record how many red nodes ($a$)
-        and how many blue nodes ($b$) are below each node.
-        The weights at each node is the sum of the weights of all descendant sample nodes.
-        \textbf{(c)} The summary function shown is applied to both the weight below 
-        and the weight not below each mutation,
-        so for instance the mutation above the node with weights $(2,1)$
-        contributes $f(2,1) + f(1,1) = 1/3 + 1/6 = 1/2$.
-        The final value for divergence is the sum of these values divided by 10,
-        the total number of sites.
-        \label{fig:divergence_diagram}
-    }
-\end{figure}
-
 We now begin to formalize these notions with definitions.
 
 
-\begin{definition}[Subtree weights]
-    Given a list of \emph{sample weights} $w$ and a tree $T$,
-    define the \emph{subtree weight} $\nw_T(u)$ for each node $u$ to be the sum of all sample weights
-    of every node descending from (and including) $u$ in the tree:
+\begin{definition}[Sample and subtree weights]
+    The \emph{samples} of a tree sequence are the focal nodes, 
+    and appear in the trees at every point along the genome.
+    A list of \emph{sample weights} $\iw$ assigns a numeric value $\iw(v)$
+    to every sample node.
+    Given these and a tree $T$,
+    the \emph{subtree weight} $\nw_T(u)$ for a node $u$ is the sum of all sample weights
+    of every sample node that is descended $u$ in the tree (including $u$, if it is a sample):
     \begin{align*}
         \nw_T(u) = \sum_{v \,:\, v \le_T u} \iw(v) ,
     \end{align*}
@@ -268,6 +252,29 @@ but this will not feature in our examples.
 Next, we will describe how to use these subtree weights,
 passed through a ``summary function'' in various ways,
 to summarize genetic variation and tree shapes across the tree sequence.
+
+\begin{figure}
+    \centering
+    \includegraphics{figures/divergence_diagram}
+    \caption{
+        An example of computing sequence divergence between red nodes and blue nodes
+        from seven mutations at distinct sites in a sequence of length 10 using the tree.
+        The summary function, $f(a,b) = (a/3)(1-b/2)$ gives the probability that
+        an allele found in $a$ of the red nodes and $b$ of the blue nodes is present in
+        a randomly chosen red node but not in a randomly chosen blue node.
+        \textbf{(a)} Weights are assigned to each subtree by adding together the weights of any children,
+        plus the weight of the node itself, if it is a sample.
+        \textbf{(b)} In this example, subtree weights $(a,b)$ record how many red nodes ($a$)
+        and how many blue nodes ($b$) lie in that subtree.
+        \textbf{(c)} The summary function shown is applied to both the weight below 
+        and the weight not below each mutation,
+        so for instance the mutation above the node with weights $(2,1)$
+        contributes $f(2,1) + f(1,1) = 1/3 + 1/6 = 1/2$.
+        The final value for divergence is the sum of these values divided by 10,
+        the total number of sites.
+        \label{fig:divergence_diagram}
+    }
+\end{figure}
 
 
 %%%%%%%%%%%%%%%%%%
@@ -311,63 +318,92 @@ this tells us what proportion of the sample's genomes were inherited from each n
 Motivated by this, we define the
 \textbf{node statistic} for node $u$
 associated with summary function $f()$ and sample weights $\iw$
-to be the sum of $f()$ applied to the weight of the subtree below node $u$,
+to be the sum of $f()$ applied to the weight of the subtree below node $u$
+and to the remaining weight,
 averaged across the genome:
 \begin{align}
     \node(f, \iw)_u
     =
-    \frac{1}{L} \sum_{k=1}^{n(\treeseq)} L_k f(\nw_{T_k}(u)).
+    \frac{1}{L} \sum_{k=1}^{n(\treeseq)} L_k \left( f(\nw_{T_k}(u)) + f(\tiw - \nw_{T_k}(u)) \right).
 \end{align}
+The weight $\nw_{T_k}(u)$ is the subtree weight below $u$ in the tree $T_k$,
+and $\tiw - \nw_{T_k}(u)$ is the sum of all weights \emph{not} in the subtree below $u$ in $T_k$.
 % i.e., the length of the segment of genome that the tree extends for.
 % If this is computed over only a ``window'' of the genome
 % then $L_k$ is replaced by the length of the portion of that window
 % that $T$ extends for.
 
+\paragraph{Polarisation}
+In this definition we have associated with each node the summary of both the weight below the node
+\emph{and} the weight not below the node.
+Would it not be more natural to only include the first term, $f(\nw_{T_k}(u))$?
+The reason for this definition is that it does not depend on the location of the root of the tree,
+which in practice may be unknown.
+Statistics of genotype sequence defined below in an analogous way
+will not depend on knowledge of which allele is ancestral, i.e., on \emph{polarisation} of alleles.
+For this reason, the node statistic above is the \emph{unpolarised} version,
+while a \emph{polarised} node statistic is defined without the second term:
+\begin{align}
+    \text{(polarised)} \qquad
+    \nodep(f, \iw)_u
+    =
+    \frac{1}{L} \sum_{k=1}^{n(\treeseq)} L_k f(\nw_{T_k}(u)) .
+\end{align}
+
 We will use weights that count number of samples below each node
 sufficiently often that we give them a special name --
-for a subset set $A$ of samples,
-the \emph{indicator weights of $A$} are the sample weights $\bone_A$ with
-$\bone_A(u) = 1$ if $u \in A$ and $\bone_A(u) = 0$ otherwise.
+for a subset set $S$ of samples,
+the \emph{indicator weights of $S$} are the sample weights $\bone_S$ with
+$\bone_S(u) = 1$ if $u \in S$ and $\bone_S(u) = 0$ otherwise.
 
 \begin{example}[Ancestry proportions] \label{ex:ancestry_props}
     If $\iw$ are the indicator weights of the set $S$ of $n$ samples,
     and then $\iw_u / n$ is the proportion of the samples in $S$ that lie below $u$.
     Therefore, if $f(x) = x / n$,
-    then $\node(f, \iw)_u$ is the proportion of the genomes of $S$
+    then $\nodep(f, \iw)_u$ is the proportion of the genomes of $S$
     that are inherited from (ancestor) $u$.
 \end{example}
 
 Node statistics only make sense in the context of the tree sequence,
 but provide a useful bridge to the next type of statistic,
-which are defined directly in terms of the genotypes
-(and so do not depend on the tree sequence).
+which are defined directly in terms of the genotypes.
 
 
 %%%%%%%%%%%%%%%%%%
 \subsection*{Site statistics}
 
-The next mode of summarizing uses weights
-to compute a summary for each site in the genome.
-These are often reported by averaging the values over windows.
-The general definition uses the \emph{allele weights} at each site in the genome,
-defined simply to be the total weight of all nodes who have inherited that allele.
+Now we arrive at our primary goal, which is to compute statistics from \emph{genomes}
+using this framework.
+To do this, we assume that the genetic variation data is embedded in a tree sequence,
+but the trees are used only for efficiency --
+the results will not depend on the trees in any way
+(with the only exception being if the ancestral allele is assumed to be known, as discussed below).
+
+The summaries we defined above for each node in each tree
+extend nicely to genetic variants 
+-- just as a node weight contains information about which samples are below the node and which are not,
+so we can summarise patterns of genetic variation by summing up weights of all samples
+that carry a given allele.
+So, we define \emph{allele weights} to be
+the total weight of all sample nodes who have inherited that allele.
 
 \begin{definition}[Allele weights]
     The \emph{allele weight} for allele $a$ at site $j$ is the sum of the weights
-    of all nodes inheriting this allele:
+    of all sample nodes inheriting this allele:
     \begin{align*}
         \aw_j(a) = \sum_{v \st g_j(v) = a} \iw(v) ,
     \end{align*}
-    where $g_j(v)$ is the allele carried by node $v$ at site $j$.
+    where the sum is over all sample nodes $v$ for which
+    $g_j(v)$, the allele carried by node $v$ at site $j$, is equal to $a$.
 \end{definition}
 
 If there has been only one mutation at the site,
-then $\aw_j(a)$ is equal to the subtree weight of the node that the mutation producing $a$
-appeared above,
-while more generally $\aw$ is not necessarily equal to a subtree weight
+then $\aw_j(a)$ is equal to the weight of the subtree below the mutation that produced $a$.
+More generally, $\aw$ is not necessarily equal to a subtree weight
 but is easily computable from them.
 
-We then define the \textbf{site statistic} of site $j$ computed using a summary function $f()$
+Using allele weights,
+we define the \textbf{site statistic} of site $j$ computed using a summary function $f()$
 and a set of sample weights $\iw$
 to be the sum of $f()$ applied to each of the allele weights:
 \begin{align}
@@ -385,21 +421,22 @@ over the corresponding portion of the genome:
     &=
     \frac{1}{j-i} \sum_{k=i}^{j-1} \site(f, \iw)_k
 \end{align}
-Recall that we have always defined the summary function $f()$ to be zero at monomorphic sites,
-so that the sum will be only over polymorphic sites
-(although the normalization is always by total number of sites, to allow comparison between regions).
+Since we have required $f(0) = f(\tiw) = 0$,
+the sum will only be affected by polymorphic sites,
+although the normalization is always by total number of sites, to allow comparison between regions.
 
 
-\paragraph{What about polarization?}
+\paragraph{What about polarisation?}
 In the definition above we simply sum over all alleles at each site.
 However, sometimes it is useful to distinguish the \emph{ancestral} allele
 (i.e., the allele at the root of the tree) from the remaining derived alleles.
 This allows statistics in principle to differentiate ancestral from derived alleles,
 information which is available in practice (albeit noisily).
 One way to make use of this information is to sum over only derived alleles.
-We say a site statistic is \textbf{polarized} if we do this,
-and so
-\begin{align} \label{eqn:site_unpolarized}
+We say a site statistic is \textbf{polarised} if we do this,
+and so define
+\begin{align} \label{eqn:site_polarised}
+    \text{(polarised)} \qquad
     \sitep(f, \iw)_j
     &=
     \sum_{a \in D_j} f(\aw_j(a)) ,
@@ -411,6 +448,10 @@ or if there have been mutations to distinct alleles on different parts of the tr
 such that the ancestral allele is no longer present.
 However, since these situations depend on multiple mutations occurring at a single site,
 they are relatively rare in practice.
+
+Now we have defined a general, abstract, framework.
+Is it good for anything?
+Next we give some examples.
 
 \begin{example}[Nucleotide diversity] \label{ex:site_diversity}
     Suppose we want to compute the mean density of nucleotide differences
@@ -441,19 +482,39 @@ they are relatively rare in practice.
     in the region between $a$ and $b$.
 \end{example}
 
+\begin{example}[Segregating sites] \label{ex:segregating_sites}
+    Again, let $\iw = \bone_{S}$ for a group of $n$ sequences,
+    and now define
+    \begin{align*}
+        f(x) = \begin{cases}
+            1 - \frac{x}{n} \qquad &\text{if } x > 0 \\
+            0 \qquad &\text{otherwise} .
+        \end{cases}
+    \end{align*}
+    In computing $\site(f, \iw)_{[a,b)}$, the function $f()$ is given the number of samples in $S$
+    that inherit each allele.
+    A site with $k$ distinct alleles that segregate in $S$ with proportions $p_1 + \cdots + p_k = 1$
+    contributes $f(p_1) + \cdots + f(p_k) = (1 - p_1) + \cdots + (1 - p_k) = k - 1$ to the statistic.
+    Therefore, $\site(f, \iw)_{[a,b)}$, is the minimum number of derived mutations per unit length,
+    which is the density of segregating sites if all sites are biallelic.
+\end{example}
+
 \begin{example}[Phenotypic correlations] \label{ex:site_correlations}
     Suppose that for each sample $u$ we have a numeric phenotype, denoted $z(u)$,
     and we want to compute the correlation between this phenotype
     and the genotype at each site in the tree sequence.
-    For convenience, suppose $z$ is normalized so that $\sum_u z(u) = 0$ and $\sum_u z(u)^2 = 1$.
+    For convenience, suppose $z$ is normalized 
+    % so that $\sum_u z(u) = 0$ and $\sum_u z(u)^2/(n-1) = 1$.
+    to have mean zero and variance 1.
     Then, if $g_j$ is a vector of binary genotypes (so $g_j(u) = 1$ if $u$ carries the derived allele),
     then the covariance of $z$ with $g_j$ is just $\sum_u z(u) g_j(u) = \sum_{u \st g_j(u) = 1} z(u)$,
     i.e., the sum of the phenotypes of all samples carrying the derived allele,
-    divided $\sqrt{n - 1}$, where $n$ is the number of samples.
+    divided by $(n - 1)$, where $n$ is the number of samples.
     Since the phenotypes sum to zero, this is also equal to 
     $- \sum_{u \st g_j(u) = 0} z(u)$.
-    Therefore, if we write $p_j = \sum_u g_j(u)$ for the derived allele frequency,
-    we can write the squared correlation as the sum across alleles as
+    If $p_j = \sum_u g_j(u)$ is the derived allele frequency at site $j$,
+    then the variance of $g_j$ is $n p_j (1-p_j) / (n-1)$,
+    and so the squared correlation can be calculated as a sum across the two alleles:
     \begin{align*}
         r_j^2 =
         \frac{\left( \sum_{u \st g_j(u) = 0} z(u)\right)^2}{2p(1-p)n(n-1)} 
@@ -464,7 +525,10 @@ they are relatively rare in practice.
     then $\site(\iw, f)_j = r_j^2$ is the squared correlation between $z$ and the allele at site $j$.
 \end{example}
 
-\textbf{Note:} computing correlations with branches instead of SNPs is like stuff done in \citet{zollner2005coalescent} and \citet{minichiello2006mapping}, maybe.
+%% Check that math:
+% n <- 10; z <- rnorm(10); z <- (z - mean(z))/sd(z); g <- rbinom(n, size=1, prob=1/2); p <- mean(g)
+% c(cov(z,g), sum(z*g)/(n-1))
+% c(cor(g,z), sum(g*z)/sqrt(n*(n-1)*p*(1-p)))
 
 \begin{example}[Patterson's $f_4$] \label{ex:site_f4}
     Given four disjoint groups of samples, $S_1$, $S_2$, $S_3$, and $S_4$,
@@ -479,7 +543,7 @@ they are relatively rare in practice.
     let $\iw_j = \bone_{S_j}$
     % let $\iw_{ju} = 1$ if $u \in S_j$
     (so that $\iw_{ju}$ tells us the number of samples in $S_j$ descended from $u$),
-    and write $n_i$ for the number of samples in $S_i$,
+    and write $n_i$ for the number of samples in $S_i$, and
     \begin{align*}
         f(x_1, x_2, x_3, x_4)
         =
@@ -491,34 +555,28 @@ they are relatively rare in practice.
         \left(1 - \frac{x_1}{n_1}\right)
         \left(1 - \frac{x_4}{n_4}\right)
         \frac{x_2}{n_2}
-        \frac{x_3}{n_3}
+        \frac{x_3}{n_3} ,
     \end{align*}
     then $\site(\iw, f)_{[a,b)}$ is equal to Patterson's $f_4(S_1, S_2; S_3, S_4)$ statistic
-    across the region of the genome between $a$ and $b$.
+    for the region of the genome between $a$ and $b$.
 \end{example}
 
 \paragraph{Polyallelic sites}
 The statistics defined above map exactly onto those standard in population genetics
 when all sites are biallelic.
-If there is a consensus in the field
-for how to use sites with more than two alleles,
-it is to reduce to biallelic data, by either discarding other sites
+There is not a consensus in the field
+on how to use sites with more than two alleles, but the most common practice is
+to reduce to biallelic data, by either discarding other sites
 or by marking all non-ancestral alleles as (the same) ``derived'' allele.
 We choose to define statistics in a way that still makes formal sense for polyallelic sites,
 so that for instance a site with ancestral allele $A$ and derived alleles $C$ and $T$
-would have site statistic $f(\aw(C)) + f(\aw(T))$.
-This is a natural defintion in that it agrees with what you'd get
-from looking at haplotype differences.
+would have site statistic $f(\aw(A)) + f(\aw(C)) + f(\aw(T))$.
+This is a natural defintion in that it agrees with what is obtained by
+looking at pairwise haplotype differences.
 For instance, the definition of nucleotide divergence in Example \ref{ex:site_divergence}
 gives the probability that a randomly chosen sample from each set differ.
 This definition makes sense even at polyallelic sites,
 and (as we discuss below) has a natural correspondence to statistics related to branch lengths.
-
-\plr{Figure: example of propagating weights and labeling nodes with weights,
-    in the case that weights are number of samples you are ancestor of.
-    Also, this is a node statistic.}
-
-\plr{Figure: example of branch and site statistics}
 
 
 %%%%%%%%%%%%%%%%%%
@@ -538,7 +596,8 @@ over some segment of genome
 is equal to the mutation rate multiplied by the length of the segment and by the length of the branch.
 In other words, the ``area'' of a branch in a tree of the tree sequence,
 defined as its span (right minus left endpoint) multiplied by its length (parent time minus child time)
-is equal to the expected number of mutations that will land on it, up to the mutation rate.
+and scaled by the mutation rate,
+is equal to the expected number of mutations that will land on it.
 If the mutation rate is constant,
 then this gives us an isometry --
 measuring tree distances in branch lengths versus in numbers of mutations
@@ -546,49 +605,52 @@ are equal in expectation, up to a constant.
 
 This makes it natural to define
 a statistic of tree shape by summing these expected contributions across its branches.
-Concretely, the \textbf{branch statistic} of a tree $T$
+We define the \textbf{branch statistic} of a single tree $T$ with span $L$
 obtained from summary function $f()$
 and sample weights $\iw$ with total weight $\tiw = \sum_u \iw(u)$
-is defined to be
+to be the sum of the area of each branch in each tree
+multiplied by the summary function applied to its subtree weight:
 \begin{align}
     \branch(f, \iw)_T
     &=
-    \sum_{k=1}^{n(\treeseq)} L_k \left\{ f(\nw_{T_k}(u)) + f(\tiw - \nw_{T_k}(u)) \right\}  ,
+    \frac{1}{L} \sum_{u \in T} t_{u} \left( f(\nw_{T}(u)) + f(\tiw - \nw_{T}(u)) \right)  ,
 \end{align}
-where $t_u$ is the length of the branch above node $u$ in the tree $T$
-and $\nw(u)$ is the total weight of the subtree below $u$ (as defined above).
-The term $\tiw - \nw_{T_k}(u)$ gives the total weight \emph{not} in the subtree of $T_k$ below $u$,
-because the sum of all weights in the tree is always constant,
-and so $\sum_u \nw_T(u) = \tiw$.
+where $t_{u}$ is the length of the branch above node $u$ in tree $T$
+and $\nw_{T}(u)$ is the total weight of the subtree of $T$ below $u$ (as defined above).
+The term $\tiw - \nw_{T}(u)$ gives the total weight \emph{not} in the subtree of $T$ below $u$,
+because the sum of all weights in the tree is always $\tiw$.
 The value $f(\nw(u))$ is the summary value that would be added to a site statistic
 if a single mutation occurred on the branch above $u$,
-and $f(\tiw - \nw_{T_k}(u))$ is the value that would be added due to its complementary allele,
+and $f(\tiw - \nw_{T}(u))$ is the value that would be added due to its complementary allele,
 so $\branch(f, \iw)_T$ gives the expected contribution of this branch to $\site(f, \iw)$,
 per unit of sequence length that the tree $T$ covers.
 
-In practice it is probably most useful to average branch statistics
+This defines a statistic for a single window,
+but in practice it is probably most useful to average branch statistics
 over a region of the genome,
 which we do by averaging the tree statistics over the region
-with weights proportional to the trees' spans.
+with probabilities proportional to the trees' spans.
 We write this with similar notation:
 \begin{align}
-    \branch(f, \iw)_{[a,b)}
+    \branch(f, \iw)_{[c,d)}
     &=
-    \frac{1}{b-a} \sum_T \ell_T(a,b) \branch(f, \iw)_T ,
+    \frac{1}{d-c} \sum_{k=1}^{n(\treeseq)} \ell_k(c,d) \branch(f, \iw)_{T_k} ,
 \end{align}
-where $\ell_T(a,b)$ is the length of the region in $[a,b)$ that the tree $T$ extends for
-(i.e., if $T$ covers the half-open interval $[c,d)$,
-then $\ell_T(a,b) = \max(0, \min(b,d) - \max(a,c))$).
+where $\ell_k(c,d)$ is the length of the region in $[c,d)$ that the tree $T_k$ extends for
+(i.e., $T$ covers the half-open interval $[a_{k-1},a_k)$,
+so $\ell_k(c,d) = \max(0, \min(d,a_k) - \max(c,a_{k-1}))$).
 
-The ``unpolarized'' version of this statistic, corresponding to equation \ref{eqn:site_unpolarized},
-omits the second term:
-\begin{align} \label{eqn:branch_unpolarized}
-    \branch_+(f, \iw)_T
+The \emph{polarised} version of this statistic
+is defined analogously to the Node and Site versions:
+\begin{align} \label{eqn:branch_polarised}
+    \text{(polarised)} \qquad
+    \branchp(f, \iw)_T
     &=
-    \sum_{k=1}^{n(T)} L_k f(\nw_{T_k}(u)) .
+    \sum_{u \in T} f(\nw_{T}(u)) ,
 \end{align}
-However, the correspondence between the unpolarized statistics is less tight
-than for the polarized ones.
+and $\branchp(f, \iw)_{[c,d)}$ is defined using $\branchp(f, \iw)_T$ as before.
+However, the correspondence between the polarised statistics is less tight
+than for the unpolarised ones.
 
 
 \begin{example}[Mean TMRCA] \label{ex:branch_diversity}
@@ -596,10 +658,10 @@ than for the polarized ones.
     then $f(u)$ gives the probability that the branch above $u$
     lies on the path from two randomly chosen samples from $S$
     on the path up to their most recent common ancestor (MRCA).
-    Therefore, $\bar \branch(f, \iw)$ for these choices
+    Therefore, $\branch(f, \iw)$ for these choices
     gives the mean total distance in the tree between two samples from $S$,
     averaged across the sequence.
-    (This is twice the TMRCA if the samples are all from the same time.)
+    This is twice the mean TMRCA if the samples are all from the same time.
 \end{example}
 
 \begin{example}[Phenotypic correlation with pedigree] \label{ex:branch_correlation}
@@ -665,17 +727,16 @@ in a way that mutation rates are constant, but how these vary is generally unkno
 
 Note that the expected product of two site statistics,
 $\E[\site(f, \iw) \site(g, \iw')]$
-is not equal to $\branch(f, \iw) \branch(g, \iw')$,
+is not equal to the product of the two branch statistics, $\branch(f, \iw) \branch(g, \iw')$,
 because they are not independent.
 However, it is always possible to define a branch statistic that
 gives the expected value of the product.
 How to do this is described in \citet{ralph2019empirical}.
 
-This correspondance is useful for several things:
-(1) removing noise of mutations
-(2) understanding what statistics tell us about genealogies
 
-\paragraph{Example: a selective sweep}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{A selective sweep}
+
 In this view,
 site statistics are noisy approximations to the corresponding branch statistic
 -- but, how noisy?
@@ -729,10 +790,47 @@ for a simulation with 10,000 individuals.
 
 
 %%%%%%%%%%%%%%%%%%
-\subsection*{Separating mutational from genealogical noise}
+\subsection*{Empirical duality between branch and site statistics?}
 
-\plr{figure showing noise of some site statistic decreasing and approaching the branch statistic
-    as the mutation rate increases}
+We do not know the true genealogies underlying real data,
+but recent methods are available to estimate them.
+To evaluate the correspondence between site and branch statistics
+in real data,
+we calculated mean sequence diversity along chromosome 20 from the 1000 Genomes dataset
+in windows of 500Kb \plr{check this}
+separately in each of its 26 populations,
+calculated using the site statistic described in Example~\ref{ex:site_diversity},
+and compared this to the corresponding branch statistic (of Example~\ref{ex:branch_diversity})
+as calculated from three inferred tree sequences:
+by tsinfer \citep{tsinfer}, which does not attenpt to estimate well-calibrated node times,
+(2) by GEVA \citep{geva}, which aims to calibrate the node times reported by tsinfer,
+and (3) by Relate \citep{relate}, an independently developed method.
+These are shown in Figure~\ref{fig:chr20}.
+
+\begin{figure}
+    \includegraphics[width=0.5\textwidth]{{figures/1kg/relate_site_diversity_chr20}.png}
+    \includegraphics[width=0.5\textwidth]{{figures/1kg/tsinfer_1kg_chr20.branch_diversity.2000000}.pdf}
+    \includegraphics[width=0.5\textwidth]{{figures/1kg/tgp_geva_chr20.branch_diversity.2000000}.pdf}
+    \includegraphics[width=0.5\textwidth]{{figures/1kg/relate_branch_diversity_chr20}.png}
+    \caption{
+        \textbf{(A)} Mean sequence diversity 
+        in 500Kb \plr{?} windows along human chromosome 20 of the 1000 Genomes Project,
+        and the dual branch statistic as calculated from tree sequences inferred by
+        \textbf{(B)} tsinfer,
+        \textbf{(C)} GEVA, and 
+        \textbf{(D)} Relate.
+        \label{fig:chr20}
+    }
+\end{figure}
+
+These are different because of XXX but similar YYY.
+As discussed above, we expect site and branch statistics to agree up to noise
+if mutation rates are constant along the genome.
+However, this caveat may well be substantial -- mutation rates are likely \emph{not} constant
+\citep{mut_rate_variation},
+although the extent of this is unknown.
+
+
 
 
 %%%%%%%%%%%%%%%%%%

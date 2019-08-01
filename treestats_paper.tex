@@ -828,7 +828,16 @@ as calculated from three inferred tree sequences:
 by tsinfer \citep{tsinfer}, which does not attenpt to estimate well-calibrated node times,
 (2) by GEVA \citep{geva}, which aims to calibrate the node times reported by tsinfer,
 and (3) by Relate \citep{relate}, an independently developed method.
-These are shown in Figure~\ref{fig:chr20}.
+
+
+The comparisons are shown in Figure~\ref{fig:chr20}.
+Of these methods, branch diversity from tsinfer shows the worst agreement with site diversity,
+which is unsurprising as tsinfer makes no attempt to provide well-calibrated node times,
+and only aims to provide consistent tree topologies.
+The two methods that infer node times differ substantially,
+with Relate showing a significantly tighter agreement than GEVA.
+Does this mean that Relate is doing a better job at inferring the tree sequence than GEVA?
+This is highly suggestive, but not entirely clear.
 
 \begin{figure}
     \includegraphics[width=0.5\textwidth]{{figures/1kg/relate_site_diversity_chr20}.png}
@@ -846,13 +855,26 @@ These are shown in Figure~\ref{fig:chr20}.
     }
 \end{figure}
 
-These are different because of XXX but similar YYY.
-As discussed above, we expect site and branch statistics to agree up to noise
-if mutation rates are constant along the genome.
-However, this caveat may well be substantial -- mutation rates are likely \emph{not} constant
-\citep{mut_rate_variation},
-although the extent of this is unknown.
-
+In practice, we do not expect branch and site diversity to agree exactly,
+because of local differences in mutation rate and intensities of selected mutations.
+For instance, regions in which a high proportion of potential mutations are deleterious
+are expected to have a diversity for two reasons:
+first, the deleterious mutations themselves are less likely to be found,
+and second, the indirect effect of deleterious mutations on nearby sites reduces typical tree height
+and thus diversity at even neutral, linked sites \citep{background_selection}.
+The first effect would cause site and branch statistics to differ,
+because it effectively reduces the mutation rate in the region
+and violates the assumption of independence of mutations given the trees.
+However, the second effect does not affect the correspondence between site and branch statistics,
+since it is mediated by tree shape.
+However, it is generally unknown how much mutation rate varies along the genome
+\citep[but see][]{mut_rate_varies}
+or how dense are targets of selection \citep{how_important_is_selection}.
+For this reason, it is very interesting to see how close a correspondence between site and branch
+statistics it is \emph{possible} to obtain --
+it is tempting to say that the best tree sequence would obtain
+as tight a match between site and branch statistics as possible,
+with remaining variation explained by selection and/or mutation rate variation.
 
 
 

@@ -625,6 +625,29 @@ and $f(\tiw - \nw_{T}(u))$ is the value that would be added due to its complemen
 so $\branch(f, \iw)_T$ gives the expected contribution of this branch to $\site(f, \iw)$,
 per unit of sequence length that the tree $T$ covers.
 
+An example is shown in Figure~\ref{fig:branch_site_diagram},
+showing how the $f_4$ site statistic assigns a weight to each mutation
+depending on the frequencies in each of the four sample sets below it,
+and how the corresponding branch statistic assigns the same weight to those branches.
+
+\begin{figure}
+    \centering
+    \includegraphics{figures/branch_site_diagram}
+    \caption{
+    Computing the $f_4(A,B;C,D)$ statistic on a tree.
+    \textbf{(a)} Each mutation is given weight equal to $(p_A - p_B)(p_C - p_D)$,
+    where $p_X$ is the proportion of the samples inheriting that mutation in set $X$
+    (shown in labels at the bottom).
+    Note that each of the mutations shown occurs at a distinct site, so there is no backmutation.
+    \textbf{(b)} Each branch is assigned weight equal to the weight that would be assigned
+    to any mutation falling in it, and then the branch $f_4$ statistic
+    is the sum over these weights, multiplied by the length of the branch
+    (and the span of the tree, not depicted).
+        \label{fig:branch_site_diagram}
+    }
+\end{figure}
+
+
 This defines a statistic for a single window,
 but in practice it is probably most useful to average branch statistics
 over a region of the genome,

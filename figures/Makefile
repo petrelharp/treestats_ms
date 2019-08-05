@@ -4,6 +4,7 @@
 figs : swept.1000.999.1e-09.diversity.pdf swept.10000.765.1e-09.diversity.pdf divergence_diagram.pdf branch_site_diagram.pdf 
 	
 1kgfigs : figures/tgp_geva_chr20.branch.1000000.diversity.pdf 1kg_chr20.branch.1000000.diversity.pdf
+	$(MAKE) -C 1kg
 
 swept.1000.%.1e-09.diversity.pdf : swept.1000.%.trees
 	python3 plot_sweep.py $< 1000 1e-9

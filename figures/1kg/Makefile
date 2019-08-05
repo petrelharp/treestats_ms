@@ -1,3 +1,5 @@
+all : chr20.strictMask.binary.gz
+
 chr20.strictMask.fasta.gz :
 	# from ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase1/analysis_results/supporting/accessible_genome_masks/README.20120515_phase1_pop_gen_mask
 	# N - the base is an N in the reference genome GRCh37

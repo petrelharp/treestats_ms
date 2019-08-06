@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import tskit, tszip, json
+import tskit, json
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -84,6 +84,8 @@ mask = mask[:int(ts.sequence_length)]
 
 starts = np.where(np.diff(mask) > 0)[0]
 ends = np.where(np.diff(mask) < 0)[0]
+if len(ends) == len(starts) - 1:
+    ends = np.concatenate([ends, np.array([len(mask) - 1])])
 lengths = ends - starts
 assert(np.all(lengths > 0))
 

@@ -32,19 +32,36 @@ popstyles = {"EAS" : (0, ()),
              "SAS" : (0, (3, 1, 3, 1, 1, 1))}
 colors = plt.get_cmap("tab20").colors
 pop_names = ['CHB', 'JPT', 'CHS', 'CDX', 'KHV', 'CEU', 'TSI', 'FIN', 'GBR', 'IBS', 'YRI', 'LWK', 'GWD', 'MSL', 'ESN', 'ASW', 'ACB', 'MXL', 'PUR', 'CLM', 'PEL', 'GIH', 'PJL', 'BEB', 'STU', 'ITU']
+superpops = ['EAS', 'EAS', 'EAS', 'EAS', 'EAS', 'EUR', 'EUR', 'EUR', 'EUR', 'EUR', 'AFR', 'AFR', 'AFR', 'AFR', 'AFR', 'AFR', 'AFR', 'AMR', 'AMR', 'AMR', 'AMR', 'SAS', 'SAS', 'SAS', 'SAS', 'SAS']
 popcolors = { k : colors[j % len(colors)] for j, k in enumerate(pop_names) }
+num_pops = len(pop_names)
 
 ts = tskit.load(treefile)
 
-pop_metadata = [json.loads(pop.metadata) for pop in ts.populations()]
-pn = [x['name'] for x in pop_metadata]
-for a,b in zip(pn, pop_names):
-    assert(a == b)
+if ts.num_populations > 0:
+    pop_metadata = [json.loads(pop.metadata) for pop in ts.populations()]
+    for a, b, c in zip(pop_metadata, pop_names, superpops):
+        assert(a['name'] == b)
+        assert(a['super_population'] == c)
 
-superpops = [x['super_population'] for x in pop_metadata]
-pop = [ts.node(ind.nodes[0]).population for ind in ts.individuals()]
+    pop = [ts.node(ind.nodes[0]).population for ind in ts.individuals()]
 
-pop_nodes = [[] for _ in range(ts.num_populations)]
+else:
+    # this should be a Relate tree sequence
+    assert(treefile.find("relate") >= 0)
+    # in which case the metadata are in this external file, in order,
+    # with one line per diploid
+    pop = []
+    with open("1kg/1000GP_Phase3_sub.sample", "r") as metafile:
+        header = metafile.readline()
+        assert(header == "ID POP GROUP SEX\n")
+        for line in metafile:
+            md = line.strip().split()
+            for _ in range(2): # diploids!
+                pop.append(pop_names.index(md[1]))
+
+    
+pop_nodes = [[] for _ in range(num_pops)]
 for ind in ts.individuals():
     pop_nodes[pop[ind.id]].extend(ind.nodes)
 

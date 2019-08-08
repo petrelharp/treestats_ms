@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import tskit, json
+import tskit, tszip, json
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -11,6 +11,7 @@ Usage:
     {} treefile maskfile mode window_width
 Here `maskfile` should be a fasta of 0s and 1s.
 """.format(sys.argv[0])
+
 
 if len(sys.argv) != 5:
     raise ValueError(usage)
@@ -24,19 +25,21 @@ window_width = float(sys.argv[4])
 min_window_content = window_width / 3
 
 outbase = ".".join(treefile.split(".")[:-1]) + f".{mode}.{int(window_width)}"
-divfile = f"{outbase}.diversity.tsv"
-plotfile = f"{outbase}.diversity.pdf"
+statfile = f"{outbase}.f4.tsv"
+plotfile = f"{outbase}.f4.pdf"
 
-popstyles = {"EAS" : (0, ()),
-             "EUR" : (0, (1, 2)),
-             "AFR" : (0, (3, 1)),
-             "AMR" : (0, (3, 2, 1, 2)),
-             "SAS" : (0, (3, 1, 3, 1, 1, 1))}
-colors = plt.get_cmap("tab20").colors
 pop_names = ['CHB', 'JPT', 'CHS', 'CDX', 'KHV', 'CEU', 'TSI', 'FIN', 'GBR', 'IBS', 'YRI', 'LWK', 'GWD', 'MSL', 'ESN', 'ASW', 'ACB', 'MXL', 'PUR', 'CLM', 'PEL', 'GIH', 'PJL', 'BEB', 'STU', 'ITU']
 superpops = ['EAS', 'EAS', 'EAS', 'EAS', 'EAS', 'EUR', 'EUR', 'EUR', 'EUR', 'EUR', 'AFR', 'AFR', 'AFR', 'AFR', 'AFR', 'AFR', 'AFR', 'AMR', 'AMR', 'AMR', 'AMR', 'SAS', 'SAS', 'SAS', 'SAS', 'SAS']
-popcolors = { k : colors[j % len(colors)] for j, k in enumerate(pop_names) }
 num_pops = len(pop_names)
+
+# which populations?
+f4_pops = [('PUR', 'TSI', 'GWD', 'CHB'),
+           ('ASW', 'CEU', 'MSL', 'CHB')]
+
+stat_names = [f"{a},{b};{c},{d}" for a, b, c, d in f4_pops]
+colors = plt.get_cmap("tab20").colors
+stat_colors = { k : colors[j] for j, k in enumerate(stat_names) }
+
 
 ts = tskit.load(treefile)
 
@@ -72,7 +75,12 @@ num_windows = int(ts.sequence_length / window_width)
 windows = np.linspace(0, ts.sequence_length, num_windows + 1).astype('int')
 
 try:
-    bdiv = np.loadtxt(divfile, skiprows=1)
+    with open(statfile, "r") as f:
+        header = f.readline().strip().split()[1:]
+    assert(len(header) == len(f4_pops))
+    for a, b in zip(header, f4_pops):
+        assert(a == ".".join(b))
+    stat = np.loadtxt(statfile, skiprows=1)
 
 except:
     #############
@@ -111,24 +119,24 @@ except:
     good_window = (mask[refined_windows[:-1]] == 1)
     refined_window_num = window_num[refined_windows[:-1]]
 
-    refined_bdiv = ts.diversity(pop_nodes, windows=refined_windows,
-                                mode=mode, span_normalise=False)
+    indexes = [tuple([pop_names.index(u) for u in a]) for a in f4_pops]
+
+    refined_stat = ts.f4(pop_nodes, indexes=indexes,
+                         windows=refined_windows, mode=mode, span_normalise=False)
 
     # combine the many little windows back to the big ones
-    bdiv = np.zeros((len(windows) - 1, len(pop_nodes)))
-    for k in range(len(pop_nodes)):
-        bdiv[:, k] = np.bincount(
+    stat = np.zeros((len(windows) - 1, len(indexes)))
+    for k in range(len(indexes)):
+        stat[:, k] = np.bincount(
                         refined_window_num[good_window],
-                        weights=refined_bdiv[good_window, k],
+                        weights=refined_stat[good_window, k],
                         minlength=num_windows)
-        bdiv[nonmissing < min_window_content, k] = np.nan
-        bdiv[nonmissing >= min_window_content, k] /= nonmissing[nonmissing >= min_window_content]
+        stat[nonmissing < min_window_content, k] = np.nan
+        stat[nonmissing >= min_window_content, k] /= nonmissing[nonmissing >= min_window_content]
 
-
-    # unmasked_bdiv = ts.diversity(pop_nodes, windows=windows, mode=mode)
-
-    np.savetxt(divfile, bdiv, 
-               header="\t".join(pop_names), delimiter="\t")
+    np.savetxt(statfile, stat, 
+               header="\t".join(".".join(a) for a in f4_pops),
+               delimiter="\t")
 
 #############
 # plot results
@@ -137,11 +145,10 @@ x = windows[:-1] + np.diff(windows)/2
 
 fig = plt.figure(figsize=(12 * len(windows) / 64, 6))
 ax = fig.add_subplot(111)
-for j in range(bdiv.shape[1]):
+for j in range(stat.shape[1]):
     dl = ax.plot(
-            x, bdiv[:, j], label=pop_names[j],
-            linestyle=popstyles[superpops[j]],
-            color=popcolors[pop_names[j]])
+            x, stat[:, j], label=stat_names[j],
+            color=stat_colors[stat_names[j]])
 
 leg = ax.legend(
          fontsize = "small",
@@ -152,4 +159,5 @@ leg = ax.legend(
          borderpad=0)
 fig.savefig(plotfile, bbox_inches = "tight")
 plt.close(fig)
+
 

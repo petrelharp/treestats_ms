@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import pyslim, tskit, msprime
 import numpy as np
 import os, sys

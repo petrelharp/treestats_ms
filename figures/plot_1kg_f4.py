@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import tskit, tszip, json
+import tskit, json
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -34,7 +34,8 @@ num_pops = len(pop_names)
 
 # which populations?
 f4_pops = [('PUR', 'TSI', 'GWD', 'CHB'),
-           ('ASW', 'CEU', 'MSL', 'CHB')]
+           ('ASW', 'CEU', 'MSL', 'CHB'),
+           ('GBR', 'IBS', 'ITU', 'JPT')]
 
 stat_names = [f"{a},{b};{c},{d}" for a, b, c, d in f4_pops]
 colors = plt.get_cmap("tab20").colors
@@ -123,7 +124,6 @@ except:
 
     refined_stat = ts.f4(pop_nodes, indexes=indexes,
                          windows=refined_windows, mode=mode, span_normalise=False)
-
     # combine the many little windows back to the big ones
     stat = np.zeros((len(windows) - 1, len(indexes)))
     for k in range(len(indexes)):
@@ -137,6 +137,7 @@ except:
     np.savetxt(statfile, stat, 
                header="\t".join(".".join(a) for a in f4_pops),
                delimiter="\t")
+
 
 #############
 # plot results
@@ -159,5 +160,3 @@ leg = ax.legend(
          borderpad=0)
 fig.savefig(plotfile, bbox_inches = "tight")
 plt.close(fig)
-
-

@@ -1,0 +1,44 @@
+// We'll have a single pop
+//  split into two
+//  and then one splits again
+//  and then one splits again
+//  and then there's migration between 2<->3
+
+initialize()
+{
+    initializeTreeSeq();
+    setSeed(seed);
+    initializeMutationRate(0.0);
+    initializeMutationType("m1", 0.5, "e", 0.1);
+    initializeGenomicElementType("g1", m1, 1.0);
+    initializeGenomicElement(g1, 0, 1e8-1);
+    initializeRecombinationRate(1e-8);
+}
+
+1 { 
+    sim.addSubpop("p1", N);
+    sim.rescheduleScriptBlock(s1, generations=N);
+    sim.rescheduleScriptBlock(s2, generations=2*N);
+    sim.rescheduleScriptBlock(s3, generations=3*N);
+    sim.rescheduleScriptBlock(s99, generations=4*N);
+}
+
+s1 10 {
+    sim.addSubpopSplit("p2", N, p1);
+}
+
+s2 20 {
+    sim.addSubpopSplit("p3", N, p2);
+}
+
+s3 30 {
+    sim.addSubpopSplit("p4", N, p3);
+    p2.setMigrationRates(p3, 5/N);
+    p3.setMigrationRates(p2, 5/N);
+}
+
+s99 40 {
+    sim.treeSeqOutput("intro/introgressed." + N + "." + seed + ".trees");
+    catn("Done!");
+    sim.simulationFinished();
+}

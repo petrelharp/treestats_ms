@@ -26,6 +26,13 @@ min_window_content = window_width / 3
 outbase = ".".join(treefile.split(".")[:-1]) + f".{mode}.{int(window_width)}"
 divfile = f"{outbase}.diversity.tsv"
 plotfile = f"{outbase}.diversity.pdf"
+regionplotfile = f"{outbase}.region.diversity.pdf"
+
+method_label = {
+        "1kg/relate_chr20.trees" : "Relate",
+        "1kg/tgp_geva_chr20.trees" : "GEVA",
+        "1kg/1kg_chr20.trees" : "tsinfer"
+        }[treefile]
 
 popstyles = {"EAS" : (0, ()),
              "EUR" : (0, (1, 2)),
@@ -38,43 +45,46 @@ superpops = ['EAS', 'EAS', 'EAS', 'EAS', 'EAS', 'EUR', 'EUR', 'EUR', 'EUR', 'EUR
 popcolors = { k : colors[j % len(colors)] for j, k in enumerate(pop_names) }
 num_pops = len(pop_names)
 
-ts = tskit.load(treefile)
-
-if ts.num_populations > 0:
-    pop_metadata = [json.loads(pop.metadata) for pop in ts.populations()]
-    for a, b, c in zip(pop_metadata, pop_names, superpops):
-        assert(a['name'] == b)
-        assert(a['super_population'] == c)
-
-    pop = [ts.node(ind.nodes[0]).population for ind in ts.individuals()]
-
-else:
-    # this should be a Relate tree sequence
-    assert(treefile.find("relate") >= 0)
-    # in which case the metadata are in this external file, in order,
-    # with one line per diploid
-    pop = []
-    with open("1kg/1000GP_Phase3_sub.sample", "r") as metafile:
-        header = metafile.readline()
-        assert(header == "ID POP GROUP SEX\n")
-        for line in metafile:
-            md = line.strip().split()
-            for _ in range(2): # diploids!
-                pop.append(pop_names.index(md[1]))
-
-    
-pop_nodes = [[] for _ in range(num_pops)]
-for ind in ts.individuals():
-    pop_nodes[pop[ind.id]].extend(ind.nodes)
-
-# define the big windows
-num_windows = int(ts.sequence_length / window_width)
-windows = np.linspace(0, ts.sequence_length, num_windows + 1).astype('int')
-
 try:
     bdiv = np.loadtxt(divfile, skiprows=1)
+    num_windows = bdiv.shape[0]
+    windows = np.linspace(0, 63025522, num_windows + 1).astype('int')
 
 except:
+
+    ts = tskit.load(treefile)
+
+    # define the big windows
+    num_windows = int(ts.sequence_length / window_width)
+    windows = np.linspace(0, ts.sequence_length, num_windows + 1).astype('int')
+
+    if ts.num_populations > 0:
+        pop_metadata = [json.loads(pop.metadata) for pop in ts.populations()]
+        for a, b, c in zip(pop_metadata, pop_names, superpops):
+            assert(a['name'] == b)
+            assert(a['super_population'] == c)
+
+        pop = [ts.node(ind.nodes[0]).population for ind in ts.individuals()]
+
+    else:
+        # this should be a Relate tree sequence
+        assert(treefile.find("relate") >= 0)
+        # in which case the metadata are in this external file, in order,
+        # with one line per diploid
+        pop = []
+        with open("1kg/1000GP_Phase3_sub.sample", "r") as metafile:
+            header = metafile.readline()
+            assert(header == "ID POP GROUP SEX\n")
+            for line in metafile:
+                md = line.strip().split()
+                for _ in range(2): # diploids!
+                    pop.append(pop_names.index(md[1]))
+
+        
+    pop_nodes = [[] for _ in range(num_pops)]
+    for ind in ts.individuals():
+        pop_nodes[pop[ind.id]].extend(ind.nodes)
+
     #############
     # get the mask
 
@@ -153,3 +163,37 @@ leg = ax.legend(
 fig.savefig(plotfile, bbox_inches = "tight")
 plt.close(fig)
 
+############
+# also smaller figures aggregated by superpop
+
+supernames = ['EAS', 'EUR', 'AFR', 'AMR', 'SAS']
+superpopcolors = { k : popcolors[pop_names[superpops.index(k)]] for k in supernames }
+sbdiv = np.zeros((bdiv.shape[0], len(supernames)))
+nsp = [0 for _ in supernames]
+for j, p in enumerate(pop_names):
+    k = supernames.index(superpops[j])
+    sbdiv[:, k] = sbdiv[:, k] * k / (k + 1) + bdiv[:, j] / (k + 1)
+    nsp[k] += 1
+
+
+fig = plt.figure(figsize=(4 * len(windows) / 64, 3))
+ax = fig.add_subplot(111)
+ax.set_xlabel("chr20 position")
+for j in range(sbdiv.shape[1]):
+    dl = ax.plot(
+            x, sbdiv[:, j], label=supernames[j],
+            color=superpopcolors[supernames[j]])
+
+atl = ax.text(0, np.nanmax(sbdiv),
+              method_label if mode == "branch" else "site",
+              horizontalalignment='left',
+              verticalalignment='top')
+
+if method_label == "GEVA":
+    leg = ax.legend(
+             fontsize = "small",
+             frameon = False,
+             borderpad=0)
+
+fig.savefig(regionplotfile, bbox_inches = "tight")
+plt.close(fig)

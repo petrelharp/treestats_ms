@@ -25,8 +25,10 @@ nreps = 20
 outbase = ".".join(treefile.split(".")[:-1])
 newtrees = outbase + ".recap.trees"
 
-plotfile = "{}.{}.{}.f4.pdf".format(outbase, int(window_width), mut_rate)
-sdplotfile = "{}.{}.{}.f4sd.pdf".format(outbase, int(window_width), mut_rate)
+f4plotfile = "{}.{}.{}.f4.pdf".format(outbase, int(window_width), mut_rate)
+f4sdplotfile = "{}.{}.{}.f4sd.pdf".format(outbase, int(window_width), mut_rate)
+divsdplotfile = "{}.{}.{}.divsd.pdf".format(outbase, int(window_width), mut_rate)
+windowsizeplotfile = "{}.{}.windowsd.pdf".format(outbase, mut_rate)
 
 try:
     ts = pyslim.load(newtrees)
@@ -211,7 +213,7 @@ leg = ax.legend(
          borderpad=0)
 
 # done
-fig.savefig(plotfile, bbox_inches = "tight")
+fig.savefig(f4plotfile, bbox_inches = "tight")
 plt.close(fig)
 
 
@@ -245,17 +247,166 @@ for j, sample_size in enumerate(sample_sizes):
 bf4 = ts.f4(pop_nodes, indexes=f4_indexes, mode='branch')
 sf4 = ts.f4(pop_nodes, indexes=f4_indexes, mode='site')
 
+def sd(array, axis):
+    n = array.shape[axis]
+    return np.std(array, axis=axis) * np.sqrt(n / (n - 1))
 
+mut_std = sd(mut_site[:, 0, :], axis=0)
+branch_std = sd(all_branch[:, 0], axis=0)
+sub_site_std = sd(sub_site[:, 0, :], axis=0)
+sub_branch_std = sd(sub_branch[:, 0, :], axis=0)
+ymax = max(np.max(mut_std), np.max(branch_std), np.max(sub_site_std), np.max(sub_branch_std))
+
+############# SD as a function of window size
+
+branchwin = []
+sitewin = []
+ww = np.linspace(1e4, 1e6, 20)
+mts = msprime.mutate(ts, rate=mut_rate, keep=True)
+for window_width in ww:
+    windows = np.arange(0, ts.sequence_length+1, window_width)
+    windows[-1] = ts.sequence_length
+    branchwin.append(ts.f4(pop_nodes, indexes=f4_indexes, windows=windows, mode='branch'))
+    sitewin.append(mts.f4(pop_nodes, indexes=f4_indexes, windows=windows, mode='site'))
+
+branchwinsd = np.array([sd(x, axis=0) for x in branchwin])
+sitewinsd = np.array([sd(x, axis=0) for x in sitewin]) / mut_rate
+
+## theory
+const = 2
+xx = np.linspace(mutrates[0], mutrates[-1], 100)
+yy = np.sqrt(1 + const * 1e-8 / xx) * branch_std
+
+#########
+fig = plt.figure(figsize=(7, 2.5))
+
+ax = fig.add_subplot(1,3,1)
+ax.set_xlabel("mutation rate")
+ax.set_ylabel("SD(f4/μ)")
+ax.set_ylim(0, ymax)
+ax.plot(mutrates,
+           mut_std,
+           color='black',
+           label='site')
+# ax.plot(xx, yy, color='green', label=f"theory (C={const})", linestyle = ':')
+ax.axhline(branch_std,
+           color='red',
+           label='branch')
+
+
+ax = fig.add_subplot(1,3,2)
+ax.set_xlabel("sample size")
+# ax.set_ylabel("SD(f4/μ)")
+ax.set_yticklabels([])
+ax.set_ylim(0, ymax)
+ax.plot(sample_sizes,
+           sub_site_std,
+           color='black',
+           label='site')
+ax.plot(sample_sizes,
+           sub_branch_std,
+           color='red',
+           label='branch')
+
+atl = ax.text(sample_sizes[-1], np.max(sd(sub_site[:, 0, :], axis=0)),
+              "{}\nμ={:.0}".format(stat_names[0], mut_rate),
+              horizontalalignment='right',
+              verticalalignment='top')
+
+
+ax = fig.add_subplot(1,3,3)
+ax.set_xlabel("window width (Kb)")
+ax.set_ylim(0, ymax)
+# ax.set_ylabel("SD(f4/μ)")
+ax.set_yticklabels([])
+ax.plot(ww/1e3,
+        sitewinsd[:, 0],
+        color='black',
+        label='site')
+ax.plot(ww/1e3,
+        branchwinsd[:, 0],
+        color='red',
+        label='branch')
+
+leg = ax.legend()
+
+# done
+fig.savefig(f4sdplotfile, bbox_inches = "tight")
+plt.close(fig)
+
+
+## plotted to show (lack of) scaling with 1/L
+
+fig = plt.figure(figsize=(6, 3))
+ax = fig.add_subplot(1,2,1)
+ax.set_xlabel("window width")
+ax.set_ylabel("SD(f4/μ)")
+ax.plot(ww, branchwinsd[:, 0], label='branch')
+ax.plot(ww, sitewinsd[:, 0], label='site')
+
+ax = fig.add_subplot(1,2,2)
+ax.set_xlabel("window width")
+ax.set_ylabel("sqrt(window) * SD(f4/μ)")
+ax.plot(ww, np.sqrt(ww) * branchwinsd[:, 0], label='branch')
+ax.plot(ww, np.sqrt(ww) * sitewinsd[:, 0], label='site')
+ax.legend()
+
+
+fig.savefig(windowsizeplotfile, bbox_inches = "tight")
+plt.close(fig)
+
+###########
+# same thing for divergence
+
+div_indexes = [(i, j) for i in range(4) for j in range(i, 4)]
+all_branch = ts.divergence(pop_nodes, indexes=div_indexes, windows=windows, mode='branch')
+
+mut_site = np.zeros((len(windows) - 1, len(div_indexes), len(mutrates)))
+for k, mr in enumerate(mutrates):
+    mts = msprime.mutate(ts, rate=mr, keep=True)
+    mut_site[:, :, k] = (1/mr) * mts.divergence(pop_nodes, indexes=div_indexes, windows=windows, mode='site')
+
+mts = msprime.mutate(ts, rate=mut_rate, keep=True)
+sub_site = np.zeros((len(windows) - 1, len(div_indexes), len(sample_sizes)))
+sub_branch = np.zeros((len(windows) - 1, len(div_indexes), len(sample_sizes)))
+for j, sample_size in enumerate(sample_sizes):
+    sample_nodes = []
+    for k in range(num_pops):
+        inds = alive[pop == k]
+        np.random.shuffle(inds)
+        si = inds[:sample_size]
+        sn = []
+        for ind in si:
+            sn.extend(ts.individual(ind).nodes)
+        sample_nodes.append(sn)
+    sub_branch[:, :, j] = ts.divergence(sample_nodes, indexes=div_indexes, windows=windows, mode='branch')
+    sub_site[:, :, j] = (1/mut_rate) * mts.divergence(sample_nodes, indexes=div_indexes, windows=windows, mode='site')
+
+
+mut_std = sd(mut_site[:, 0, :], axis=0)
+branch_std = sd(all_branch[:, 0], axis=0)
+sub_site_std = sd(sub_site[:, 0, :], axis=0)
+sub_branch_std = sd(sub_branch[:, 0, :], axis=0)
+ymax = max(np.max(mut_std), np.max(branch_std), np.max(sub_site_std), np.max(sub_branch_std))
+
+## theory
+const = 2
+xx = np.linspace(mutrates[0], mutrates[-1], 100)
+yy = np.sqrt(1 + const * 1e-8 / xx) * branch_std
+
+#########
 fig = plt.figure(figsize=(6, 3))
 
 ax = fig.add_subplot(1,2,1)
 ax.set_xlabel("mutation rate (μ)")
-ax.set_ylabel("SD(f4/μ)")
+ax.set_ylabel("SD(divergence/μ)")
+ax.set_ylim(0, ymax)
 ax.plot(mutrates,
-           np.std(mut_site[:, 0, :], axis=0),
+           mut_std,
            color='black',
            label='site')
-ax.axhline(np.std(all_branch[:, 0], axis=0),
+ax.plot(xx, yy, color='green', label=f"theory (C={const})", linestyle = ':')
+ax.axhline(branch_std,
            color='red',
            label='branch')
 
@@ -264,22 +415,26 @@ leg = ax.legend()
 
 ax = fig.add_subplot(1,2,2)
 ax.set_xlabel("sample size")
-# ax.set_ylabel("SD(f4/μ)")
+# ax.set_ylabel("SD(divergence/μ)")
+ax.set_ylim(0, ymax)
 ax.plot(sample_sizes,
-           np.std(sub_site[:, 0, :], axis=0),
+           sub_site_std,
            color='black',
            label='site')
 ax.plot(sample_sizes,
-           np.std(sub_branch[:, 0, :], axis=0),
+           sub_branch_std,
            color='red',
            label='branch')
 
-atl = ax.text(sample_sizes[-1], np.max(np.std(sub_site[:, 0, :], axis=0)),
+atl = ax.text(sample_sizes[-1], np.max(sd(sub_site[:, 0, :], axis=0)),
               "{}\nμ={:.0}".format(stat_names[0], mut_rate),
               horizontalalignment='right',
               verticalalignment='top')
 
 
 # done
-fig.savefig(sdplotfile, bbox_inches = "tight")
+plt.tight_layout()
+fig.savefig(divsdplotfile, bbox_inches = "tight")
 plt.close(fig)
+
+

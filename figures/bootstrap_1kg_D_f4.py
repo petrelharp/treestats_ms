@@ -1,3 +1,5 @@
+## WARNING: something is wrong with this script: DEBUG before using it.
+
 #!/usr/bin/env python3
 import tskit, json
 import numpy as np

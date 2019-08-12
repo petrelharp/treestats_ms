@@ -22,14 +22,21 @@ maskfile = sys.argv[2]
 outbase = ".".join(treefile.split(".")[:-1]) + f".node"
 plotfile = f"{outbase}.f4.pdf"
 
+method_label = {
+        "1kg/relate_chr20.trees" : "Relate",
+        "1kg/tgp_geva_chr20.trees" : "GEVA",
+        "1kg/1kg_chr20.trees" : "tsinfer"
+        }[treefile]
+
 pop_names = ['CHB', 'JPT', 'CHS', 'CDX', 'KHV', 'CEU', 'TSI', 'FIN', 'GBR', 'IBS', 'YRI', 'LWK', 'GWD', 'MSL', 'ESN', 'ASW', 'ACB', 'MXL', 'PUR', 'CLM', 'PEL', 'GIH', 'PJL', 'BEB', 'STU', 'ITU']
 superpops = ['EAS', 'EAS', 'EAS', 'EAS', 'EAS', 'EUR', 'EUR', 'EUR', 'EUR', 'EUR', 'AFR', 'AFR', 'AFR', 'AFR', 'AFR', 'AFR', 'AFR', 'AMR', 'AMR', 'AMR', 'AMR', 'SAS', 'SAS', 'SAS', 'SAS', 'SAS']
 num_pops = len(pop_names)
 
 # which populations?
-f4_pops = [('PUR', 'TSI', 'GWD', 'CHB'),
+f4_pops = [('PUR', 'TSI', 'GWD', 'JPT'),
            ('ASW', 'CEU', 'MSL', 'CHB'),
-           ('GBR', 'IBS', 'ITU', 'JPT')]
+           ('IBS', 'GBR', 'FIN', 'JPT'),
+           ('TSI', 'CEU', 'FIN', 'CHB')]
 f4_indexes = [tuple(pop_names.index(i) for i in a) for a in f4_pops]
 
 stat_names = [f"{a},{b};{c},{d}" for a, b, c, d in f4_pops]
@@ -71,29 +78,39 @@ for ind in ts.individuals():
 nf4 = ts.f4(pop_nodes, indexes=f4_indexes,
            mode="node", span_normalise=False)[0, :, :]
 node_denom = ts.segregating_sites([ts.samples()], mode="node", span_normalise=False)[0, :, :]
-nf4 /= node_denom
-nf4[np.isnan(nf4)] = 0.0
+# nf4 /= node_denom
+# nf4[np.isnan(nf4)] = 0.0
 
-num_bins = 100
+if method_label == "Relate":
+    num_bins = 500
+else:
+    num_bins = 50
+
 node_times = ts.tables.nodes.time
-time_bins = np.linspace(0, max(node_times) + 1, num_bins)
+time_bins = np.concatenate([[0], np.exp(np.linspace(np.log(100), np.log(max(node_times) + 1), num_bins - 1))])
 node_bins = np.digitize(node_times, time_bins)
 
 f4_binned = np.zeros((num_bins, nf4.shape[1]))
 for j in range(nf4.shape[1]):
     f4_binned[:, j] = np.bincount(node_bins, weights=nf4[:, j], minlength=num_bins)
+    # f4_binned[:, j] = (np.bincount(node_bins, weights=nf4[:, j], minlength=num_bins)
+    #                    / np.bincount(node_bins, minlength=num_bins))
 
-f4_binned /= np.sum(f4_binned, axis=0)
+f4_binned /= np.nansum(f4_binned, axis=0)
 
 #### plot it
 
 fig = plt.figure(figsize=(6, 3))
 ax = fig.add_subplot(111)
 ax.set_xlabel("time ago")
-ax.set_ylabel("total node f4")
+ax.set_ylabel("proportion of node f4")
+# if method_label == "Relate":
+#     ax.set_xlim(0, 20000)
+# elif method_label == "GEVA":
+#     ax.set_xlim(0, 10000)
 
-for j, sn in enumerate(stat_names[:2]):
-    fl = ax.plot(f4_binned[:, j], label=sn)
+for j, sn in enumerate(stat_names):
+    fl = ax.semilogx(time_bins, f4_binned[:, j], label=sn)
 
 ax.legend(
         fontsize = "small",

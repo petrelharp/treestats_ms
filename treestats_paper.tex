@@ -880,7 +880,7 @@ so it remains to be seen if the improvement could be made in practice.
 
 
 %%%%%%%%%%%%%%%%%%
-\subsection*{Empirical duality between branch and site statistics?}
+\section*{Application to 1000 Genomes tree sequences}
 
 We do not know the true genealogies underlying real data,
 but recent methods are available to estimate them.
@@ -943,6 +943,32 @@ statistics it is \emph{possible} to obtain --
 it is tempting to say that the best tree sequence would obtain
 as tight a match between site and branch statistics as possible,
 with remaining variation explained by selection and/or mutation rate variation.
+
+
+%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Time stratification of statistics}
+
+Thus far we have examined how statistics vary along the genome.
+A tree sequence allows us access to another dimension: time.
+Next, we use node statistics to display the \emph{time} distribution of admixture signal
+in the tree sequences inferred by tsinfer/GEVA and by Relate.
+The ``node'' $f_4(A, B; C, D)$ statistic for four populations $A$, $B$, $C$, and $D$
+can be used to calculate, for each node, the average of $(p_A - p_B)(p_C - p_D)$
+across the portion of the genome that the node is present in the tree sequence,
+where $p_A$ is the proportion of samples in $A$ that lie below that node, etcetera.
+A node with a large value will contribute a large amount to the site or branch $f_4$.
+
+
+\begin{figure}
+    \includegraphics{{figures/1kg/relate_chr20.node.f4}.pdf}
+    \includegraphics{{figures/1kg/tgp_geva_chr20.node.f4}.pdf}
+    \caption{
+        Time distribution of signal for two $f_4$ statistics
+        in tree sequences inferred by \textbf{(top)} Relate and \textbf{(bottom)} GEVA.
+        Both 
+        \label{fig:node_f4}
+    }
+\end{figure}
 
 
 

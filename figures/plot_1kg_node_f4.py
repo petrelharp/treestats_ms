@@ -21,6 +21,7 @@ maskfile = sys.argv[2]
 
 outbase = ".".join(treefile.split(".")[:-1]) + f".node"
 plotfile = f"{outbase}.f4.pdf"
+timeplotfile = f"{outbase}.time.f4.pdf"
 
 method_label = {
         "1kg/relate_chr20.trees" : "Relate",
@@ -77,9 +78,6 @@ for ind in ts.individuals():
 
 nf4 = ts.f4(pop_nodes, indexes=f4_indexes,
            mode="node", span_normalise=False)[0, :, :]
-node_denom = ts.segregating_sites([ts.samples()], mode="node", span_normalise=False)[0, :, :]
-# nf4 /= node_denom
-# nf4[np.isnan(nf4)] = 0.0
 
 if method_label == "Relate":
     num_bins = 500
@@ -97,6 +95,7 @@ for j in range(nf4.shape[1]):
     #                    / np.bincount(node_bins, minlength=num_bins))
 
 f4_binned /= np.nansum(f4_binned, axis=0)
+
 
 #### plot it
 
@@ -119,3 +118,30 @@ ax.legend(
 
 fig.savefig(plotfile, bbox_inches = "tight")
 plt.close(fig)
+
+###### load and plot branch-length-weighted f4 values
+
+time_f4 = np.zeros((num_bins, len(f4_indexes)))
+for j, f4p in enumerate(f4_pops):
+    sn = ".".join(f4p)
+    datafile = f"{outbase}.{sn}.realf4.binned.txt"
+    rf4 = np.loadtxt(datafile)
+    time_f4[:, j] = rf4 / np.nansum(rf4)
+
+
+fig = plt.figure(figsize=(6, 3))
+ax = fig.add_subplot(111)
+ax.set_xlabel("time ago")
+ax.set_ylabel("branch f4")
+
+for j, sn in enumerate(stat_names):
+    fl = ax.semilogx(time_bins, time_f4[:, j], label=sn)
+
+ax.legend(
+        fontsize = "small",
+        frameon = False,
+        borderpad = 0)
+
+fig.savefig(timeplotfile, bbox_inches = "tight")
+plt.close(fig)
+

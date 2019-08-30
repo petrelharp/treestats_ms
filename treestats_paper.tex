@@ -26,6 +26,11 @@
 \newcommand{\nw}{x} % subtree (node) weights
 \newcommand{\aw}{{\bar x}} % allele weights
 
+\newcommand{\Nt}{\mathcal{N}}  % node table
+\newcommand{\Et}{\mathcal{E}}  % edge table
+\newcommand{\indexin}[0]{\ensuremath{\mathcal{I}}}
+\newcommand{\indexout}[0]{\ensuremath{\mathcal{O}}}
+
 \newcommand{\plr}[1]{{\color{blue}\textbf{plr:} \it #1}}
 \newcommand{\jk}[1]{{\color{red}\textbf{jk:} \it #1}}
 
@@ -1018,6 +1023,72 @@ during that time period.
 %%%%%%%%%%%%%%%%%%%%%
 \subsection*{Algorithms}
 write-up of algorithm for maintaining branch statistic across trees
+
+
+\clearpage
+\begin{taocpalg}{B}{General branch statistics}
+{Given a list of $n$ sample nodes $S$, corresponding weights $w$ and
+summary function $f: \R \rightarrow \R$
+compute the span-normalised statistic $\sigma$
+over a tree sequence with sequence length $L$
+defined by the node and edge tables $\Nt$ and $\Et$. We assume
+that the index vectors $\indexin$ and $\indexout$ have been precomputed.}
+
+\algstep{B1.}{Initialisation.}{
+    For $0 \leq u < |\Et|$ set $\beta_u \leftarrow x_u
+    \leftarrow F_u \leftarrow 0$ and $\pi_u \leftarrow -1$.
+    Then, for $0 \leq j < n$ set $u \leftarrow S_j$,
+    $x_u \leftarrow w_j$ and $F_u \leftarrow f(x_j)$. Finally,
+    set $s \leftarrow \sigma \leftarrow j \leftarrow k \leftarrow t_l \leftarrow 0$.
+}
+
+\algstep{B2.}{Terminate.}{If $j \geq |\Et|$ or $t_l \geq L$
+    set $\sigma \leftarrow \sigma / L$ and terminate.
+}
+
+\algstep{B3.}{Edge removal loop.}{If $k \geq |\Et|$ or $t_l \neq
+    \Et[\indexout_k]\mbox{.right}$ go to \algref{B6}}.
+
+\algstep{B4.}{Remove edge.}{Set
+    $u \leftarrow \Et[\indexout_k]\mbox{.child}$,
+    $v \leftarrow \Et[\indexout_k]\mbox{.parent}$ and $k \leftarrow k + 1$.
+    Then set $s \leftarrow s - \beta_u F_u$, $\pi_u \leftarrow -1$
+    and $\beta_u \leftarrow 0$.
+}
+
+\algstep{B5.}{Propagate loss.}{While $v \neq -1$, set
+    $s \leftarrow s - \beta_v F_v$, $x_v \leftarrow x_v - x_u$,
+    $F_v \leftarrow f(x_v)$, $s \leftarrow s - \beta_v F_v$
+    and $v \leftarrow \pi_v$. Afterwards, go to \algref{B3}.
+}
+
+\algstep{B6.}{Edge insertion loop.}{If $j \geq |\Et|$ or $t_l \neq
+    \Et[\indexin_j]\mbox{.left}$ go to \algref{B9}}.
+
+\algstep{B7.}{Insert edge.}{Set
+    $u \leftarrow \Et[\indexin_j]\mbox{.child}$,
+    $v \leftarrow \Et[\indexin_j]\mbox{.parent}$ and $j \leftarrow j + 1$.
+    Then set $\pi_u \leftarrow v$,
+    $\beta_u \leftarrow \Nt[v]\mbox{.time} - \Nt[u]\mbox{.time}$ and
+    $s \leftarrow s + \beta_u F_u$.
+}
+
+\algstep{B8.}{Propagate gain.}{While $v \neq -1$, set
+    $s \leftarrow s - \beta_v F_v$, $x_v \leftarrow x_v + x_u$,
+    $F_v \leftarrow f(x_v)$, $s \leftarrow s - \beta_v F_v$
+    and $v \leftarrow \pi_v$. Afterwards, go to \algref{B6}.
+}
+
+\algstep{B9.}{Tree loop tail.}{Set $t_r \leftarrow L$.
+    If $j < |\Et|$ set $t_r \leftarrow \min(t_r, \Et[\indexin_j]\mbox{.left})$.
+    Then, if $k < |\Et|$ set $t_r \leftarrow \min(t_r, \Et[\indexout_k]\mbox{.right})$
+    Finally, set $\sigma \leftarrow (t_r - t_l)s$,  $t_l \leftarrow t_r$
+    and go to \algref{B2}.
+}
+
+\end{taocpalg}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection*{Speed}

@@ -140,7 +140,7 @@ genome-wide genealogies, and shown that it is feasible to infer trees for
 millions of whole genome samples.
 
 The key to the remarkable scalability and efficiency of tree sequence
-algorithms is the way that shared structure in adjacent trees along the genome is encoded. 
+algorithms is the way that shared structure in adjacent trees along the genome is encoded.
 As one looks across the genome, genealogies change because of the results of recombination in ancestors.
 However, nearby trees tend to share a lot of common structure,
 and single genealogical relationships (e.g., individual $x$ inherits from individual $y$)
@@ -221,7 +221,7 @@ We now begin to formalize these notions with definitions.
 
 
 \begin{definition}[Sample and subtree weights]
-    The \emph{samples} of a tree sequence are the focal nodes, 
+    The \emph{samples} of a tree sequence are the focal nodes,
     and appear in the trees at every point along the genome.
     A list of \emph{sample weights} $\iw$ assigns a numeric value $\iw(v)$
     to every sample node.
@@ -267,7 +267,7 @@ to summarize genetic variation and tree shapes across the tree sequence.
         plus the weight of the node itself, if it is a sample.
         \textbf{(b)} In this example, subtree weights $(a,b)$ record how many red nodes ($a$)
         and how many blue nodes ($b$) lie in that subtree.
-        \textbf{(c)} The summary function shown is applied to both the weight below 
+        \textbf{(c)} The summary function shown is applied to both the weight below
         and the weight not below each mutation,
         so for instance the mutation above the node with weights $(2,1)$
         contributes $f(2,1) + f(1,1) = 1/3 + 1/6 = 1/2$.
@@ -312,8 +312,8 @@ trees.
 
 Perhaps the most natural way to summarise weights on the tree
 is simply to examine the values at each node.
-This would allow us, for instance, to 
-count the number of samples that inherit from each node in the tree. 
+This would allow us, for instance, to
+count the number of samples that inherit from each node in the tree.
 Averaged across trees,
 this tells us what proportion of the sample's genomes were inherited from each node.
 Motivated by this, we define the
@@ -381,7 +381,7 @@ the results will not depend on the trees in any way
 (with the only exception being if the ancestral allele is assumed to be known, as discussed below).
 
 The summaries we defined above for each node in each tree
-extend nicely to genetic variants 
+extend nicely to genetic variants
 -- just as a node weight contains information about which samples are below the node and which are not,
 so we can summarise patterns of genetic variation by summing up weights of all samples
 that carry a given allele.
@@ -504,21 +504,21 @@ Next we give some examples.
     Suppose that for each sample $u$ we have a numeric phenotype, denoted $z(u)$,
     and we want to compute the correlation between this phenotype
     and the genotype at each site in the tree sequence.
-    For convenience, suppose $z$ is normalized 
+    For convenience, suppose $z$ is normalized
     % so that $\sum_u z(u) = 0$ and $\sum_u z(u)^2/(n-1) = 1$.
     to have mean zero and variance 1.
     Then, if $g_j$ is a vector of binary genotypes (so $g_j(u) = 1$ if $u$ carries the derived allele),
     then the covariance of $z$ with $g_j$ is just $\sum_u z(u) g_j(u) = \sum_{u \st g_j(u) = 1} z(u)$,
     i.e., the sum of the phenotypes of all samples carrying the derived allele,
     divided by $(n - 1)$, where $n$ is the number of samples.
-    Since the phenotypes sum to zero, this is also equal to 
+    Since the phenotypes sum to zero, this is also equal to
     $- \sum_{u \st g_j(u) = 0} z(u)$.
     If $p_j = \sum_u g_j(u)$ is the derived allele frequency at site $j$,
     then the variance of $g_j$ is $n p_j (1-p_j) / (n-1)$,
     and so the squared correlation can be calculated as a sum across the two alleles:
     \begin{align*}
         r_j^2 =
-        \frac{\left( \sum_{u \st g_j(u) = 0} z(u)\right)^2}{2p(1-p)n(n-1)} 
+        \frac{\left( \sum_{u \st g_j(u) = 0} z(u)\right)^2}{2p(1-p)n(n-1)}
         + \frac{\left( \sum_{u \st g_j(u) = 1} z(u)\right)^2}{2p(1-p)n(n-1)}  .
     \end{align*}
     We can compute this as a site statistic by defining $\iw_{1}(u) = z(u)$, and $\iw_{2}(u) = 1/n$,
@@ -765,12 +765,12 @@ How big is the contribution of mutation to the overall sampling variance of a st
 Concretely the law of total variance lets us partition the variance of a site statistic
 into the contributions of mutation and demographic noise:
 \begin{align*}
-    \var[\site(f, \iw)_{[a,b)}] 
+    \var[\site(f, \iw)_{[a,b)}]
     &=
-        \E\left[ \var\left[\site(f, \iw)_{[a,b)} \given \treeseq_{[a,b)}\right] \right] 
+        \E\left[ \var\left[\site(f, \iw)_{[a,b)} \given \treeseq_{[a,b)}\right] \right]
         + \var\left[ \E\left[\site(f, \iw)_{[a,b)} \given \treeseq_{[a,b)}\right] \right] \\
     &=
-        \E\left[ \var\left[\site(f, \iw)_{[a,b)} \given \treeseq_{[a,b)}\right] \right] 
+        \E\left[ \var\left[\site(f, \iw)_{[a,b)} \given \treeseq_{[a,b)}\right] \right]
         + \var\left[ \branch(f, \iw)_{[a,b)} \right] .
 \end{align*}
 The first term, the variance of the statistic given the trees,
@@ -819,7 +819,7 @@ is unobservable, although estimable.
         in 500Kb windows along a 50Mb genome (0.5 Morgans) following several selective sweeps.
         In each case, ``site'' is mean genetic diversity (Tajima's $\pi$) divided by mutation rate,
         and ``branch'' is the corresponding branch statistic described above.
-        The tree sequence was produced by simulating mutations under positive selection with mutation rate $10^{-12}$ 
+        The tree sequence was produced by simulating mutations under positive selection with mutation rate $10^{-12}$
         in a population of size 1000 for 400 generations using SLiM,
         followed by recapitation with $N_e=1000$.
         The selected alleles at the marked sites have selection coefficients between 0.08 and 0.25,
@@ -913,7 +913,7 @@ This is highly suggestive, but not entirely clear.
     \includegraphics[width=0.5\textwidth]{{figures/1kg/relate_chr20.branch.1000000.region.diversity}.pdf}
     \includegraphics[width=0.5\textwidth]{{figures/1kg/tgp_geva_chr20.branch.1000000.region.diversity}.pdf}
     \caption{
-        \textbf{(top left)} Mean sequence diversity 
+        \textbf{(top left)} Mean sequence diversity
         in 1Mb windows along human chromosome 20 of the 1000 Genomes Project,
         and the dual branch statistic as calculated from tree sequences inferred by
         \textbf{(top right)} tsinfer,
@@ -963,7 +963,7 @@ and then summed these values across all nodes in 50 logarithmically-spaced bins 
 We then normalised these to sum to 1 by dividing by the total branch $f_4$ value.
 
 The four-tuple of populations for the first two statistics (PUR,TSI;GWD,JPT and ASW,CEU;MSL,CHB)
-are from similar regions of the world, 
+are from similar regions of the world,
 and show almost identical time signatures,
 even though the second set of populations has a value of $f_4$ nearly eight times higher.
 The second two statistics (IBS,GBR;FIN,JPT and TSI,CEU;FIN,CHB) are also comparable,
@@ -994,7 +994,7 @@ during that time period.
         ASW,CEU;MSL,CHB: 12587,
         IBS,GBR;FIN,JPT: -129, and
         TSI,CEU;FIN,CHB: -96.
-        Population codes are 
+        Population codes are
         `PUR': Puerto Ricans from Puerto Rico;
         `TSI': Toscani in Italia;
         `GWD': Gambian in Western Divisions in the Gambia;
@@ -1103,9 +1103,9 @@ Then, let $a$ be the number and $b$ be the $k$-vector satisfying
 \end{align*}
 Writing this in block matrix notation, $a$ and $b$ minimise
 \begin{align*}
-    \left\| 
+    \left\|
         \left[ \begin{array}{@{}c@{}} h \end{array}\right]
-            - 
+            -
         \left[ \begin{array}{@{}c|c@{}} g & Z \end{array} \right]
             \left[ \begin{array}{@{}c@{}} a \\ \hline b \end{array} \right]
     \right\|^2 .
@@ -1114,7 +1114,7 @@ Writing this in block matrix notation, $a$ and $b$ minimise
 
 Letting $B = [g | Z]$, the solution to this is
 \begin{align*}
-    \left[\begin{array}{@{}c@{}}a\\\hline b\end{array}\right] 
+    \left[\begin{array}{@{}c@{}}a\\\hline b\end{array}\right]
         = (B^T B)^{-1} B^T h ,
 \end{align*}
 as long as $B^T B$ is invertible (which we assume to be the case).
@@ -1168,7 +1168,7 @@ with $h_g = g^T h$,
 To compute this in the framework above,
 first add a column of 1s to the covariates $Z$,
 then decorrelate the resulting matrix, so that now $Z^T Z = I$.
-Then, put this normalised version of $Z$ 
+Then, put this normalised version of $Z$
 into the first $k$ columns of the weight matrix (so that $w_j(u) = Z_{uj}$),
 set the $(k+1)^\text{st}$ column to the trait (so that $w_{k+1}(u) = w_u$),
 and the final column to all $1$s (so $w_{k+2}(u) = 1$).
@@ -1209,7 +1209,7 @@ however, this would be more involved
 % p <- sum(g)
 % alpha <- (p - sum(u^2))
 % a <- (1/alpha) * (hg - crossprod(u, hZ))
-% 
+%
 % # check formula for regression coefs
 % # and that coefficient of g doesn't change on linear transform of Z
 % B <- cbind(g, Z)
@@ -1241,11 +1241,11 @@ however, this would be more involved
     \includegraphics[width=\textwidth]{{figures/1kg/tgp_geva_chr20.branch.1000000.diversity}.pdf}
     \includegraphics[width=\textwidth]{{figures/1kg/relate_chr20.branch.1000000.diversity}.pdf}
     \caption{
-        \textbf{(top left)} Mean sequence diversity 
+        \textbf{(top left)} Mean sequence diversity
         in 1Mb windows along human chromosome 20 of the 1000 Genomes Project,
         and the dual branch statistic as calculated from tree sequences inferred by
         \textbf{(top right)} tsinfer,
-        \textbf{(bottom left)} GEVA, and 
+        \textbf{(bottom left)} GEVA, and
         \textbf{(bottom right)} Relate.
         \label{fig:chr20_full}
     }

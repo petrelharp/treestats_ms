@@ -1022,8 +1022,28 @@ during that time period.
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection*{Algorithms}
-write-up of algorithm for maintaining branch statistic across trees
+In this section we provide describe and analyse the algorithm used
+to compute branch length statistics. This is a generalation
+of the algorithm used to maintain the number of samples from a
+given set that derive from each node in a tree sequence.
+\cite[Algorithm L]{kelleher2016efficient}.
 
+\jk{Plan for section}
+\begin{itemize}
+\item First paragraph is a general outline of the strategy.
+\item Explanation of notation and the index vectors (we should probably define
+these again, in the interest of completeness. I'm not sure the definition
+in the msprime paper really worked)
+\item Algorithm listing.
+\item Next para is an explanation of the algorithm in words, referring
+to the figure for what we mean by adding and removing edges.
+\item Next para is an analysis of the algorithm. We note here that
+we propagate stuff all the way up the tree close to optimally, because of the
+ordering of edge insertions and removals. For example, we always disconnect
+a subtree from the main tree first, meaning that the only time we go all the
+way to the root is the first disconnection.
+Discuss the figure perf figure.
+\end{itemize}
 
 \clearpage
 \begin{taocpalg}{B}{General branch statistics}
@@ -1089,6 +1109,75 @@ that the index vectors $\indexin$ and $\indexout$ have been precomputed.}
 \end{taocpalg}
 
 
+\begin{figure}
+
+% Run the script illustrate_algorithm.py to generate these pdfs and
+% the latex tables below.
+\begin{tabular}{cccc}
+\includegraphics[width=3cm]{figures/tree_0_in_6.pdf} &
+\includegraphics[width=3cm]{figures/tree_0_out_0.pdf} &
+\includegraphics[width=3cm]{figures/tree_0_out_1.pdf} &
+\includegraphics[width=3cm]{figures/tree_1_in_0.pdf}
+\\
+
+\begin{tabular}{c|cccc}
+& $\pi$ & $\beta$ & $x$ & $F$\\
+0 & 7 & 2.0 & 1.0 & 0.2\\
+1 & 6 & 1.0 & 1.0 & 0.2\\
+2 & 6 & 1.0 & 1.0 & 0.2\\
+3 & 6 & 1.0 & 1.0 & 0.2\\
+4 & 8 & 3.0 & 1.0 & 0.2\\
+5 & -1 & 0.0 & 0.0 & 0.0\\
+6 & 7 & 1.0 & 3.0 & 0.3\\
+7 & 8 & 1.0 & 4.0 & 0.2\\
+8 & -1 & 0.0 & 5.0 & 0.0\\
+\end{tabular}
+&
+\begin{tabular}{c|cccc}
+& $\pi$ & $\beta$ & $x$ & $F$\\
+0 & -1 & 0.0 & 1.0 & 0.2\\
+1 & 6 & 1.0 & 1.0 & 0.2\\
+2 & 6 & 1.0 & 1.0 & 0.2\\
+3 & 6 & 1.0 & 1.0 & 0.2\\
+4 & 8 & 3.0 & 1.0 & 0.2\\
+5 & -1 & 0.0 & 0.0 & 0.0\\
+6 & 7 & 1.0 & 3.0 & 0.3\\
+7 & 8 & 1.0 & 3.0 & 0.3\\
+8 & -1 & 0.0 & 4.0 & 0.2\\
+\end{tabular}
+&
+\begin{tabular}{c|cccc}
+& $\pi$ & $\beta$ & $x$ & $F$\\
+0 & -1 & 0.0 & 1.0 & 0.2\\
+1 & 6 & 1.0 & 1.0 & 0.2\\
+2 & 6 & 1.0 & 1.0 & 0.2\\
+3 & -1 & 0.0 & 1.0 & 0.2\\
+4 & 8 & 3.0 & 1.0 & 0.2\\
+5 & -1 & 0.0 & 0.0 & 0.0\\
+6 & 7 & 1.0 & 2.0 & 0.3\\
+7 & 8 & 1.0 & 2.0 & 0.3\\
+8 & -1 & 0.0 & 3.0 & 0.3\\
+\end{tabular}
+&
+\begin{tabular}{c|cccc}
+& $\pi$ & $\beta$ & $x$ & $F$\\
+0 & 5 & 1.0 & 1.0 & 0.2\\
+1 & 6 & 1.0 & 1.0 & 0.2\\
+2 & 6 & 1.0 & 1.0 & 0.2\\
+3 & -1 & 0.0 & 1.0 & 0.2\\
+4 & 8 & 3.0 & 1.0 & 0.2\\
+5 & -1 & 0.0 & 1.0 & 0.2\\
+6 & 7 & 1.0 & 2.0 & 0.3\\
+7 & 8 & 1.0 & 2.0 & 0.3\\
+8 & -1 & 0.0 & 3.0 & 0.3\\
+\end{tabular}
+\end{tabular}
+
+\caption{Example of the algorithm state during the transition between two
+trees. \jk{If we keep this then we talk about what we see in the different
+examples. We want to give some insight into how the algorithm works by showing
+the intermediate states.}}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection*{Speed}

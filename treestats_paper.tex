@@ -1113,70 +1113,50 @@ that the index vectors $\indexin$ and $\indexout$ have been precomputed.}
 
 % Run the script illustrate_algorithm.py to generate these pdfs and
 % the latex tables below.
-\begin{tabular}{cccc}
-\includegraphics[width=3cm]{figures/tree_0_in_6.pdf} &
-\includegraphics[width=3cm]{figures/tree_0_out_0.pdf} &
-\includegraphics[width=3cm]{figures/tree_0_out_1.pdf} &
-\includegraphics[width=3cm]{figures/tree_1_in_0.pdf}
+\begin{center}
+\begin{tabular}{ccc}
+\includegraphics[width=4cm]{figures/tree_0_init.pdf} & &
+\includegraphics[width=4cm]{figures/tree_0_out_0.pdf}
 \\
 
 \begin{tabular}{c|cccc}
 & $\pi$ & $\beta$ & $x$ & $F$\\
-0 & 7 & 2.0 & 1.0 & 0.2\\
-1 & 6 & 1.0 & 1.0 & 0.2\\
-2 & 6 & 1.0 & 1.0 & 0.2\\
-3 & 6 & 1.0 & 1.0 & 0.2\\
-4 & 8 & 3.0 & 1.0 & 0.2\\
-5 & -1 & 0.0 & 0.0 & 0.0\\
-6 & 7 & 1.0 & 3.0 & 0.3\\
+\hline
+0 & 8 & 4.0 & 1.0 & 0.2\\
+1 & 5 & 1.0 & 1.0 & 0.2\\
+2 & 5 & 1.0 & 1.0 & 0.2\\
+3 & 6 & 2.0 & 1.0 & 0.2\\
+4 & 6 & 2.0 & 1.0 & 0.2\\
+5 & 7 & 2.0 & 2.0 & 0.3\\
+6 & 7 & 1.0 & 2.0 & 0.3\\
 7 & 8 & 1.0 & 4.0 & 0.2\\
 8 & -1 & 0.0 & 5.0 & 0.0\\
 \end{tabular}
-&
+& &
 \begin{tabular}{c|cccc}
 & $\pi$ & $\beta$ & $x$ & $F$\\
-0 & -1 & 0.0 & 1.0 & 0.2\\
-1 & 6 & 1.0 & 1.0 & 0.2\\
-2 & 6 & 1.0 & 1.0 & 0.2\\
-3 & 6 & 1.0 & 1.0 & 0.2\\
-4 & 8 & 3.0 & 1.0 & 0.2\\
-5 & -1 & 0.0 & 0.0 & 0.0\\
-6 & 7 & 1.0 & 3.0 & 0.3\\
-7 & 8 & 1.0 & 3.0 & 0.3\\
-8 & -1 & 0.0 & 4.0 & 0.2\\
-\end{tabular}
-&
-\begin{tabular}{c|cccc}
-& $\pi$ & $\beta$ & $x$ & $F$\\
-0 & -1 & 0.0 & 1.0 & 0.2\\
-1 & 6 & 1.0 & 1.0 & 0.2\\
-2 & 6 & 1.0 & 1.0 & 0.2\\
-3 & -1 & 0.0 & 1.0 & 0.2\\
-4 & 8 & 3.0 & 1.0 & 0.2\\
-5 & -1 & 0.0 & 0.0 & 0.0\\
-6 & 7 & 1.0 & 2.0 & 0.3\\
+\hline
+0 & 8 & 4.0 & 1.0 & 0.2\\
+1 & 5 & 1.0 & 1.0 & 0.2\\
+2 & 5 & 1.0 & 1.0 & 0.2\\
+3 & 6 & 2.0 & 1.0 & 0.2\\
+4 & 6 & 2.0 & 1.0 & 0.2\\
+5 & 7 & 2.0 & 2.0 & 0.3\\
+6 & -1 & 0.0 & 2.0 & 0.3\\
 7 & 8 & 1.0 & 2.0 & 0.3\\
 8 & -1 & 0.0 & 3.0 & 0.3\\
 \end{tabular}
-&
-\begin{tabular}{c|cccc}
-& $\pi$ & $\beta$ & $x$ & $F$\\
-0 & 5 & 1.0 & 1.0 & 0.2\\
-1 & 6 & 1.0 & 1.0 & 0.2\\
-2 & 6 & 1.0 & 1.0 & 0.2\\
-3 & -1 & 0.0 & 1.0 & 0.2\\
-4 & 8 & 3.0 & 1.0 & 0.2\\
-5 & -1 & 0.0 & 1.0 & 0.2\\
-6 & 7 & 1.0 & 2.0 & 0.3\\
-7 & 8 & 1.0 & 2.0 & 0.3\\
-8 & -1 & 0.0 & 3.0 & 0.3\\
+\\
+(A) && (B)
 \end{tabular}
-\end{tabular}
+\end{center}
 
-\caption{Example of the algorithm state during the transition between two
-trees. \jk{If we keep this then we talk about what we see in the different
-examples. We want to give some insight into how the algorithm works by showing
-the intermediate states.}}
+\caption{
+\label{fig:algorithm_example}
+Illustration of the internal state for algorithm B for $\iw = \bone_S$ and
+$f(x) = x(5 - x) / 20$ as in Example~\ref{ex:site_diversity}. (A)
+Immediately before we remove the edge joining 6 to 7 and (B) immediately after.
+See the text for descriptions of the arrays encoding the state.}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%

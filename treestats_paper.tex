@@ -28,6 +28,7 @@
 
 \newcommand{\Nt}{\mathcal{N}}  % node table
 \newcommand{\Et}{\mathcal{E}}  % edge table
+\newcommand{\prop}[1]{.\mbox{\texttt{#1}}} % property of a thing
 \newcommand{\indexin}[0]{\ensuremath{\mathcal{I}}}
 \newcommand{\indexout}[0]{\ensuremath{\mathcal{O}}}
 
@@ -1045,6 +1046,14 @@ way to the root is the first disconnection.
 Discuss the figure perf figure.
 \end{itemize}
 
+\plr{Question: Figures 1, 2 and 7 show the same sort of thing 
+    (fig 1 is a site stat, aiming to give the general overview;
+    figs 2 and 7 are branch stats). Should they be more similar?
+    Do we need all of these?}
+
+\plr{right now things like $\Et\mbox{.right}$ read like a funnily terminated sentence.
+     I've changed these with a macro, feel free to adjust.}
+
 \clearpage
 \begin{taocpalg}{B}{General branch statistics}
 {Given a list of $n$ sample nodes $S$, corresponding weights $w$ and
@@ -1052,7 +1061,9 @@ summary function $f: \R \rightarrow \R$
 compute the span-normalised statistic $\sigma$
 over a tree sequence with sequence length $L$
 defined by the node and edge tables $\Nt$ and $\Et$. We assume
-that the index vectors $\indexin$ and $\indexout$ have been precomputed.}
+that the index vectors $\indexin$ and $\indexout$ have been precomputed.
+\plr{I assume you plan to say in words what $\beta$, $x$, $F$, etc are}
+}
 
 \algstep{B1.}{Initialisation.}{
     For $0 \leq u < |\Et|$ set $\beta_u \leftarrow x_u
@@ -1064,14 +1075,15 @@ that the index vectors $\indexin$ and $\indexout$ have been precomputed.}
 
 \algstep{B2.}{Terminate.}{If $j \geq |\Et|$ or $t_l \geq L$
     set $\sigma \leftarrow \sigma / L$ and terminate.
+    \plr{perhaps say "return $\sigma/L$" to make it more clear what the output is?}
 }
 
 \algstep{B3.}{Edge removal loop.}{If $k \geq |\Et|$ or $t_l \neq
-    \Et[\indexout_k]\mbox{.right}$ go to \algref{B6}}.
+    \Et[\indexout_k]\prop{right}$ go to \algref{B6}.}
 
 \algstep{B4.}{Remove edge.}{Set
-    $u \leftarrow \Et[\indexout_k]\mbox{.child}$,
-    $v \leftarrow \Et[\indexout_k]\mbox{.parent}$ and $k \leftarrow k + 1$.
+    $u \leftarrow \Et[\indexout_k]\prop{child}$,
+    $v \leftarrow \Et[\indexout_k]\prop{parent}$ and $k \leftarrow k + 1$.
     Then set $s \leftarrow s - \beta_u F_u$, $\pi_u \leftarrow -1$
     and $\beta_u \leftarrow 0$.
 }
@@ -1083,13 +1095,13 @@ that the index vectors $\indexin$ and $\indexout$ have been precomputed.}
 }
 
 \algstep{B6.}{Edge insertion loop.}{If $j \geq |\Et|$ or $t_l \neq
-    \Et[\indexin_j]\mbox{.left}$ go to \algref{B9}}.
+    \Et[\indexin_j]\prop{left}$ go to \algref{B9}.}
 
 \algstep{B7.}{Insert edge.}{Set
-    $u \leftarrow \Et[\indexin_j]\mbox{.child}$,
-    $v \leftarrow \Et[\indexin_j]\mbox{.parent}$ and $j \leftarrow j + 1$.
+    $u \leftarrow \Et[\indexin_j]\prop{child}$,
+    $v \leftarrow \Et[\indexin_j]\prop{parent}$ and $j \leftarrow j + 1$.
     Then set $\pi_u \leftarrow v$,
-    $\beta_u \leftarrow \Nt[v]\mbox{.time} - \Nt[u]\mbox{.time}$ and
+    $\beta_u \leftarrow \Nt[v]\prop{time} - \Nt[u]\prop{time}$ and
     $s \leftarrow s + \beta_u F_u$.
 }
 
@@ -1100,10 +1112,11 @@ that the index vectors $\indexin$ and $\indexout$ have been precomputed.}
 }
 
 \algstep{B9.}{Tree loop tail.}{Set $t_r \leftarrow L$.
-    If $j < |\Et|$ set $t_r \leftarrow \min(t_r, \Et[\indexin_j]\mbox{.left})$.
-    Then, if $k < |\Et|$ set $t_r \leftarrow \min(t_r, \Et[\indexout_k]\mbox{.right})$
+    If $j < |\Et|$ set $t_r \leftarrow \min(t_r, \Et[\indexin_j]\prop{left})$.
+    Then, if $k < |\Et|$ set $t_r \leftarrow \min(t_r, \Et[\indexout_k]\prop{right})$
     Finally, set $\sigma \leftarrow (t_r - t_l)s$,  $t_l \leftarrow t_r$
     and go to \algref{B2}.
+    \plr{I think you mean to add to $\sigma$, not replace it?}
 }
 
 \end{taocpalg}

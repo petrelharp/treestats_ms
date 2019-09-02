@@ -131,8 +131,8 @@ for j, f4p in enumerate(f4_pops):
 
 fig = plt.figure(figsize=(6, 3))
 ax = fig.add_subplot(111)
-ax.set_xlabel("time ago")
-ax.set_ylabel("branch f4")
+ax.set_xlabel("time ago (generations)")
+ax.set_ylabel("normalised branch f4")
 
 for j, sn in enumerate(stat_names):
     fl = ax.semilogx(time_bins, time_f4[:, j], label=sn)

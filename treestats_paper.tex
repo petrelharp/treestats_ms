@@ -35,6 +35,7 @@
 \newcommand{\indexout}[0]{\ensuremath{\mathbf{o}}}
 \newcommand{\plr}[1]{{\color{blue}\textbf{plr:} \it #1}}
 \newcommand{\jk}[1]{{\color{red}\textbf{jk:} \it #1}}
+\newcommand{\krt}[1]{{\color{green}\textbf{krt:} \it #1}}
 
 
 \begin{document}
@@ -1266,13 +1267,33 @@ See the text for descriptions of the arrays encoding the state.
 %%%%%%%%%%%%%%%%%%%%%
 \subsection*{Speed}
 
-compare speed to scikit-allel
+\krt{need to sort out the big-O issue here}
+We used coalescent simulations to compare the performance of calculating Tajima's \citeyearpar{Tajima1989-de} $D$
+statistic from tree sequences to calculating it from integer matrices containing genotypes at all variable positions.
+\autoref{fig:stats_performance} shows that the tree sequence methods implemented in \texttt{tskit} process variant data
+three orders of magnitude faster than matrix-based approaches once the sample size is above $n \approx 500$ haploids.
+The expected number of mutations for each replicate is $10^4 \times \sum_{i=1}^{n-1}\frac{1}{i}$, and thus ranges from
+$\approx 32,000$ to $\approx 138,000$ \citep{Watterson1975-ej}.
+\autoref{fig:stats_performance} only considers the time required to calculate the statistic. It does not include the time
+required to build the genotype matrix, nor the memory required to store it.  For the largest samples size of $n=10^6$,
+the matrix is approximately 200 gigabytes, and thus not practical on many systems.
+
+\autoref{fig:stats_performance} shows that \texttt{tskit} requires more time per variant once the sample size is larger
+than $n \approx 10^4$.  For large sample sizes, the $O(n)$ complexity of building the first tree dominates the run time.
+This initial cost is amortized in longer genomes where more recombination leads to more trees.
+
 
 \begin{figure}
     \centering
     \includegraphics{tskit_stat_benchmarks/benchmarks_without_copy_longer_genome.pdf}
     \caption{Comparison of time required to compute site statistics
-        between matrix and tree based methods. [Details]
+        between matrix and tree based methods. For each sample size, a single replicate
+        was obtained using \texttt{msprime} with scaled neutral mutation rate $\theta = 4N_e\mu$ and
+        scaled recombination rate $\rho = 4Nr$ both equal to $10^4$. For each replicate, Tajima's $D$
+        \citep{Tajima1989-de} statistic was calculated using \texttt{tskit}, \texttt{libsequence}
+        \citep{Thornton2003-wj}, and \texttt{scikit-allel} \krt{need cite for this}.
+        The solid green line shows the result of fitting the timing data to a model based on the expected complexity of the 
+        algorithm used by \texttt{tskit}. \krt{need to revisit the correctness of this}
         \label{fig:stats_performance}
     }
 \end{figure}

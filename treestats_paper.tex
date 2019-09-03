@@ -29,9 +29,10 @@
 \newcommand{\Nt}{\mathcal{N}}  % node table
 \newcommand{\Et}{\mathcal{E}}  % edge table
 \newcommand{\prop}[1]{.\mbox{\texttt{#1}}} % property of a thing
-\newcommand{\indexin}[0]{\ensuremath{\mathcal{I}}}
-\newcommand{\indexout}[0]{\ensuremath{\mathcal{O}}}
-
+% Not sure about this notation. Want to use i and o, but using normal
+% math fonts would make things less clear, I think.
+\newcommand{\indexin}[0]{\ensuremath{\mathbf{i}}}
+\newcommand{\indexout}[0]{\ensuremath{\mathbf{o}}}
 \newcommand{\plr}[1]{{\color{blue}\textbf{plr:} \it #1}}
 \newcommand{\jk}[1]{{\color{red}\textbf{jk:} \it #1}}
 
@@ -1023,38 +1024,53 @@ during that time period.
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection*{Algorithms}
-In this section we provide describe and analyse the algorithm used
-to compute branch length statistics. This is a generalation
+In this section we describe and analyse the algorithm used
+to compute branch length statistics. This is a generalization
 of the algorithm used to maintain the number of samples from a
-given set that derive from each node in a tree sequence.
-\cite[Algorithm L]{kelleher2016efficient}.
+given set that derive from each node in a tree
+sequence \cite[Algorithm L]{kelleher2016efficient}. The central
+problem which is shared across site, branch and node statistics
+is to efficiently maintain the ``state'' $x_u$ (where $x_u$ is the
+sum of the weights for all samples descending
+from, and including, node $u$; see Figure~\ref{fig:divergence_diagram}).
+As we move along the sequence, the trees change when branches are inserted
+and removed. By carefully ordering these insertions and removals, we
+ensure that this state is always correctly maintained and that we
+only need to make small adjustments for each tree. Computing the statistics
+is then a straightforward matter of applying the summary function $f$
+to the node states and aggregating the results appropiately for the
+particular statistics mode and windowing options.
 
-\jk{Plan for section}
-\begin{itemize}
-\item First paragraph is a general outline of the strategy.
-\item Explanation of notation and the index vectors (we should probably define
-these again, in the interest of completeness. I'm not sure the definition
-in the msprime paper really worked)
-\item Algorithm listing.
-\item Next para is an explanation of the algorithm in words, referring
-to the figure for what we mean by adding and removing edges.
-\item Next para is an analysis of the algorithm. We note here that
-we propagate stuff all the way up the tree close to optimally, because of the
-ordering of edge insertions and removals. For example, we always disconnect
-a subtree from the main tree first, meaning that the only time we go all the
-way to the root is the first disconnection.
-Discuss the figure perf figure.
-\end{itemize}
+Formally, we define a tree sequence topology via a set of
+tables~\citep{kelleher2018efficient}. In a tree sequence, a node
+describes a specific ancestral haplotype, and details about these
+ancestors are stored in a node table, $\Nt$. The row $\Nt[u]$
+contains all information about the node $u$, and rows
+are indexed from zero such that $0 \leq u < |\Nt|$.
+In particular, the birth time for $u$ is given by
+$\Nt[u]\prop{time}$. Information about how nodes relate to each
+other along the genome is encoded in an edge table, $\Et$.
+For a given row $j$, $\Et[j]\prop{child}$ and $\Et[j]\prop{parent}$
+define a parent-child relationship between two nodes in a set of
+contiguous trees along the genome. $\Et[j]\prop{left}$ then denotes
+the left-most (inclusive) and $\Et[j]\prop{right}$ the right-most
+(exclusive) genome coordinates over which this branch exists.
+The order in which edges are inserted and removed is determined
+by the ``index vectors'' $\indexin$ and $\indexout$~\citep{kelleher2016efficient},
+which are defined as follows. \jk{TODO: succinct definition of these}.
+As we move along the tree sequence, the topology is recorded in the
+parent vector $\pi$, such that $\pi_u$ is the parent of node $u$
+and $\pi_u = -1$ if $u$ is a root. Similarly, we maintain the
+branch length $\beta$ such that
+$\beta_u = \Nt[\pi_u]\prop{time} - \Nt[u]\prop{time}$ and
+$\beta_u = 0$ if $u$ is a root. As evaluating the summary function
+$f$ is an expensive operation, we also maintain the vector $F$
+such that $F_u = f(x_u)$. For notational simplicity here we assume
+that weights and summary functions are scalars, but the extension to
+vectors is trivial. We also assume that we are computing the statistic
+for across the full span of the tree sequence; the extension to multiple
+windows is routine.
 
-\plr{Question: Figures 1, 2 and 7 show the same sort of thing
-    (fig 1 is a site stat, aiming to give the general overview;
-    figs 2 and 7 are branch stats). Should they be more similar?
-    Do we need all of these?}
-
-\plr{right now things like $\Et\mbox{.right}$ read like a funnily terminated sentence.
-     I've changed these with a macro, feel free to adjust.}
-
-\clearpage
 \begin{taocpalg}{B}{General branch statistics}
 {Given a list of $n$ sample nodes $S$, corresponding weights $w$ and
 summary function $f: \R \rightarrow \R$
@@ -1062,7 +1078,6 @@ compute the span-normalised statistic $\sigma$
 over a tree sequence with sequence length $L$
 defined by the node and edge tables $\Nt$ and $\Et$. We assume
 that the index vectors $\indexin$ and $\indexout$ have been precomputed.
-\plr{I assume you plan to say in words what $\beta$, $x$, $F$, etc are}
 }
 
 \algstep{B1.}{Initialisation.}{
@@ -1073,9 +1088,8 @@ that the index vectors $\indexin$ and $\indexout$ have been precomputed.
     set $s \leftarrow \sigma \leftarrow j \leftarrow k \leftarrow t_l \leftarrow 0$.
 }
 
-\algstep{B2.}{Terminate.}{If $j \geq |\Et|$ or $t_l \geq L$
-    set $\sigma \leftarrow \sigma / L$ and terminate.
-    \plr{perhaps say "return $\sigma/L$" to make it more clear what the output is?}
+\algstep{B2.}{Terminate.}{If $j \geq |\Et|$ or $t_l \geq L$,
+    return $\sigma / L$ and terminate.
 }
 
 \algstep{B3.}{Edge removal loop.}{If $k \geq |\Et|$ or $t_l \neq
@@ -1090,7 +1104,7 @@ that the index vectors $\indexin$ and $\indexout$ have been precomputed.
 
 \algstep{B5.}{Propagate loss.}{While $v \neq -1$, set
     $s \leftarrow s - \beta_v F_v$, $x_v \leftarrow x_v - x_u$,
-    $F_v \leftarrow f(x_v)$, $s \leftarrow s - \beta_v F_v$
+    $F_v \leftarrow f(x_v)$, $s \leftarrow s + \beta_v F_v$
     and $v \leftarrow \pi_v$. Afterwards, go to \algref{B3}.
 }
 
@@ -1107,20 +1121,96 @@ that the index vectors $\indexin$ and $\indexout$ have been precomputed.
 
 \algstep{B8.}{Propagate gain.}{While $v \neq -1$, set
     $s \leftarrow s - \beta_v F_v$, $x_v \leftarrow x_v + x_u$,
-    $F_v \leftarrow f(x_v)$, $s \leftarrow s - \beta_v F_v$
+    $F_v \leftarrow f(x_v)$, $s \leftarrow s + \beta_v F_v$
     and $v \leftarrow \pi_v$. Afterwards, go to \algref{B6}.
 }
 
 \algstep{B9.}{Tree loop tail.}{Set $t_r \leftarrow L$.
     If $j < |\Et|$ set $t_r \leftarrow \min(t_r, \Et[\indexin_j]\prop{left})$.
     Then, if $k < |\Et|$ set $t_r \leftarrow \min(t_r, \Et[\indexout_k]\prop{right})$
-    Finally, set $\sigma \leftarrow (t_r - t_l)s$,  $t_l \leftarrow t_r$
+    Finally, set $\sigma \leftarrow \sigma + (t_r - t_l)s$,  $t_l \leftarrow t_r$
     and go to \algref{B2}.
-    \plr{I think you mean to add to $\sigma$, not replace it?}
 }
 
 \end{taocpalg}
 
+Algorithm \algref{B} begins by setting the initial state for $\pi$, $\beta$,
+$x$ and $F$ for each node in the tree sequence, and then sets the values
+of $x_u$ and $F_u$ for each of the samples in $S$. Afterwards, we set
+our ``running sum'' $s$ and output statistic $\sigma$ to zero, along
+with the ``tree left'' variable $t_l$. The $j$ and $k$ variables are
+used to keep track of our position in the edge insertion and edge
+removal indexes, respectively. After completing initialisation in
+\algref{B1}, we enter the main tree loop in \algref{B2} which is
+run once for each tree in the sequence. As we are processing each
+tree, we keep track of the edges that need to be processed with
+the $t_l$ variable, which stores the left-most genome coordinate
+in the current tree. The first thing we do for a new tree is to
+remove any edges that were in the previous tree are not in the
+current tree. These must be the edges in which the right coordinate
+is equal to $t_l$, and so \algref{B3} loops over these edges using
+the edge removal index $\indexout$. Step \algref{B4} then removes
+the branch $u \mapsto v$ corresponding to a single edge, by
+subtracting its contribution to the running sum $s$, setting the parent of
+$u$ to $-1$ and its branch length to $0$. As shown in
+Figure~\ref{fig:algorithm_example}B, removing an edge will result
+in the subtree rooted at $u$ become disconnected from the rest of the
+tree. Step \algref{B5} ensures that the state of the rest of the tree
+is correctly maintained by propagating the loss of the state $x_u$
+up the tree from $v$. Thus, for each direct ancestor $v$ that was a
+direct ancestor of $u$ in the previous tree, we first subtract
+its contribution from the running sum $s$ and remove the contribution
+of $x_u$ from its state. Since the state of $v$ has changed, we must
+recompute the value of our summary cache $F_v$, and then finally
+add the new contribution of $v$ to $s$. (For example, note the changes in $x$
+and $F$ for nodes 7 and 8 in Figure~\ref{fig:algorithm_example}B.)
+
+Once all of the edges with right coordinate equal to $t_l$ have been removed in
+steps \algref{B3--B5}, we then insert edges that start in the current tree
+(i.e., with left coordinate $t_l$) in steps \algref{B6--B8}. We update the
+state to account for the new branch $u \mapsto v$ by setting the parent of
+$u$ to $v$, computing the branch length of $u$ and adding the new contribution
+of $u$ to $s$ in \algref{B7}. Then, as adding a new edge can connect the
+subtree rooted at $u$ to the larger tree at $v$, we propagate the gain of $x_u$
+up the tree in step \algref{B8} (note the symmetry with step \algref{B5}).
+Finally, once we have remove and inserted all of the relevant edges, we are
+ready to add the contribution of the current tree to the overall statistic,
+$\sigma$ and move on to the next tree in step \algref{B9}. To do this, we first
+compute the right-hand coordinate of the tree $t_r$ (a process slightly
+complicated by the possible presence of ``gaps'' in the tree sequence, spanned
+by no edges). Then, we add the running sum $s$ weighted by the span of the
+current tree $t_r - t_l$ to $\sigma$, and return to \algref{B2} to process the
+next tree. If we have reached the end of the sequence, we then divide $\sigma$
+by the sequence length to renormalise and exit.
+
+To analyse Algorithm~\algref{B} we will assume that the tree sequence has
+been simulated under the standard coalescent with a sample of size
+$n$ and population scaled recombination rate $\rho$. Under these conditions,
+we know that there are $O(n + \rho \ln n)$ edges in the tree
+sequence~\cite{kelleher2016efficient}. Clearly, each edge is examined
+exactly once in steps \algref{B6} and \algref{B7} in order to create
+the trees, and at most once in steps \algref{B3} and \algref{B4} (we do
+not remove the edges for the final tree). Additionally, each edge that
+we insert or remove may incur the cost of traversing up the tree as
+far as the root in steps \algref{B5} and \algref{B8}.
+As coalescent genealogies are asymptotically
+balanced~\citep{li2013coalescent}, the expected number of nodes
+on the path to root is $\log_2 n$. Therefore, the overall running time
+of Algorithms~\algref{B} is
+\[
+O(n \log_2 n + \rho \log_2 n \ln n)
+\]
+\jk{Slightly iffy on what this should be in $O$ terms. I'm pretty
+sure that the total number of edges of log base $e$ and the
+expected height is log base 2. Not sure what the asymptotics
+say here.}
+The asymptotic analysis here assumes that we traverse upwards to root
+for each edge, but this is not the case. Edges are removed in
+oldest-first order, guaranteeing that the deepest node any subtree being
+modified is processed first. Therefore, this subtree will be disconnected from the
+main tree, ensuring that we traverse upwards all the way to root once. Similarly,
+edges are inserted in youngest-first order, ensuring that subtrees are only
+reconnected to the main tree when they are fully built.
 
 \begin{figure}
 
@@ -1169,6 +1259,7 @@ Illustration of the internal state for algorithm B for $\iw = \bone_S$ and
 $f(x) = x(5 - x) / 20$ as in Example~\ref{ex:site_diversity}. (A)
 Immediately before we remove the edge joining 6 to 7 and (B) immediately after.
 See the text for descriptions of the arrays encoding the state.
+\jk{TODO: the value of $s$ would be helpful here too.}
 \label{fig:algorithm_example}}
 \end{figure}
 

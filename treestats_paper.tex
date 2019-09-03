@@ -1046,7 +1046,7 @@ way to the root is the first disconnection.
 Discuss the figure perf figure.
 \end{itemize}
 
-\plr{Question: Figures 1, 2 and 7 show the same sort of thing 
+\plr{Question: Figures 1, 2 and 7 show the same sort of thing
     (fig 1 is a site stat, aiming to give the general overview;
     figs 2 and 7 are branch stats). Should they be more similar?
     Do we need all of these?}
@@ -1165,11 +1165,11 @@ that the index vectors $\indexin$ and $\indexout$ have been precomputed.
 \end{center}
 
 \caption{
-\label{fig:algorithm_example}
 Illustration of the internal state for algorithm B for $\iw = \bone_S$ and
 $f(x) = x(5 - x) / 20$ as in Example~\ref{ex:site_diversity}. (A)
 Immediately before we remove the edge joining 6 to 7 and (B) immediately after.
-See the text for descriptions of the arrays encoding the state.}
+See the text for descriptions of the arrays encoding the state.
+\label{fig:algorithm_example}}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%
@@ -1177,7 +1177,14 @@ See the text for descriptions of the arrays encoding the state.}
 
 compare speed to scikit-allel
 
-
+\begin{figure}
+    \centering
+    \includegraphics{tskit_stat_benchmarks/benchmarks_without_copy_longer_genome.pdf}
+    \caption{Comparison of time required to compute site statistics
+        between matrix and tree based methods. [Details]
+        \label{fig:stats_performance}
+    }
+\end{figure}
 
 
 

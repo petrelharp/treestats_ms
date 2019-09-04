@@ -1185,25 +1185,26 @@ by the sequence length to renormalise and exit.
 
 To analyse Algorithm~\algref{B} we will assume that the tree sequence has
 been simulated under the standard coalescent with a sample of size
-$n$ and population scaled recombination rate $\rho$. Under these conditions,
-we know that there are $O(n + \rho \ln n)$ edges in the tree
-sequence~\cite{kelleher2016efficient}. Clearly, each edge is examined
+$n$ and population scaled recombination rate $\rho = 4 N_e r$,
+where $r$ is the mean number of recombinations per chromosome per unit of time.
+Under these conditions, there are $O(n + \rho \ln n)$ edges in the tree sequence
+\citep{kelleher2016efficient}.  Clearly, each edge is examined
 exactly once in steps \algref{B6} and \algref{B7} in order to create
 the trees, and at most once in steps \algref{B3} and \algref{B4} (we do
 not remove the edges for the final tree). Additionally, each edge that
 we insert or remove may incur the cost of traversing up the tree as
 far as the root in steps \algref{B5} and \algref{B8}.
 As coalescent genealogies are asymptotically
-balanced~\citep{li2013coalescent}, the expected number of nodes
+balanced \citep{li2013coalescent}, the expected number of nodes
 on the path to root is $\log_2 n$. Therefore, the overall running time
 of Algorithms~\algref{B} is
 \[
-O(n \log_2 n + \rho \log_2 n \ln n)
+O(n + \rho \ln n) \log_2 n
 \]
-\jk{Slightly iffy on what this should be in $O$ terms. I'm pretty
-sure that the total number of edges of log base $e$ and the
-expected height is log base 2. Not sure what the asymptotics
-say here.}
+Computing a site statistic will have the same complexity,
+as the same internal state is maintained,
+and the number of segregating sites is proportional to the number of edges
+(with constant equal to the ratio of mutation to recombination rate).
 The asymptotic analysis here assumes that we traverse upwards to root
 for each edge, but this is not the case. Edges are removed in
 oldest-first order, guaranteeing that the deepest node any subtree being

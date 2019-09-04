@@ -4,17 +4,13 @@ import matplotlib.pyplot as plt
 import scipy.optimize as optimize
 
 
-def tskit_model(n, a, b, c):
+def tskit_model(logn, a, b, c):
     # The model is based on the proof that we have O(n + rho log n) edges
-    # and we look at each of these twice as we go through the trees.
-
-    # TODO not quite sure about this, need to think about it again.
-    # Excellent fit though.
+    # and we look at each of these twice as we go through the trees
+    # and that the number of mutations is also proportional to rho log n.
+    n = np.exp(logn)
     rho = 0.025  # Value from the file
-    z = rho * np.log(n)
-    # TODO: did KT mess this up?
-    return a*n + b*(z) * np.log(n) + c
-    # return a * (n+z) + b * np.log(n) + c
+    return np.log((a * n + b * rho * logn) * logn + c)
 
 
 symbols = {"tskit": "o", "allel": "^", "libseq": "s"}
@@ -30,8 +26,8 @@ for n, g in grp:
     if n == 'tskit':
         line, = plt.loglog(g.nsam, g.seconds_snp, symbols[n], label=n)
         fit_params, _ = optimize.curve_fit(
-            tskit_model, g.nsam, g.seconds_snp)
-        fit = tskit_model(g.nsam, *fit_params)
+            tskit_model, np.log(g.nsam), np.log(g.seconds))
+        fit = np.exp(tskit_model(np.log(g.nsam), *fit_params)) / g.nmutations
         plt.loglog(g.nsam, fit, color=line.get_color(),
                    label='__nolegend__')
     else:

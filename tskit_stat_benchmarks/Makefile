@@ -9,5 +9,5 @@ benchmarks_without_copy.txt: benchmarks_no_conversion2.py
 benchmarks_without_copy_longer_genome.txt: benchmarks_no_conversion_longer_genome.py
 	python3 $< > $@
 
-benchmarks_without_copy_longer_genome.pdf: benchmarks_without_copy_longer_genome.txt
+benchmarks_without_copy_longer_genome.pdf: plot_benchmarks_longer_genome.py benchmarks_without_copy_longer_genome.txt
 	python3 $<

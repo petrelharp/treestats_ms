@@ -1276,7 +1276,8 @@ The expected number of mutations for each replicate is $10^4 \times \sum_{i=1}^{
 $\approx 32,000$ to $\approx 138,000$ \citep{Watterson1975-ej}.
 \autoref{fig:stats_performance} only considers the time required to calculate the statistic. It does not include the time
 required to build the genotype matrix, nor the memory required to store it.  For the largest samples size of $n=10^6$,
-the matrix is approximately 200 gigabytes, and thus not practical on many systems.
+the matrix is approximately 200 gigabytes, and thus not practical on many systems.  The largest tree sequence simulated
+required less than one gigabyte of memory.
 
 \autoref{fig:stats_performance} shows that \texttt{tskit} requires more time per variant once the sample size is larger
 than $n \approx 10^4$.  For large sample sizes, the $O(n)$ complexity of building the first tree dominates the run time.

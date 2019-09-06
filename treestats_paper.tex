@@ -73,9 +73,11 @@ by \emph{branch}, which gives the expected value of the site statistic
 with a large number of infinite-sites mutations,
 or by \emph{node}, which summarises the contribution of each node in the tree to the statistics.
 This formulation also makes it easy to see what statistic of the underlying genealogical trees
-each sequence-based statistic is estimating.
+each sequence-based statistic is estimating.  By using simulations to evaluate performance, we 
+show that calculating statistics from tree sequences is several orders of magnitude more efficient than
+methods traversing the entire data matrix in terms of both run time and memory requirements.
 
-\plr{add bits for speedup; data}
+\plr{add bits for data}
 
 %%% OUTLINE
 % 1. Framework and algorithms for computing general stats

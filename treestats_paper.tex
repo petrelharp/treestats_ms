@@ -265,7 +265,8 @@ We allow vector-valued weights,
 i.e., $\iw(v)$ may be a vector $(\iw_1(v), \ldots, \iw_m(v))$,
 so that when summarising we have access to more than one aspect of each subtree.
 The requirement that $f(0) = f(\tiw) = 0$ is for consistency,
-so that statistics do not depend on portions of the tree not ancestral to any of the samples.
+so that statistics do not depend on portions of the tree either not ancestral to any of the samples or ancestral to all
+of them.
 % Below, in section XXX, we describe how to efficiently
 % maintain a list of the weights of the subtrees below each node
 % as we iterate through the tree sequence.

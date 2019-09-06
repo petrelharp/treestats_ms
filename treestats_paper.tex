@@ -140,6 +140,8 @@ but for many applications we are now interested in computing a large number of s
 or iteratively refining a single computation.
 Many sorts of modern inference machinery, such as deep learning,
 depend on being able to compute enough statistics that this becomes a serious bottleneck in practice.
+To a large extent, this computational bottleneck is because existing approaches for computing statistics
+typically do not incorporate the relatedness amongst samples.
 
 The \emph{succinct tree sequence} (or \emph{tree sequence}, for brevity) is a data
 structure that efficiently encodes the genealogical trees describing how a set of

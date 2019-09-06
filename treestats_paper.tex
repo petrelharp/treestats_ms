@@ -469,14 +469,12 @@ such that the ancestral allele is no longer present.
 However, since these situations depend on multiple mutations occurring at a single site,
 they are relatively rare in practice.
 
-Now we have defined a general, abstract, framework.
-Is it good for anything?
-Next we give some examples.
+Having defined a general framework, we may now give concrete examples of functions related to common summary statistics.
 
 \begin{example}[Nucleotide diversity] \label{ex:site_diversity}
-    Suppose we want to compute the mean density of nucleotide differences
-    in a group $S$ of $n$ sequences.
-    To do this,
+    The nucleotide diversity of a sample is the average number of differences between all haplotypes, which is
+    equivalent to the sum of heterozygosity at all positions.
+    To calculate this statistic,
     % let $\iw_u = 1$ for $u \in S$ and $\iw_v = 0$ otherwise,
     let $\iw = \bone_S$,
     so that $\nw(u)$ gives the number of nodes in $S$ below $u$,
@@ -501,6 +499,8 @@ Next we give some examples.
     Then $\site(f, \iw)_{[a,b)}$ is mean nucleotide divergence between the two groups
     in the region between $a$ and $b$.
 \end{example}
+
+This example corresponds to the calculations shown in \autoref{fig:divergence_diagram}.
 
 \begin{example}[Segregating sites] \label{ex:segregating_sites}
     Again, let $\iw = \bone_{S}$ for a group of $n$ sequences,

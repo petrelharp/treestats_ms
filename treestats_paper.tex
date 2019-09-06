@@ -359,15 +359,10 @@ and $\tiw - \nw_{T_k}(u)$ is the sum of all weights \emph{not} in the subtree be
 % that $T$ extends for.
 
 \paragraph{Polarisation}
-In this definition we have associated with each node the summary of both the weight below the node
-\emph{and} the weight not below the node.
-Would it not be more natural to only include the first term, $f(\nw_{T_k}(u))$?
-The reason for this definition is that it does not depend on the location of the root of the tree,
-which in practice may be unknown.
-Statistics of genotype sequence defined below in an analogous way
-will not depend on knowledge of which allele is ancestral, i.e., on \emph{polarisation} of alleles.
-For this reason, the node statistic above is the \emph{unpolarised} version,
-while a \emph{polarised} node statistic is defined without the second term:
+The node statistic defined above is appropriate for statistics such as nucleotide diversity, which is a function
+of all alleles at given variable site.  For other statistics, one is only concerned with the derived state(s)
+at a site, and we may defined a \emph{polarised} node statistic without the second term from our previous definition:
+
 \begin{align}
     \text{(polarised)} \qquad
     \nodep(f, \iw)_u

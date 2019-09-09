@@ -904,6 +904,10 @@ so it remains to be seen if the improvement could be made in practice.
 %%%%%%%%%%%%%%%%%%
 \section*{Application to 1000 Genomes tree sequences}
 
+\krt{Is there a circularity here?  What does a branch statistic from real data mean
+when the branch lengths must be inferred somehow from the mutations? If this is not circular,the 
+reasons why need to be made clearer.}
+
 We do not know the true genealogies underlying real data,
 but recent methods are available to estimate them.
 To evaluate the correspondence between site and branch statistics
@@ -927,7 +931,7 @@ which is unsurprising as tsinfer makes no attempt to provide well-calibrated nod
 and only aims to provide consistent tree topologies.
 The two methods that infer node times differ substantially,
 with Relate showing a significantly tighter agreement than GEVA.
-Does this mean that Relate is doing a better job at inferring the tree sequence than \texttt{tsinfer} plus GEVA?
+Does this mean that Relate is doing a better job at inferring the tree sequence than \texttt{tsinfer} pluse GEVA?
 The results presented here are highly suggestive, but not entirely clear.
 
 \begin{figure}
@@ -938,6 +942,7 @@ The results presented here are highly suggestive, but not entirely clear.
     \caption{
         \textbf{(top left)} Mean sequence diversity
         in 1Mb windows along human chromosome 20 of the 1000 Genomes Project,
+        \krt{the only appearances of "dual branch" are in figure legends.  need to define somewhere}
         and the dual branch statistic as calculated from tree sequences inferred by
         \textbf{(top right)} tsinfer,
         \textbf{(bottom left)} Relate, and
@@ -946,12 +951,7 @@ The results presented here are highly suggestive, but not entirely clear.
     }
 \end{figure}
 
-\krt{Hmmm...not sure about this paragraph.  Under strict BGS, some of what is stated here doesn't hold.  The tree will
-    still be neutral in shape, just shorter overall.  For the case of many weakly-deleterious segregating mutations, the
-    overall shape of the tree may not be that different from neutral expectations (Neuhaueser/Krone and the later
-Przeworksi paper, all in Genetics IIRC?) It also seems to me that the idea of what branch-vs-site should look like under
-these processes vs what they should look like in a ts inferred from data where the true model is these processes are
-getting conflated.}
+\krt{Not sure exactly how to rewrite.}
 In practice, we do not expect branch and site diversity to agree exactly,
 because of local differences in mutation rate and intensities of selected mutations.
 For instance, regions in which a high proportion of potential mutations are deleterious

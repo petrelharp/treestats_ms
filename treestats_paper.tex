@@ -1219,9 +1219,9 @@ far as the root in steps \algref{B5} and \algref{B8}.
 As coalescent genealogies are asymptotically
 balanced \citep{li2013coalescent}, the expected number of nodes
 on the path to root is $\log_2 n$. Therefore, the overall running time
-of Algorithms~\algref{B} is
+of Algorithms~\algref{B} is of order $(n = \rho \ln n)\log_2 n$, which is
 \[
-O(n + \rho \ln n) \log_2 n
+    O\left(n \log n + \rho \log^2 n \right)
 \]
 Computing a site statistic will have the same complexity,
 as the same internal state is maintained,

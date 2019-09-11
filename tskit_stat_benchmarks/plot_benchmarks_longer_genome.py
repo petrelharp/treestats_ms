@@ -10,7 +10,7 @@ def tskit_model(logn, a, b, c):
     # and that the number of mutations is also proportional to rho log n.
     n = np.exp(logn)
     rho = 0.025  # Value from the file
-    return np.log((a * n + b * rho * logn) * logn + c)
+    return np.log(a * n + b * rho * logn * logn + c)
 
 
 symbols = {"tskit": "o", "allel": "^", "libseq": "s"}

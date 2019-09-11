@@ -1263,14 +1263,16 @@ Under these conditions, there are $O(n + \rho \ln n)$ edges in the tree sequence
 exactly once in steps \algref{B6} and \algref{B7} in order to create
 the trees, and at most once in steps \algref{B3} and \algref{B4} (we do
 not remove the edges for the final tree). Additionally, each edge that
-we insert or remove may incur the cost of traversing up the tree as
+we insert or remove after the initial building of the tree
+may incur the cost of traversing up the tree as
 far as the root in steps \algref{B5} and \algref{B8}.
 As coalescent genealogies are asymptotically
 balanced \citep{li2013coalescent}, the expected number of nodes
-on the path to root is $\log_2 n$. Therefore, the overall running time
-of Algorithms~\algref{B} is of order $(n + \rho \log n)\log_2 n$, which is
+on the path to root is $\log_2 n$.
+Therefore, the overall running time
+of Algorithms~\algref{B} is of order $n + \rho \log(n) \log_2(n)$, which is
 \[
-    O\left(n \log n + \rho \log^2 n \right)
+    O\left(n + \rho \log(n)^2 \right)
 \]
 Computing a site statistic will have the same complexity,
 as the same internal state is maintained,
@@ -1285,54 +1287,53 @@ Similarly, edges are inserted in youngest-first order, ensuring that subtrees ar
 reconnected to the main tree when they are fully built.
 
 \begin{figure}
+    % Run the script illustrate_algorithm.py to generate these pdfs and
+    % the latex tables below.
+    \begin{center}
+    \begin{tabular}{ccc}
+    \includegraphics[width=4cm]{figures/tree_0_init.pdf} & &
+    \includegraphics[width=4cm]{figures/tree_0_out_0.pdf}
+    \\
 
-% Run the script illustrate_algorithm.py to generate these pdfs and
-% the latex tables below.
-\begin{center}
-\begin{tabular}{ccc}
-\includegraphics[width=4cm]{figures/tree_0_init.pdf} & &
-\includegraphics[width=4cm]{figures/tree_0_out_0.pdf}
-\\
+    \begin{tabular}{c|cccc}
+    & $\pi$ & $\beta$ & $x$ & $F$\\
+    \hline
+    0 & 8 & 4.0 & 1.0 & 0.2\\
+    1 & 5 & 1.0 & 1.0 & 0.2\\
+    2 & 5 & 1.0 & 1.0 & 0.2\\
+    3 & 6 & 2.0 & 1.0 & 0.2\\
+    4 & 6 & 2.0 & 1.0 & 0.2\\
+    5 & 7 & 2.0 & 2.0 & 0.3\\
+    6 & 7 & 1.0 & 2.0 & 0.3\\
+    7 & 8 & 1.0 & 4.0 & 0.2\\
+    8 & -1 & 0.0 & 5.0 & 0.0\\
+    \end{tabular}
+    & &
+    \begin{tabular}{c|cccc}
+    & $\pi$ & $\beta$ & $x$ & $F$\\
+    \hline
+    0 & 8 & 4.0 & 1.0 & 0.2\\
+    1 & 5 & 1.0 & 1.0 & 0.2\\
+    2 & 5 & 1.0 & 1.0 & 0.2\\
+    3 & 6 & 2.0 & 1.0 & 0.2\\
+    4 & 6 & 2.0 & 1.0 & 0.2\\
+    5 & 7 & 2.0 & 2.0 & 0.3\\
+    6 & -1 & 0.0 & 2.0 & 0.3\\
+    7 & 8 & 1.0 & 2.0 & 0.3\\
+    8 & -1 & 0.0 & 3.0 & 0.3\\
+    \end{tabular}
+    \\
+    (A) && (B)
+    \end{tabular}
+    \end{center}
 
-\begin{tabular}{c|cccc}
-& $\pi$ & $\beta$ & $x$ & $F$\\
-\hline
-0 & 8 & 4.0 & 1.0 & 0.2\\
-1 & 5 & 1.0 & 1.0 & 0.2\\
-2 & 5 & 1.0 & 1.0 & 0.2\\
-3 & 6 & 2.0 & 1.0 & 0.2\\
-4 & 6 & 2.0 & 1.0 & 0.2\\
-5 & 7 & 2.0 & 2.0 & 0.3\\
-6 & 7 & 1.0 & 2.0 & 0.3\\
-7 & 8 & 1.0 & 4.0 & 0.2\\
-8 & -1 & 0.0 & 5.0 & 0.0\\
-\end{tabular}
-& &
-\begin{tabular}{c|cccc}
-& $\pi$ & $\beta$ & $x$ & $F$\\
-\hline
-0 & 8 & 4.0 & 1.0 & 0.2\\
-1 & 5 & 1.0 & 1.0 & 0.2\\
-2 & 5 & 1.0 & 1.0 & 0.2\\
-3 & 6 & 2.0 & 1.0 & 0.2\\
-4 & 6 & 2.0 & 1.0 & 0.2\\
-5 & 7 & 2.0 & 2.0 & 0.3\\
-6 & -1 & 0.0 & 2.0 & 0.3\\
-7 & 8 & 1.0 & 2.0 & 0.3\\
-8 & -1 & 0.0 & 3.0 & 0.3\\
-\end{tabular}
-\\
-(A) && (B)
-\end{tabular}
-\end{center}
-
-\caption{
-Illustration of the internal state for algorithm B for $\iw = \bone_S$ and
-$f(x) = x(5 - x) / 20$ as in Example~\ref{ex:site_diversity}. (A)
-Immediately before we remove the edge joining 6 to 7 and (B) immediately after.
-See the text for descriptions of the arrays encoding the state.
-\jk{TODO: the value of $s$ would be helpful here too.}
-\label{fig:algorithm_example}}
+    \caption{
+    Illustration of the internal state for algorithm B for $\iw = \bone_S$ and
+    $f(x) = x(5 - x) / 20$ as in Example~\ref{ex:site_diversity}. (A)
+    Immediately before we remove the edge joining 6 to 7 and (B) immediately after.
+    See the text for descriptions of the arrays encoding the state.
+    \jk{TODO: the value of $s$ would be helpful here too.}
+    \label{fig:algorithm_example}}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%
@@ -1342,7 +1343,9 @@ See the text for descriptions of the arrays encoding the state.
 We used coalescent simulations to compare the performance of calculating Tajima's \citeyearpar{Tajima1989-de} $D$
 statistic from tree sequences to calculating it from integer matrices containing genotypes at all variable positions.
 \autoref{fig:stats_performance} shows that the tree sequence methods implemented in \texttt{tskit} processes variant data
-three orders of magnitude faster than matrix-based approaches once the sample size is above $n \approx 500$ haploids.
+substantially faster than matrix-based approaches once the sample size is above $n \approx 500$ haploids --
+three times faster for one thousand haplotypes,
+growing to nearly three orders of magnitude faster for one million haplotypes.
 The expected number of mutations for each replicate is $10^4 \times \sum_{i=1}^{n-1}\frac{1}{i}$, and thus ranges from
 $\approx 32,000$ to $\approx 138,000$ \citep{Watterson1975-ej}.
 \autoref{fig:stats_performance} only considers the time required to calculate the statistic,
@@ -1365,8 +1368,8 @@ a cost that is amortized in longer genomes where more recombination leads to mor
         between matrix and tree based methods. For each sample size, a single replicate
         was obtained using \texttt{msprime} with scaled neutral mutation rate $\theta = 4N_e\mu$ and
         scaled recombination rate $\rho = 4N_er$ both equal to $10^4$ and $N_e = 10^4$. For each replicate, Tajima's $D$
-        \citep{Tajima1989-de} statistic was calculated using \texttt{tskit}, \texttt{libsequence}
-        \citep{Thornton2003-wj}, and \texttt{scikit-allel} \krt{need cite for this}.
+        \citep{Tajima1989-de} statistic was calculated using \tskit, \texttt{libsequence}
+        \citep{Thornton2003-wj}, and \texttt{scikit-allel} \citep{miles2017scikit}.
         The solid green line shows the result of fitting the timing data to a model based on the expected complexity of the 
         algorithm used by \texttt{tskit}. \krt{need to revisit the correctness of this}
         \label{fig:stats_performance}
@@ -1379,37 +1382,46 @@ a cost that is amortized in longer genomes where more recombination leads to mor
 %%%%%%%%%%%%%%%%%%%%%%%
 \section*{Discussion}
 
+% this stuff is faster
+The most direct effect of the methods presented here might be on efficiency of computation
+with large genomic datasets --
+the python library \tskit{} provides fast, rigorously tested implementations
+of many standard population genetic statistics, with more on the way.
+The logarithmic scaling of storage and computation time with sample size
+could bring much more computation-intensive methods within reach on modern large genomic datasets
+of humans, 
+and helps make detailed investigation of whole populations in evolutionary simulations feasible.
+
+% but the duality thing is maybe more long-term exciting
+However, the focus of this paper was not on computation of standard population genetics statistics,
+but on the relationship of these statistics to the underlying trees.
+We have used essentially the same general framework
+to define two additional classes of statistics -- Branch and Node statistics --
+that well-defined relationships to the Site statistics computable from genome sequence.
+% describing trees is cool
+At least, this gives us descriptive tools to directly describe the genealogical trees
+of tree sequences obtained by simulation.
+% and we can do it with real data now
+However, new methods to infer tree sequences allow us to apply these methods to real data.
+% branch stats are less noisy!
+Given the true tree sequence,
+Branch statistics are less-noisy versions of the standard Site statistics,
+so methods that use Branch statistics may show increased power and precision
+over the corresponding genotype-only methods.
+We have shown that this is true in simulated data,
+but it is not yet known how much additional noise the process of tree sequence inference will add.
+% and we get the time dimension
+Furthermore, tree sequences add a \emph{time} dimension to genotype data,
+which these descriptive methods open up many possibilities for utilizing and visualizing of.
+
+
+\paragraph{Future work}
 In this paper,
-we consider only so-called \emph{single site} statistics
-(which we will define concretely shortly).
+we have considered only so-called additive, single site statistics.
 Extensions to statistics involving the pairwise joint distribution of genotypes across sites,
-such as linkage disequlibrium,
-are straightforward, and are planned for future work.
+such as linkage disequlibrium are planned for future work.
 Haplotype-based statistics may require a different class of algorithms.
 
-
-\paragraph{Diploid statistics}
-The statistics we develop here are in essence \emph{haploid} statistics.
-These tools can be used to compute a statistic about polyploid individuals,
-but they do not scale to large numbers of individuals.
-For instance, to compute the heterozygosity of a set of samples
--- this is $(1/N) \sum_{i=1}^N 2 p_i (1-p_i)$, where $p_i$ is the derived allele frequency
-in the $i^\text{th}$ individual --
-one would need to have an entry in the weight vector for \emph{each individual}.
-The genotype of a diploid at a site with a single mutation that occurred on the branch ancestral to node $n$
-is determined by where that node falls relative to the diploid's two haplotypes in the tree:
-if $n$ is on the path from either haplotype to their MRCA, the individual is heterozygous;
-if $n$ is on the path from the MRCA to the root, the individual is homozygous derived;
-and the individual is homozygous ancestral otherwise.
-This suggests the following generalization of our current scheme for diploids:
-for a list $(I_1, \ldots, I_N)$ of pairs of nodes,
-and two vectors $w^{(1)}$ and $w^{(2)}$ of weights of length $N$,
-add weight $w^{(1)}_i$ to each node on the path between the two nodes of $I_i$,
-and weight $w^{(2)}_i$ to each node on the path from the MRCA of $I_i$ to the root.
-With $k$ such weighting schemes, we would then need the summary function $F$
-to take $k \times 2$ values as input.
-Efficiently updating these ``diploid'' weights on the nodes should be possible,
-but is not a straightforward extension of our current method.
 
 
 
@@ -1663,3 +1675,26 @@ However, equation \eqref{eqn:yCz} gives $y^T C y$ as a sum over \emph{sites},
 and thus distributes the variance in $G$ associated with $y$
 across the tree sequence.
 (This is true because of the singular value decomposition of $G$.)
+
+\paragraph{Diploid statistics}
+The statistics we develop here are in essence \emph{haploid} statistics.
+These tools can be used to compute a statistic about polyploid individuals,
+but they do not scale to large numbers of individuals.
+For instance, to compute the heterozygosity of a set of samples
+-- this is $(1/N) \sum_{i=1}^N 2 p_i (1-p_i)$, where $p_i$ is the derived allele frequency
+in the $i^\text{th}$ individual --
+one would need to have an entry in the weight vector for \emph{each individual}.
+The genotype of a diploid at a site with a single mutation that occurred on the branch ancestral to node $n$
+is determined by where that node falls relative to the diploid's two haplotypes in the tree:
+if $n$ is on the path from either haplotype to their MRCA, the individual is heterozygous;
+if $n$ is on the path from the MRCA to the root, the individual is homozygous derived;
+and the individual is homozygous ancestral otherwise.
+This suggests the following generalization of our current scheme for diploids:
+for a list $(I_1, \ldots, I_N)$ of pairs of nodes,
+and two vectors $w^{(1)}$ and $w^{(2)}$ of weights of length $N$,
+add weight $w^{(1)}_i$ to each node on the path between the two nodes of $I_i$,
+and weight $w^{(2)}_i$ to each node on the path from the MRCA of $I_i$ to the root.
+With $k$ such weighting schemes, we would then need the summary function $F$
+to take $k \times 2$ values as input.
+Efficiently updating these ``diploid'' weights on the nodes should be possible,
+but is not a straightforward extension of our current method.

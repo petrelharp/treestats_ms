@@ -57,27 +57,29 @@
 As a genetic mutation is passed down across generations,
 it distinguishes those genomes that have inherited it from those that have not,
 thus providing a glimpse of the genealogical tree that relates the genomes to each other at that site.
-Summaries of genetic variation thus also aim to summarize the underlying genealogies.
+Summaries of genetic variation thus also describe the underlying genealogies.
 Here we exploit this duality to create a method that efficiently computes single-site statistics
 from population genetic data using the succinct tree sequence encoding
 of genome sequence and genealogies.
 We use the framework to provide fast implementations of many currently-defined statistics
 (whose run time scales with the logarithm of the number of samples),
-and to suggest several statistics.
+and to suggest several new statistics.
 The general approach aggregates ``sample weights'' up each marginal tree,
 which are then summarised using a ``summary function'';
 different statistics result from different choices of weight or function.
 The results can be summarised in three different ways:
 by \emph{site}, which corresponds to statistics calculated from genome sequence,
 by \emph{branch}, which gives the expected value of the site statistic
-with a large number of infinite-sites mutations,
+with a large number of mutations under the infinite-sites model,
 or by \emph{node}, which summarises the contribution of each node in the tree to the statistics.
 This formulation also makes it easy to see what statistic of the underlying genealogical trees
 each sequence-based statistic is estimating.  By using simulations to evaluate performance, we 
 show that calculating statistics from tree sequences is several orders of magnitude more efficient than
 methods traversing the entire data matrix in terms of both run time and memory requirements.
+We also use tree sequences inferred from the 1000 Genomes Project dataset,
+to evaluate how well this duality between site and branch statistics holds
+and to describe the temporal origin of some admixture statistics.
 
-\plr{add bits for data}
 
 %%% OUTLINE
 % 1. Framework and algorithms for computing general stats
@@ -120,10 +122,7 @@ methods traversing the entire data matrix in terms of both run time and memory r
 %%%%%%%%%%%%%%%%%%%%%%%
 \section*{Introduction}
 
-\krt{Why? I think this is an odd way of putting it.  The challenge back then was
-    genotyping.  Once that was done, summarizing the relationships was done on a 
-    calculator b/c the data sets were so small.}
-It was once a major undertaking to estimate a single summary
+It was once a major undertaking to collect data sufficent to estimate a single summary
 of the many genetic relationships between the individuals of a sample,
 e.g., to estimate $F_{ST}$ between two populations using a dozen allozymes.
 Today's vast quantity of whole-genome sequence
@@ -140,8 +139,7 @@ but for many applications we are now interested in computing a large number of s
 or iteratively refining a single computation.
 Many sorts of modern inference machinery, such as deep learning,
 depend on being able to compute enough statistics that this becomes a serious bottleneck in practice.
-To a large extent, this computational bottleneck is because existing approaches for computing statistics
-typically do not incorporate the relatedness amongst samples.
+Bypassing this bottleneck will require new data structures appropriate for genomic data.
 
 The \emph{succinct tree sequence} (or \emph{tree sequence}, for brevity) is a data
 structure that efficiently encodes the genealogical trees describing how a set of
@@ -150,46 +148,44 @@ data structure was introduced in the context of coalescent
 simulation~\citep{kelleher2016efficient}, and led to scalability increases of
 several orders of magnitude over existing methods. It was subsequently extended
 and refined for forwards-time simulations~\citep{kelleher2018efficient,haller2018tree}
-where similar efficiency gains were made. Recent
-work~\citep{kelleher2018inferring} has shown that tree sequence algorithms can
+where similar efficiency gains were made. 
+Recent work~\citep{kelleher2018inferring} has shown that tree sequence algorithms can
 also be used to massively increase the scalability of methods for inferring
-genome-wide genealogies, and shown that it is feasible to infer trees for
-millions of whole genome samples.
+genome-wide genealogies, and making it possible to infer trees for millions of whole genome samples.
 
 The key to the remarkable scalability and efficiency of tree sequence
 algorithms is the way that shared structure in adjacent trees along the genome is encoded.
-As one looks across the genome, genealogies change because of the results of recombination in ancestors.
+As one looks across the genome, genealogies change at recombination breakpoints in ancestors.
 However, nearby trees tend to share a lot of common structure,
 and single genealogical relationships (e.g., individual $x$ inherits from individual $y$)
 are often shared across relatively long distances,
 which manifest as shared \emph{edges} across many adjacent trees in the tree sequence.
-\citep{kelleher2016efficient} used this redundancy
+\citet{kelleher2016efficient} used this redundancy
 to store genome sequence and the associated genealogical relationships extremely compactly,
 as well as to compute several population genetics statistics efficiently.
-This paper generalizes the strategy used by \citep{kelleher2016efficient} for statistics computation
+This paper generalizes the strategy used by \citet{kelleher2016efficient} for statistics computation
 to a much broader class of statistics.
 
-The trees describing genealogical relationships as one moves along the genome
--- also described by the Ancestral Recombination Graph \citep[][or ARG,]{arg} --
-contain a good deal of information about the history and ongoing dynamics of a population.
-Given sufficiently many mutations, it would be possible to infer the genealogical tree
-at each point along the genome \citep{felsenstein_book},
-and each mutation gives a small piece of information about the tree at that site
-\citep{semple2003phylogenetics}.
-However, population genetics has the task of summarizing relationships across \emph{many} trees,
-each only partially known because mutations are sparse in the data.
+Naturally, the genealogical perspective on population genetics statistics has a long history.
+The sequence of trees describing genealogical relationships as one moves along the genome
+are also described by the Ancestral Recombination Graph \citep[or ARG,][]{arg},
+the basis for several inference methods \citep{argmethod}.
+These genealogical trees can be fairly precisely inferred in nonrecombining regions
+\citep{felsenstein_book},
+as for instance the mitochondria,
+and substantial theoretical work has been done in the context of phylogenetics \citep{semple2003phylogenetics}.
+% describing how each mutation gives a small piece of information about the tree at that site
+% However, population genetics has the task of summarizing relationships across \emph{many} trees,
+% each only partially known because mutations are sparse in the data.
 The basic relationship between tree shape and summaries of genetic variation
 is that if mutations are neutral then the expected number that occur on a given branch
 is proportional to the length of that branch,
 thus establishing a duality between genealogical and genetic summaries,
-under the infinite-sites model of mutation \citep{ralph2019empirical}.
-\krt{The idea is much older than this: Taiima 83, 89(?), Fu 95 are all relevant here.  The latter
-derives a lot of properties of the expectations of "node weights" under Kingman's coalescent, including
-the polarised vs non- cases.}
-
-\plr{previous work stuff here}
-Computing correlations with branches instead of SNPs is like stuff done in \citet{zollner2005coalescent} and \citet{minichiello2006mapping}, maybe.
-Cite dynamic graph algorithm something something.
+a fact used extensively in deriving properties of statistics in models of random mating
+\citep[e.g.][]{tajima1983evolutionary,tavare1984lineofdescent,fu1995statistical}.
+The fact that the duality applies regardless of the underlying demographic model was also used
+\citep[e.g.][]{gillespie1979evolutionary,hudson1983properties,slatkin1991inbreeding,mcvean2002genealogical,ralph2019empirical},
+but only recently have datasets made it possible to move beyond a few numerical summaries.
 
 % summary
 In this paper, we study only ``single-site'' genetic statistics,
@@ -537,6 +533,7 @@ This example corresponds to the calculations shown in \autoref{fig:divergence_di
     We can compute this as a site statistic by defining $\iw_{1}(u) = z(u)$, and $\iw_{2}(u) = 1/n$,
     and $f(x_1, x_2) = x_1^2 / (2 x_2 (1 - x_2) n (n-1))$:
     then $\site(\iw, f)_j = r_j^2$ is the squared correlation between $z$ and the allele at site $j$.
+    Appendix \ref{apx:regression} explains how to extend this to regression with covariates.
 \end{example}
 
 %% Check that math:
@@ -713,6 +710,8 @@ than for the unpolarised ones.
     The statistic tells us the \emph{expected} correlation between phenotype and any mutations
     appearing on the tree, which is a summary of how much local relatedness
     aligns with similarity in phenotype.
+    Similar strategies for using local tree topology to improve associate mapping
+    were explored by \citet{zollner2005coalescent} and \citet{minichiello2006mapping}.
 \end{example}
 
 

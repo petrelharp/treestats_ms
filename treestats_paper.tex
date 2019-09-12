@@ -57,24 +57,24 @@
 
 As a genetic mutation is passed down across generations,
 it distinguishes those genomes that have inherited it from those that have not,
-thus providing a glimpse of the genealogical tree that relates the genomes to each other at that site.
-Summaries of genetic variation thus also describe the underlying genealogies.
+providing a glimpse of the genealogical tree relating the genomes to each other at that site.
+Summaries of genetic variation therefore also describe the underlying genealogies.
 Here we exploit this duality to create a method that efficiently computes single-site statistics
 from population genetic data using the succinct tree sequence encoding
-of genome sequence and genealogies.
-We use the framework to provide fast implementations of many currently-defined statistics
-(whose run time scales with the logarithm of the number of samples),
-and to suggest several new statistics.
+of genealogies and genome sequence.
+We use the framework to provide efficient implementations of
+many currently-defined statistics, and to suggest several new statistics.
 The general approach aggregates ``sample weights'' up each marginal tree,
 which are then summarised using a ``summary function'';
 different statistics result from different choices of weight or function.
 The results can be summarised in three different ways:
-by \emph{site}, which corresponds to statistics calculated from genome sequence,
+by \emph{site}, which corresponds to statistics calculated from genome
+sequence;
 by \emph{branch}, which gives the expected value of the site statistic
-with a large number of mutations under the infinite-sites model,
+with a large number of mutations under the infinite-sites model;
 or by \emph{node}, which summarises the contribution of each node in the tree to the statistics.
-This formulation also makes it easy to see what statistic of the underlying genealogical trees
-each sequence-based statistic is estimating.  By using simulations to evaluate performance, we 
+This formulation also makes it apparent what statistic of the underlying genealogical trees
+each sequence-based statistic is estimating.  By using simulations to evaluate performance, we
 show that calculating statistics from tree sequences is several orders of magnitude more efficient than
 methods traversing the entire data matrix in terms of both run time and memory requirements.
 We also use tree sequences inferred from the 1000 Genomes Project dataset,
@@ -126,34 +126,37 @@ and to describe the temporal origin of some admixture statistics.
 It was once a major undertaking to collect data sufficient to estimate a single summary
 of the many genetic relationships between the individuals of a sample,
 e.g., to estimate $F_{ST}$ between two populations using a dozen allozymes.
+\jk{Citation?}
 Today's vast quantity of whole-genome sequence
 makes it possible to confidently estimate many more properties of genealogical relationships
 in local regions of genomes \citep{stankowski2019widespread,fst_landscapes},
 or between individuals rather than populations \citep{individual_stats}.
 Computation is beginning to be a major problem:
-whole-genome sequence on the scale of the UK Biobank,
-for instance, might have 500K individuals genotyped at 10M loci \citep{ukbb},
+genetic data on the scale of the UK Biobank~\citep{bycroft2018genome},
+for instance, might have 500K individuals genotyped at 10M loci,
 resulting in a genotype matrix of $5 \times 10^{12}$ entries.
 Computing a single summary from this matrix is still relatively quick,
 once loaded into memory,
 but for many applications we are now interested in computing a large number of statistics,
 or iteratively refining a single computation.
-Many sorts of modern inference machinery, such as deep learning,
-depend on being able to compute enough statistics that this becomes a serious bottleneck in practice.
-Bypassing this bottleneck will require new data structures appropriate for genomic data.
+Furthermore, even larger datasets are being collected,
+and millions of whole genomes will soon be available. In this case the
+genotype matrix simply cannot fit into memory, and complex distributed
+computations are required to calculate population genetic statistics.
 
+Fortunately, the genotype matrix is not the only way to encode genetic data.
 The \emph{succinct tree sequence} (or \emph{tree sequence}, for brevity) is a data
 structure that efficiently encodes the genealogical trees describing how a set of
-individuals are related to each other at each point along their genome. The
-data structure was introduced in the context of coalescent
+individuals are related to each other at each point along their genome.
+It was introduced in the context of coalescent
 simulation~\citep{kelleher2016efficient}, and led to scalability increases of
-several orders of magnitude over existing methods. It was subsequently extended
-and refined for forwards-time simulations~\citep{kelleher2018efficient,haller2018tree}
-where similar efficiency gains were made. 
-Recent work~\citep{kelleher2018inferring} has shown that tree sequence algorithms can
+several orders of magnitude over existing methods. The methods were subsequently extended
+and refined for forwards-time
+simulations~\citep{kelleher2018efficient,haller2018tree}, with similar efficiency gains.
+Recent work~\citep{kelleher2019inferring} has shown that tree sequence algorithms can
 also be used to massively increase the scalability of methods for inferring
-genome-wide genealogies, and making it possible to infer trees for millions of whole genome samples.
-
+genome-wide genealogies, and making it possible to infer trees for millions of
+samples.
 The key to the remarkable scalability and efficiency of tree sequence
 algorithms is the way that shared structure in adjacent trees along the genome is encoded.
 As one looks across the genome, genealogies change at recombination breakpoints in ancestors.
@@ -161,18 +164,18 @@ However, nearby trees tend to share a lot of common structure,
 and single genealogical relationships (e.g., individual $x$ inherits from individual $y$)
 are often shared across relatively long distances,
 which manifest as shared \emph{edges} across many adjacent trees in the tree sequence.
-\citet{kelleher2016efficient} used this redundancy
-to store genome sequence and the associated genealogical relationships extremely compactly,
-as well as to compute several population genetics statistics efficiently.
-This paper generalizes the strategy used by \citet{kelleher2016efficient} for statistics computation
-to a much broader class of statistics.
+This redundancy can be exploited to store genome sequence and the
+associated genealogical relationships very compactly, while also
+allowing us to to compute several population genetics statistics
+efficiently~\citep{kelleher2016efficient}.
+This paper generalizes the approach to a much broader class of statistics.
 
 Naturally, the genealogical perspective on population genetics statistics has a long history.
 The sequence of trees describing genealogical relationships as one moves along the genome
-are also described by the Ancestral Recombination Graph \citep[or ARG,][]{arg},
-the basis for several inference methods \citep{argmethod}.
+are also described by the Ancestral Recombination
+Graph~\citep{griffiths1991two,griffiths1996ancestral,rasmussen2014genome}.
 These genealogical trees can be fairly precisely inferred in nonrecombining regions
-\citep{felsenstein_book},
+\citep{felsenstein2004inferring},
 as for instance the mitochondria,
 and substantial theoretical work has been done in the context of phylogenetics \citep{semple2003phylogenetics}.
 % describing how each mutation gives a small piece of information about the tree at that site
@@ -1373,7 +1376,7 @@ a cost that is amortized in longer genomes where more recombination leads to mor
         For each replicate, Tajima's $D$
         \citep{Tajima1989-de} statistic was calculated using \tskit, \texttt{libsequence}
         \citep{Thornton2003-wj}, and \texttt{scikit-allel} \citep{miles2017scikit}.
-        The solid green line shows the result of fitting the timing data to a model based on the expected complexity of the 
+        The solid green line shows the result of fitting the timing data to a model based on the expected complexity of the
         algorithm used by \texttt{tskit}. \krt{need to revisit the correctness of this}
         \label{fig:stats_performance}
     }

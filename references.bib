@@ -635,3 +635,226 @@ distribution pattern.},
 }
 
 
+@inproceedings{lacki2013reachability,
+  abstract = {In this paper we consider the problem of maintaining information about graphs with history -- so called graph timeline. A graph timeline is a sequence of graphs G1,..., Gt, in which consecutive graphs are obtained from previous ones by small modifications, e.g., by adding or removing a single edge. We aim to devise algorithms that after some preprocessing are able to efficiently answer queries about the existence of paths in the entire timeline of the graph, or within some time interval. We consider two types of queries: [forall (u,v,a,b)] --- query that checks if there exists a path from u to v in each of Ga,..., Gb; [exists(u,v,a,b)] --- query that checks if there exists a path from u to v in any of Ga,...,Gb. Our study is motivated by the recent intensive study of the evolution of graphs, and the question whether information about history can be efficiently aggregated. We show that for path queries this is, somewhat astonishingly, true. In some cases it is possible to preprocess graph timeline and answer such queries in almost optimal time. First, we consider undirected graphs and timelines in which two consecutive graphs differ by addition or removal of a single edge. We show a randomized algorithm that requires O(t log t log log t log n+m) preprocessing time and answers forall queries in O(log n log log t) time. Here, $n$ is the number of vertices in the graph and m is the number of permanent edges, that is edges common to all graphs in the timeline. This algorithm can be derandomized at some cost in the running time. Second, we give a deterministic algorithm that needs O(nt+m) preprocessing and answers exists queries in O(1) time. Finally, for directed graphs, we consider timelines where two consecutive graphs differ by addition or removal of a set of edges incident to one vertex. In this case we, are able to propose a randomized algorithm that after O(nω-1t) preprocessing time can answer exists(u,v,a,b) queries in O(n) time and forall(u,v,a,b) queries in O(n+b-a) time.},
+  acmid = {2422468},
+  added-at = {2019-09-12T19:32:20.000+0200},
+  address = {New York, NY, USA},
+  author = {Lacki, Jakub and Sankowski, Piotr},
+  biburl = {https://www.bibsonomy.org/bibtex/2c8e117f17338716333eefca7e0781324/peter.ralph},
+  booktitle = {Proceedings of the 4th Conference on Innovations in Theoretical Computer Science},
+  doi = {10.1145/2422436.2422468},
+  interhash = {17d078d1571a388f328a0868c2846605},
+  intrahash = {c8e117f17338716333eefca7e0781324},
+  isbn = {978-1-4503-1859-4},
+  keywords = {algorithms connectivity dynamic_graphs graph_algorithms graph_theory},
+  location = {Berkeley, California, USA},
+  numpages = {12},
+  pages = {257--268},
+  publisher = {ACM},
+  series = {ITCS '13},
+  timestamp = {2019-09-12T19:32:20.000+0200},
+  title = {Reachability in Graph Timelines},
+  url = {http://doi.acm.org/10.1145/2422436.2422468},
+  year = 2013
+}
+
+@article{srinivasan2018sharedmemory,
+  abstract = {n this paper, we present a network-based template for analyzing large-scale dynamic data. Specifically, we present a novel shared-memory parallel algorithm for updating treebased structures, including connected components (CC) and the minimum spanning tree (MST) on dynamic networks. We propose a rooted tree-based data structure to store the edges that are most relevant to the analysis. Our algorithm is based on updating the information stored in this rooted tree.n this paper, we present a network-based template for analyzing large-scale dynamic data. Specifically, we present a novel shared-memory parallel algorithm for updating tree-based structures, including connected components (CC) and the minimum spanning tree (MST) on dynamic networks. We propose a rooted tree-based data structure to store the edges that are most relevant to the analysis. Our algorithm is based on updating the information stored in this rooted tree.I},
+  added-at = {2019-09-12T19:30:07.000+0200},
+  author = {{Srinivasan}, S. and {Pollard}, S. and {Das}, S. K. and {Norris}, B. and {Bhowmick}, S.},
+  biburl = {https://www.bibsonomy.org/bibtex/20f61cca54894fc8bdbb9147d4cfd6f6b/peter.ralph},
+  doi = {10.1109/TBDATA.2018.2870136},
+  interhash = {79b78b15bc0accec38bcc22878fd1c33},
+  intrahash = {0f61cca54894fc8bdbb9147d4cfd6f6b},
+  journal = {IEEE Transactions on Big Data},
+  keywords = {algorithms dynamic_graphs graph_algorithms parallel_algorithms},
+  pages = {1-1},
+  timestamp = {2019-09-12T19:30:07.000+0200},
+  title = {A Shared-Memory Algorithm for Updating Tree-Based Properties of Large Dynamic Networks},
+  url = {https://ieeexplore.ieee.org/document/8464249},
+  year = 2018
+}
+
+@article{eppstein1997sparsification,
+  abstract = {We provide data strutures that maintain a graph as edges are inserted and deleted, and keep track of the following properties with the following times: minimum spanning forests, graph connectivity, graph 2-edge connectivity, and bipartiteness in timeO(n1/2) per change; 3-edge connectivity, in time O(n2/3) per change; 4-edge connectivity, in time O(n&agr;(n)) per change; k-edge connectivity for constant k, in time O(nlogn) per change;2-vertex connectivity, and 3-vertex connectivity, in the O(n) per change; and 4-vertex connectivity, in time O(n&agr;(n)) per change. Further results speed up the insertion times to match the bounds of known partially dynamic algorithms.All our algorithms are based on a new technique that transforms an algorithm for sparse graphs into one that will work on any graph, which we call sparsification.},
+  acmid = {265914},
+  added-at = {2019-09-12T19:27:37.000+0200},
+  address = {New York, NY, USA},
+  author = {Eppstein, David and Galil, Zvi and Italiano, Giuseppe F. and Nissenzweig, Amnon},
+  biburl = {https://www.bibsonomy.org/bibtex/244f2d02b7882df95303a93877cfd296e/peter.ralph},
+  doi = {10.1145/265910.265914},
+  interhash = {3d37fabb81e36abd8838cdce57bbfa22},
+  intrahash = {44f2d02b7882df95303a93877cfd296e},
+  issn = {0004-5411},
+  issue_date = {Sept. 1997},
+  journal = {J. ACM},
+  keywords = {algorithms connectivity dynamic_graphs graph_theory},
+  month = sep,
+  number = 5,
+  numpages = {28},
+  pages = {669--696},
+  publisher = {ACM},
+  timestamp = {2019-09-12T19:27:37.000+0200},
+  title = {Sparsification -- a Technique for Speeding Up Dynamic Graph Algorithms},
+  url = {http://doi.acm.org/10.1145/265910.265914},
+  volume = 44,
+  year = 1997
+}
+
+@article{eppstein1994offline,
+  abstract = {We describe an efficient algorithm for maintaining a minimum spanning tree (MST) in a graph subject to a sequence of edge weight modifications. The sequence of minimum spanning trees is computed offline, after the sequence of modifications is known. The algorithm takes time O(k log n) for a sequence of k updates to a graph of n vertices, giving a bound of O(log n) on the average time per update. We use our techniques to solve the offline geometric MST problem for a planar point set subject to insertions and deletions; our algorithm for this problem takes time O(k log2n), for an average of O(log2n) time per update. We describe a further refinement of our technique which solves the problem in the rectilinear metric in time O(k log n log log n), for an average of O(log n log log n) time per update.},
+  added-at = {2019-09-12T19:25:55.000+0200},
+  author = {Eppstein, David},
+  biburl = {https://www.bibsonomy.org/bibtex/2d376f70e5a5bba635ddd13357bfad13d/peter.ralph},
+  doi = {https://doi.org/10.1006/jagm.1994.1033},
+  interhash = {b5c34784b118313102f6eacc01de916b},
+  intrahash = {d376f70e5a5bba635ddd13357bfad13d},
+  issn = {0196-6774},
+  journal = {Journal of Algorithms},
+  keywords = {algorithms connectivity dynamic_graphs graph_theory minimum_spanning_tree},
+  number = 2,
+  pages = {237 - 250},
+  timestamp = {2019-09-12T19:25:55.000+0200},
+  title = {Offline Algorithms for Dynamic Minimum Spanning Tree Problems},
+  url = {http://www.sciencedirect.com/science/article/pii/S0196677484710339},
+  volume = 17,
+  year = 1994
+}
+
+@article{holm2001polylogarithmic,
+  abstract = {Deterministic fully dynamic graph algorithms are presented for connectivity, minimum
+spanning tree, 2-edge connectivity, and biconnectivity. Assuming that we start with no edges in a
+graph with n vertices, the amortized operation costs are O(log 2 n) for connectivity, O(log 4 n) for
+minimum spanning forest, 2-edge connectivity, and O(log 5 n) biconnectivity.},
+  added-at = {2019-09-12T19:22:16.000+0200},
+  author = {Holm, Jacob and De Lichtenberg, Kristian and Thorup, Mikkel and Thorup, Mikkel},
+  biburl = {https://www.bibsonomy.org/bibtex/2e7f4e79b4d2958d7cdc65f6f823e8480/peter.ralph},
+  interhash = {b97f78f55bc91df915b0ed235ab4b4ec},
+  intrahash = {e7f4e79b4d2958d7cdc65f6f823e8480},
+  journal = {Journal of the ACM (JACM)},
+  keywords = {algorithms connectivity dynamic_graphs graph_theory},
+  number = 4,
+  pages = {723--760},
+  publisher = {Citeseer},
+  timestamp = {2019-09-12T19:22:16.000+0200},
+  title = {Poly-logarithmic deterministic fully-dynamic algorithms for connectivity, minimum spanning tree, 2-edge, and biconnectivity},
+  url = {http://doi.acm.org/10.1145/502090.502095},
+  volume = 48,
+  year = 2001
+}
+
+@article{booker2018understanding,
+  abstract = {A major goal of population genetics has b een to determine the extent by which selection at linked sites influences patterns of neutral nucleotide di versity in the genome . Multiple lines of evidence suggest that diversity is influenced by both positive and negative selection . For example, in many species there are troughs in diversity surrounding functional genomic elements , consistent with the action of either background selection (BGS) or selective sweeps . In this study, we investigated the causes of the diversity troughs that are observed in the wild house mouse genome . Using the unfolded si te frequency spectrum (uSFS) , we estimated the strength and frequencies of deleterious and advantageous mutations occurring in different func tional elements in the genome. We then used t hese estimates to param eteriz e forward - in - time simulations of chromosomes, using realistic distributions of functional elements and recombination rate variation in order to determine if selection at linked sites can explain the observed patterns of nucleotide diversity.  The simu lations suggest that BGS alone cannot explain the dips in diversity around either exons or conserved non - coding elements (CNEs) .  A combination of BGS and s elective sweeps produce s deeper dips in diversity than BGS alone , but the inferred parameters of sele ction cannot fully explain the patterns observed in the genome .  O ur results provide evidence of sweeps shaping patterns of nucleotide diversity across the mouse genome , and also suggest that infrequent, strongly advantageous mutations play an important rol e in this.  The limitations of using the uSFS for inferring the frequency and effects of advantageous mutations are discussed.},
+  added-at = {2018-10-08T21:08:23.000+0200},
+  author = {Booker, Tom R and Keightley, Peter D},
+  biburl = {https://www.bibsonomy.org/bibtex/283309e64a9bd7dd2b254a8d6ce817656/peter.ralph},
+  doi = {10.1093/molbev/msy188},
+  eprint = {/oup/backfile/content_public/journal/mbe/pap/10.1093_molbev_msy188/2/msy188.pdf},
+  interhash = {b9c10d39cf9a7ae86de17e7bd333972d},
+  intrahash = {83309e64a9bd7dd2b254a8d6ce817656},
+  journal = {Molecular Biology and Evolution},
+  keywords = {genomic_landscape linked_selection mouse simulation simulation-based_inference},
+  pages = {msy188},
+  timestamp = {2018-10-08T21:08:23.000+0200},
+  title = {Understanding the factors that shape patterns of nucleotide diversity in the house mouse genome},
+  url = {http://dx.doi.org/10.1093/molbev/msy188},
+  year = 2018
+}
+
+@article{haenel2018metaanalysis,
+  abstract = {Abstract Understanding the distribution of crossovers along chromosomes is crucial to evolutionary genomics because the crossover rate determines how strongly a genome region is influenced by natural selection on linked sites. Nevertheless, generalities in the chromosome-scale distribution of crossovers have not been investigated formally. We fill this gap by synthesizing joint information on genetic and physical maps across 62 animal, plant and fungal species. Our quantitative analysis reveals a strong and taxonomically widespread reduction of the crossover rate in the centre of chromosomes relative to their peripheries. We demonstrate that this pattern is poorly explained by the position of the centromere, but find that the magnitude of the relative reduction in the crossover rate in chromosome centres increases with chromosome length. That is, long chromosomes often display a dramatically low crossover rate in their centre, whereas short chromosomes exhibit a relatively homogeneous crossover rate. This observation is compatible with a model in which crossover is initiated from the chromosome tips, an idea with preliminary support from mechanistic investigations of meiotic recombination. Consequently, we show that organisms achieve a higher genome-wide crossover rate by evolving smaller chromosomes. Summarizing theory and providing empirical examples, we finally highlight that taxonomically widespread and systematic heterogeneity in crossover rate along chromosomes generates predictable broad-scale trends in genetic diversity and population differentiation by modifying the impact of natural selection among regions within a genome. We conclude by emphasizing that chromosome-scale heterogeneity in crossover rate should urgently be incorporated into analytical tools in evolutionary genomics, and in the interpretation of resulting patterns.},
+  added-at = {2019-02-18T19:30:31.000+0100},
+  author = {Haenel, Quiterie and Laurentino, Telma G. and Roesti, Marius and Berner, Daniel},
+  biburl = {https://www.bibsonomy.org/bibtex/28568778ee5b8baea0a68a4be510e7938/peter.ralph},
+  doi = {10.1111/mec.14699},
+  eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1111/mec.14699},
+  interhash = {7297511bd739edf6db0a9ce5924ffc3f},
+  intrahash = {8568778ee5b8baea0a68a4be510e7938},
+  journal = {Molecular Ecology},
+  keywords = {centromeres genomic_landscape linked_selection recombination_landscape},
+  number = 11,
+  pages = {2477-2497},
+  timestamp = {2019-02-18T19:30:31.000+0100},
+  title = {Meta-analysis of chromosome-scale crossover rate variation in eukaryotes and its significance to evolutionary genomics},
+  url = {https://onlinelibrary.wiley.com/doi/abs/10.1111/mec.14699},
+  volume = 27,
+  year = 2018
+}
+
+
+@article{browning2010highresolution,
+  abstract = {Detection of recent identity by descent (IBD) in population samples is important for population-based linkage mapping and for highly accurate genotype imputation and haplotype-phase inference. We present a method for detection of recent IBD in population samples. Our method accounts for linkage disequilibrium between SNPs to enable full use of high-density SNP data. We find that our method can detect segments of a length of 2 cM with moderate power and negligible false discovery rate in Illumina 550K data in Northwestern Europeans. We compare our method with GERMLINE and PLINK, and we show that our method has a level of resolution that is significantly better than these existing methods, thus extending the usefulness of recent IBD in analysis of high-density SNP data. We survey four genomic regions in a sample of UK individuals of European descent and find that on average, at a given location, our method detects IBD in 2.7 per 10,000 pairs of individuals in Illumina 550K data. We also present methodology and results for detection of homozygosity by descent (HBD) and survey the whole genome in a sample of 1373 UK individuals of European descent. We detect HBD in 4.7 individuals per 10,000 on average at a given location. Our methodology is implemented in the freely available BEAGLE software package.},
+  added-at = {2011-06-06T19:29:57.000+0200},
+  author = {Browning, S. R. and Browning, B. L.},
+  biburl = {https://www.bibsonomy.org/bibtex/24e77991ebef7fe0cb27426b88ec8f26c/peter.ralph},
+  interhash = {87769194b42a725405844e4bb8fa9ef6},
+  intrahash = {4e77991ebef7fe0cb27426b88ec8f26c},
+  journal = {Am. J. Hum. Genet.},
+  keywords = {IBD haplotype_length human_genome pedigrees},
+  month = apr,
+  pages = {526--539},
+  timestamp = {2015-01-20T22:35:53.000+0100},
+  title = {High-resolution detection of identity by descent in unrelated individuals},
+  volume = 86,
+  year = 2010
+}
+
+@article{speed2014relatedness,
+  abstract = {Relatedness is a fundamental concept in genetics, but is surprisingly hard to define in a rigorous yet useful way.
+Traditional relatedness coefficients specify expected genome sharing between individuals in pedigrees, but actual
+genome sharing can differ considerably from these expected values, which in any case vary according to the pedigree
+that happens to be available. Nowadays, we can measure genome sharing directly from genome-wide SNP data, but
+there are many such measures in current use and we lack good criteria for choosing among them. Here, we review
+SNP-based measures of relatedness and criteria for comparing them. We discuss how useful pedigree-based concepts
+remain today, and highlight opportunities for further advances in quantitative genetics, with a focus on heritability
+estimation and prediction.},
+  added-at = {2014-08-26T21:18:33.000+0200},
+  author = {Speed, Doug and Balding, David},
+  biburl = {https://www.bibsonomy.org/bibtex/29414a297495b487c819dd3d8852c26f2/peter.ralph},
+  doi = {doi:10.1038/nrg3821},
+  interhash = {40b1d9a8a8d5e5c3e151c58014f68746},
+  intrahash = {9414a297495b487c819dd3d8852c26f2},
+  journal = {Nature Reviews Genetics},
+  keywords = {GWAS IBD PCA empirical_genealogy fixed_pedigree heritability methods pedigree review},
+  pages = {33-44},
+  privnote = {"There is a fundamental connection between coalescent trees and pedigrees: we can think of a pedigree as
+providing a “scaffold” on which coalescent trees at different genomic loci are constructed. Pedigree members have
+maternal and paternal alleles at each locus, but each coalescent lineage passes through only one allele of each indi-
+vidual. Thus we can consider the coalescent tree at a locus as a stochastic process on a fixed pedigree, making “coin
+toss” decisions between the maternal and paternal chromosomes of each ancestor that is reached (Figure 2). Features
+of a more extensive pedigree, such as population structure, generate genome-wide influences on the coalescent distri-
+butions. This effect is evident in genome-wide association studies, where population structure and cryptic relatedness
+(pedigree effects) alter the genome-wide distribution of single-SNP association statistics. 28 Coalescent modelling usu-
+ally ignores the pedigree because it is rarely observed and is difficult to infer. However, pedigree effects are not always
+negligible and it may be useful in some settings to jointly model the pedigree and the coalescent trees embedded in it."},
+  timestamp = {2015-05-09T09:28:18.000+0200},
+  title = {Relatedness in the post-genome era: is it still useful?},
+  url = {http://www.nature.com/nrg/journal/v16/n1/full/nrg3821.html},
+  volume = 16,
+  year = 2014
+}
+
+@article{aguillon2017deconstructing,
+  abstract = {Author summary Dispersal is a fundamental component of the life history of most organisms and therefore influences many biological processes. Dispersal is particularly important in creating genetic structure on the landscape. We often observe a pattern of decreased genetic relatedness between individuals as geographic distances increases, or isolation-by-distance. This pattern is particularly pronounced in organisms with extremely short dispersal distances. Despite the ubiquity of isolation-by-distance patterns in nature, there are few examples that explicitly demonstrate how limited dispersal influences spatial genetic structure. Here we investigate the processes that result in spatial genetic structure using the Florida Scrub-Jay, a bird with extremely limited dispersal behavior and extensive genome-wide data. We take advantage of the long-term monitoring of a contiguous population of Florida Scrub-Jays, which has resulted in a detailed pedigree and measurements of dispersal for hundreds of individuals. We show how limited dispersal results in close genealogical relatives living closer together geographically, which generates a strong pattern of isolation-by-distance at an extremely small spatial scale (<10 km) in just a few generations. Given the detailed dispersal, pedigree, and genomic data, we can achieve a fairly complete understanding of how dispersal shapes patterns of genetic diversity over short spatial scales.},
+  added-at = {2019-09-12T20:50:07.000+0200},
+  author = {Aguillon, Stepfanie M. and Fitzpatrick, John W. and Bowman, Reed and Schoech, Stephan J. and Clark, Andrew G. and Coop, Graham and Chen, Nancy},
+  biburl = {https://www.bibsonomy.org/bibtex/2412136d933e00e9309169159d17c59ed/peter.ralph},
+  description = {Deconstructing isolation-by-distance: The genomic consequences of limited dispersal},
+  doi = {10.1371/journal.pgen.1006911},
+  interhash = {33e4291843d6205eeab0daf756c15481},
+  intrahash = {412136d933e00e9309169159d17c59ed},
+  journal = {PLOS Genetics},
+  keywords = {empirical_genealogy empirical_pedigree pedigree scrub_jay},
+  month = {08},
+  number = 8,
+  pages = {1-27},
+  publisher = {Public Library of Science},
+  timestamp = {2019-09-12T20:50:07.000+0200},
+  title = {Deconstructing isolation-by-distance: The genomic consequences of limited dispersal},
+  url = {https://doi.org/10.1371/journal.pgen.1006911},
+  volume = 13,
+  year = 2017
+}
+
+

@@ -123,7 +123,7 @@ and to describe the temporal origin of some admixture statistics.
 %%%%%%%%%%%%%%%%%%%%%%%
 \section*{Introduction}
 
-It was once a major undertaking to collect data sufficent to estimate a single summary
+It was once a major undertaking to collect data sufficient to estimate a single summary
 of the many genetic relationships between the individuals of a sample,
 e.g., to estimate $F_{ST}$ between two populations using a dozen allozymes.
 Today's vast quantity of whole-genome sequence
@@ -311,7 +311,7 @@ From the tree sequence can be extracted a sequence of trees,
 $\treeseq = (T_1, T_2, \ldots, T_{n(\treeseq)})$
 and a sequence of breakpoints $0 = a_0 < a_1 < \cdots < a_{n(T)} = L$,
 where $T_k$ describes the genealogical relationships of the samples
-over the segment of genome betwen $a_{k-1}$ (inclusive) and $a_k$ (exclusive).
+over the segment of genome between $a_{k-1}$ (inclusive) and $a_k$ (exclusive).
 We say that tree $T_k$ \emph{covers} the (half-open) segment $[a_{k-1}, a_k)$,
 and call the length of this segment its \emph{span}, denoted $L_k = a_k - a_{k-1}$.
 We refer to the branches in each tree using the most recent node,
@@ -963,7 +963,7 @@ and (3) by Relate \citep{speidel2019method}, an independently developed method.
 All calculations were done only using the portions of the chromosome
 passing the 1000 Genomes Phase 1 ``strict'' mask for sequencing accessibility.
 % from ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase1/analysis_results/supporting/accessible_genome_masks/README.20120515_phase1_pop_gen_mask
-Separate curves for each of the 26 populations are shown in Supplemental Figure \ref{fig:chr20_full}.
+Separate curves for each of the 26 sampling locations are shown in Supplemental Figure \ref{fig:chr20_full}.
 
 The comparisons are shown in Figure~\ref{fig:chr20}.
 Of these methods, branch diversity from \tsinfer{} shows the worst agreement with site diversity,
@@ -1018,7 +1018,7 @@ with remaining variation explained by direct selection and/or mutation rate vari
 
 Thus far we have examined how statistics vary along the genome,
 but a tree sequence allows us access to another dimension: time.
-Next, we examine how the \emph{time} distribution of admixture signal
+Next, we examine the \emph{time} distribution of admixture signal
 in the tree sequence inferred by \tsinfer/GEVA.
 The branch $f_4(A, B; C, D)$ statistic for four sample sets $A$, $B$, $C$, and $D$
 is the sum of $(p_A - p_B)(p_C - p_D)$ across branches, multiplied by span and height,
@@ -1367,7 +1367,10 @@ a cost that is amortized in longer genomes where more recombination leads to mor
     \caption{Comparison of time required to compute site statistics
         between matrix and tree based methods. For each sample size, a single replicate
         was obtained using \texttt{msprime} with scaled neutral mutation rate $\theta = 4N_e\mu$ and
-        scaled recombination rate $\rho = 4N_er$ both equal to $10^4$ and $N_e = 10^4$. For each replicate, Tajima's $D$
+        scaled recombination rate $\rho = 4N_er$ both equal to $10^4$ and $N_e = 10^4$,
+        where $\mu$ and $\rho$ are the total mutation and recombination rate across the simulated region
+        per generation, respectively.
+        For each replicate, Tajima's $D$
         \citep{Tajima1989-de} statistic was calculated using \tskit, \texttt{libsequence}
         \citep{Thornton2003-wj}, and \texttt{scikit-allel} \citep{miles2017scikit}.
         The solid green line shows the result of fitting the timing data to a model based on the expected complexity of the 
@@ -1382,37 +1385,90 @@ a cost that is amortized in longer genomes where more recombination leads to mor
 %%%%%%%%%%%%%%%%%%%%%%%
 \section*{Discussion}
 
-% this stuff is faster
-The most direct effect of the methods presented here might be on efficiency of computation
-with large genomic datasets --
-the python library \tskit{} provides fast, rigorously tested implementations
-of many standard population genetic statistics, with more on the way.
-The logarithmic scaling of storage and computation time with sample size
-could bring much more computation-intensive methods within reach on modern large genomic datasets
-of humans, 
-and helps make detailed investigation of whole populations in evolutionary simulations feasible.
+% overview: general definition that is mostly functions of jAFS but includes others
+In this paper, we have described a general framework for summarising genetic variation
+and the underlying genealogies
+that encompasses many standard population genetic statistics
+and makes it easy to explore more.
+Many of these statistics are functions of the joint allele frequency spectrum,
+but the framework is more general,
+and can be used to quantify associations between genotypes and phenotypes.
+This generality was motivated in part by laziness --
+adding new statistics is now almost as easy as working out the appropriate summary function --
+but also makes it easy to computationally explore new classes of statistics.
+The range of statistics available to describe variation in a single exchangeable sample
+(i.e., a single population) are well-understood,
+but there are much larger and less well-explored classes of statistics
+describing genetic variation between many populations
+or across geographical space.
 
-% but the duality thing is maybe more long-term exciting
-However, the focus of this paper was not on computation of standard population genetics statistics,
-but on the relationship of these statistics to the underlying trees.
-We have used essentially the same general framework
-to define two additional classes of statistics -- Branch and Node statistics --
-that well-defined relationships to the Site statistics computable from genome sequence.
-% describing trees is cool
-At least, this gives us descriptive tools to directly describe the genealogical trees
-of tree sequences obtained by simulation.
-% and we can do it with real data now
-However, new methods to infer tree sequences allow us to apply these methods to real data.
-% branch stats are less noisy!
-Given the true tree sequence,
-Branch statistics are less-noisy versions of the standard Site statistics,
-so methods that use Branch statistics may show increased power and precision
-over the corresponding genotype-only methods.
-We have shown that this is true in simulated data,
-but it is not yet known how much additional noise the process of tree sequence inference will add.
-% and we get the time dimension
-Furthermore, tree sequences add a \emph{time} dimension to genotype data,
-which these descriptive methods open up many possibilities for utilizing and visualizing of.
+% speed/efficiency: big data sets; large simulations
+The most obvious application of these methods on current practice
+is to improve efficiency of existing pipelines,
+as tree sequences allow storage and processing of large genomic data sets
+with orders of magnitude less space and time than most other methods.
+All statistics described here (and more) are implemented
+in the fast, rigorously tested python library \tskit{}
+that also provides tools for working with tree sequences.
+The largest efficiency gains are found for very large sample sizes
+only likely to be available in real data sets for humans in the near future,
+but the ability to analyze millions of whole genomes
+is useful for understanding evolutionary simulations of any species
+\citep[see][for a recent example]{galloway2019stickleback}.
+
+
+% duality: site stats ~ branch stat, but conversely branch more accurate version of site
+%  maybe analogous to imputation
+We hope a more broadly interesting and useful aspect of this paper
+is a more in-depth look at the correspondence between statistics calculated with genome sequence
+and properties of the underlying genealogies, i.e.,
+the duality between Site and Branch statistics under the infinite-sites model.
+This general correspondence is well-known,
+but the common framework implemented here makes it easy to translate between the two.
+One way to use this translation is to answer:
+what aspect of tree shape is this population genetics statistic summarising?
+This can help when interpreting results, especially if reality may not fit an idealised model
+of separate populations.
+However, methods to infer tree sequences from real data
+make it now possible to work in the other direction:
+instead of calculating (Site) statistics from the genotype matrix,
+we can calculate precisely analogous (Branch) statistics from the trees themselves,
+thus hopefully bypassing the extra layer of noise induced by mutation.
+How well this works will depend on the ability of inference methods
+to infer the true tree sequence.
+This might plausibly produce less noisy estimates because tree sequence inference
+essentially uses the signal from nearby patterns of variation
+to interpret relationships at a given site,
+thus tranforming the simple binary split induced by a SNP
+into a much richer source of information at every variant site.
+Furthermore,
+if tree sequence inference can be made insensitive to local variation in mutation rate,
+calculation of branch statistics would provide a summary method
+that is not affected by this potentially important confounding factor.
+
+% visualization and time decomposition adding a new dimension
+Genomic data are naturally distributed along two axes: along the genome, and across geography.
+The tree sequence extends this to a third axis: time.
+A great many methods in population genetics aim to describe aspects of history,
+and accurate (or at least unbiased) tree sequence inference
+may shift the focus of these problems from inference to descriptive analysis.
+In this paper, we have made an exploratory foray in this direction,
+by describing the time of origin of the ``admixture'' signal of nonzero $f_4$
+between several subsets of the 1000 Genomes dataset,
+in several inferred tree sequences.
+It is not yet clear whether these time profiles tell us more about history
+or about biases of the the inference methods,
+but either result would be useful.
+
+% moving past a few summaries in discrete groups to a genome/time/space view of relatedness
+The historical toolbox of population genetics
+is still mostly composed of statistics designed for analysis of a handful of loci
+in a small number of discrete, mostly separated populations.
+Both our data and our understanding of the world have moved beyond this.
+We hope that the tools we develop here will help make it possible
+to visualize and analyze genetic variation and genealogical realtedness
+along the genome, across space, and through time.
+\plr{okay rein me in here}
 
 
 \paragraph{Future work}
@@ -1420,8 +1476,7 @@ In this paper,
 we have considered only so-called additive, single site statistics.
 Extensions to statistics involving the pairwise joint distribution of genotypes across sites,
 such as linkage disequlibrium are planned for future work.
-Haplotype-based statistics may require a different class of algorithms.
-
+Haplotype-based statistics may require different classes of algorithms.
 
 
 
@@ -1596,10 +1651,10 @@ however, this would be more involved
 \end{figure}
 
 \begin{figure}
-    \includegraphics[width=\textwidth]{{figures/1kg/relate_chr20.site.1000000.diversity}.pdf}
-    \includegraphics[width=\textwidth]{{figures/1kg/1kg_chr20.branch.1000000.diversity}.pdf}
-    \includegraphics[width=\textwidth]{{figures/1kg/tgp_geva_chr20.branch.1000000.diversity}.pdf}
-    \includegraphics[width=\textwidth]{{figures/1kg/relate_chr20.branch.1000000.diversity}.pdf}
+    \includegraphics[width=0.5\textwidth]{{figures/1kg/relate_chr20.site.1000000.diversity}.pdf}
+    \includegraphics[width=0.5\textwidth]{{figures/1kg/1kg_chr20.branch.1000000.diversity}.pdf}
+    \includegraphics[width=0.5\textwidth]{{figures/1kg/tgp_geva_chr20.branch.1000000.diversity}.pdf}
+    \includegraphics[width=0.5\textwidth]{{figures/1kg/relate_chr20.branch.1000000.diversity}.pdf}
     \caption{
         \textbf{(top left)} Mean sequence diversity
         in 1Mb windows along human chromosome 20 of the 1000 Genomes Project,

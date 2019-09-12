@@ -960,6 +960,18 @@ think we can say "significantly" (sounds like p-values or something).
 Is there some sort of time-series analysis we could do to show how
 similar sets of squiggly lines are to each other?}
 
+\krt{I have related concerns. What does it mean to look at a branch stat and a site state
+    from an inferred tree sequence?  The input genotype data are informative about both 
+    the inferred edges and their branch lengths.   So it seems to me that comparing the two types of stats is comparing
+    non-independent quantities, and I am unclear how to interpret that? (I admit to not studying the GEVA paper closely
+yet, nor the Speidel).  Presumably, the site stat is going to give you the right value (e.g., match whatever the
+original paper reported for, say, pi), but the branch version of the stat could differ from this for perhaps a lot 
+of reasons that all contribute to "edge estimation error"?  Not calling variants below a certain frequency,
+preferentially calling variants you've seen in a previous study, or imputing in variants from other studies?
+Overall, I have to squint at Fig S2 to see differences, and most of the issue seems to be near what I assume to be a
+centromere?}
+
+
 \begin{figure}
     \includegraphics[width=0.5\textwidth]{{figures/1kg/relate_chr20.site.1000000.region.diversity}.pdf}
     \includegraphics[width=0.5\textwidth]{{figures/1kg/1kg_chr20.branch.1000000.region.diversity}.pdf}
@@ -1360,7 +1372,7 @@ a cost that is amortized in longer genomes where more recombination leads to mor
         \citep{Tajima1989-de} statistic was calculated using \tskit, \texttt{libsequence}
         \citep{Thornton2003-wj}, and \texttt{scikit-allel} \citep{miles2017scikit}.
         The solid green line shows the result of fitting the timing data to a model based on the expected complexity of the
-        algorithm used by \texttt{tskit}. \krt{need to revisit the correctness of this}
+        algorithm used by \texttt{tskit}. 
         \label{fig:stats_performance}
     }
 \end{figure}
@@ -1425,7 +1437,7 @@ to estimate the true tree sequence.
 This might plausibly produce less noisy estimates because tree sequence inference
 essentially uses the signal from nearby patterns of variation
 to interpret relationships at a given site,
-thus tranforming the simple binary split induced by a SNP
+thus transforming the simple binary split induced by a SNP
 into a much richer source of information at every variant site.
 Furthermore,
 if tree sequence inference can be made insensitive to local variation in mutation rate,
@@ -1443,7 +1455,7 @@ by describing the time of origin of the ``admixture'' signal of nonzero $f_4$
 between several subsets of the 1000 Genomes dataset,
 in several inferred tree sequences.
 It is not yet clear whether these time profiles tell us more about history
-or about biases of the the inference methods,
+or about biases of the inference methods,
 but either result would be useful.
 
 % moving past a few summaries in discrete groups to a genome/time/space view of relatedness
@@ -1462,7 +1474,7 @@ The duality between Site and Branch statistics depends crucially on two assumpti
 that each new mutation is distinguishable, as in the infinite-sites model,
 and that mutation rates are constant along the genome.
 Neither of these things are true, but are they good approximations?
-Multiple mutations at the same site, causing backmutations,
+Multiple mutations at the same site, causing back mutations,
 are present in real datasets but are generally thought to be uncommon,
 especially if hypervariable sites are excluded.
 The effect of multiple mutations on Site statistics
@@ -1478,19 +1490,19 @@ would provide a way to assess variation in population genetic summaries along th
 in a way independent of local mutation rate.
 
 A final crucial assumption underlying this duality is that mutations can be treated
-as indepenent of the trees themselves.
+as independent of the trees themselves.
 This is clearly not always true --- for instance,
 a sweeping beneficial mutation strongly affects the local trees (as in \autoref{fig:sweep_duality}) ---
 but seems likely to be approximately true.
 \citet{ralph2019empirical} contains more discussion of variation in mutation rate,
-but more work needs to be done, particularly on models with large proprotions of sites under selection.
+but more work needs to be done, particularly on models with large proportions of sites under selection.
 
 
 %%%%%%%%%%%%%%%%%%
 \subsection*{General properties}
 
 The statistics defined here are all \emph{additive} along the genome:
-if we have computed a statistic in equal-size windows along a chromsome,
+if we have computed a statistic in equal-size windows along a chromosome,
 then the value of the statistic for the entire chromosome is equal to
 the average of the values in those windows.
 Some commonly-used statistics (e.g., $F_{ST}$ or Tajima's $D$)
@@ -1535,7 +1547,7 @@ is an active area of research \citep[e.g.,][]{srinivasan2018sharedmemory}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Acknowledgements}
+\subsection*{Acknowledgments}
 Thanks to Graham Coop, Andrew Kern, Nick Patterson, and Kelley Harris for useful suggestions
 and to Wilder Wohns, Yan Wong and Leo Speidel for providing inferred tree sequences.
 
@@ -1714,6 +1726,7 @@ however, this would be more involved
         and the dual branch statistic as calculated from tree sequences inferred by
         \textbf{(top right)} \tsinfer,
         \textbf{(bottom left)} GEVA, and
+        \krt{This should be tsinfer+GEVA, no?}
         \textbf{(bottom right)} Relate.
         \label{fig:chr20_full}
     }

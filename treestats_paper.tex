@@ -166,8 +166,8 @@ are often shared across relatively long distances,
 which manifest as shared \emph{edges} across many adjacent trees in the tree sequence.
 This redundancy can be exploited to store genome sequence and the
 associated genealogical relationships very compactly, while also
-allowing us to to compute several population genetics statistics
-efficiently~\citep{kelleher2016efficient}.
+enabling efficient calculation of several population genetics
+statistics~\citep{kelleher2016efficient}.
 This paper generalizes the approach to a much broader class of statistics,
 supporting arbitrary tree topologies and patterns of allelic variation.
 % Want to emphasise generality here: people might assume we're only dealing
@@ -398,7 +398,7 @@ which are defined directly in terms of the genotypes.
 Now we describe how to compute statistics from \emph{genomes} using this framework.
 To do this, we assume that the genetic variation data is embedded in a tree sequence,
 but the trees are used only for efficiency --- the results will not depend on
-the trees in any way. The summaries we defined above nodes
+the trees in any way. The summaries we defined above for nodes
 extend directly to genetic variants: just as a node weight contains information about
 which samples inherit from the node and which do not,
 so we can summarise patterns of genetic variation by summing up weights of all samples
@@ -418,11 +418,11 @@ the total weight of all sample nodes that have inherited that allele.
 
 If there has been only one mutation at the site,
 then $\aw_j(a)$ is equal to the weight of the subtree inheriting from the mutation that produced $a$.
-Similarly, in the more general case of recurrent and back mutations, $\aw$ can
+In the more general case of recurrent and back mutations, $\aw$ can
 be computed from subtree weights in a straightforward way.
 We then define the \textbf{site statistic} of site $j$ for a summary function $f()$
-and sample weights $\iw$ to be the sum of $f()$ applied to the weight of
-each allele, $a$:
+and sample weights $\iw$ to be the sum of $f()$
+applied to the weight of every allele, $a$, found at this site:
 \begin{align}
     \site(f, \iw)_j
     &=
@@ -481,11 +481,6 @@ of how to compute common summary statistics.
     \end{align*}
     Then $\site(f, \iw)_{[a,b)}$ is mean nucleotide diversity of $S$ in the region between $a$ and $b$.
 \end{example}
-
-\jk{I don't think there's anything to be gained by giving this example over
-an interval rather than saying ``Then $\site(f, \iw)_{j}$ is the nucleotide
-diversity within $S$ at site $j$". The windowing stuff is routine, I think, and is just
-distracting from the interesting stuff here. Ditto the next two examples.}
 
 \begin{example}[Nucleotide divergence] \label{ex:site_divergence}
     Now suppose we want to compute the mean pairwise density of nucleotide differences
@@ -734,9 +729,7 @@ Similar strategies were explored by \citet{zollner2005coalescent} and \citet{min
     and weight -1 to any branch that separates $x_1$ and $x_4$ from $x_2$ and $x_3$.
     The statistic $\branch(f, \iw)$ therefore
     gives the difference in average lengths of these two types of branch,
-    averaged over choices of samples from the sample sets and averaged across the genome.
-    \jk{I don't follow this last bit: how can we averate over choices in the
-sample sets if there's only one element in each?}
+    averaged across the genome.
 \end{example}
 
 

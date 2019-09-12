@@ -168,7 +168,10 @@ This redundancy can be exploited to store genome sequence and the
 associated genealogical relationships very compactly, while also
 allowing us to to compute several population genetics statistics
 efficiently~\citep{kelleher2016efficient}.
-This paper generalizes the approach to a much broader class of statistics.
+This paper generalizes the approach to a much broader class of statistics,
+supporting arbitrary tree topologies and patterns of allelic variation.
+% Want to emphasise generality here: people might assume we're only dealing
+% with the biallelic case.
 
 Naturally, the genealogical perspective on population genetics statistics has a long history.
 The sequence of trees describing genealogical relationships as one moves along the genome
@@ -197,8 +200,9 @@ i.e., statistics of aligned genome sequence that can be expressed as averages ov
 separately for each site,
 leaving other statistics (e.g., pairwise statistics such as linkage disequilibrium
 or haplotype statistics) for later work.
-The methods we describe are implemented, tested, and validated in the \tskit{} library,
-which is available as an open-source Python package at \url{https://github.com/tskit-dev/tskit}.
+The methods we describe are implemented, tested, and validated in the \tskit{}
+Python and C libraries, available at \url{https://github.com/tskit-dev/tskit}
+under the terms of the MIT open source license.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -370,7 +374,7 @@ at a site, and we may define a \emph{polarised} node statistic without the secon
 \end{align}
 
 We will use weights that count number of samples inheriting from each node
-sufficiently often that we give them a special name --
+sufficiently often that we give them a special name ---
 for a subset set $S$ of samples,
 the \emph{indicator weights of $S$} are the sample weights $\bone_S$ with
 $\bone_S(u) = 1$ if $u \in S$ and $\bone_S(u) = 0$ otherwise.
@@ -393,17 +397,14 @@ which are defined directly in terms of the genotypes.
 
 Now we describe how to compute statistics from \emph{genomes} using this framework.
 To do this, we assume that the genetic variation data is embedded in a tree sequence,
-but the trees are used only for efficiency --
-the results will not depend on the trees in any way
-(with the only exception being if the ancestral allele is assumed to be known, as discussed below).
-
-The summaries we defined above for each node in each tree
-extend nicely to genetic variants
--- just as a node weight contains information about which samples inherit from the node and which are not,
+but the trees are used only for efficiency --- the results will not depend on
+the trees in any way. The summaries we defined above nodes
+extend directly to genetic variants: just as a node weight contains information about
+which samples inherit from the node and which do not,
 so we can summarise patterns of genetic variation by summing up weights of all samples
 that carry a given allele.
-So, we define \emph{allele weights} to be
-the total weight of all sample nodes who have inherited that allele.
+Therefore, we define \emph{allele weights} to be
+the total weight of all sample nodes that have inherited that allele.
 
 \begin{definition}[Allele weights]
     The \emph{allele weight} for allele $a$ at site $j$ is the sum of the weights
@@ -417,21 +418,17 @@ the total weight of all sample nodes who have inherited that allele.
 
 If there has been only one mutation at the site,
 then $\aw_j(a)$ is equal to the weight of the subtree inheriting from the mutation that produced $a$.
-More generally, $\aw$ is not necessarily equal to a subtree weight
-but is easily computable from them.
-
-Using allele weights,
-we define the \textbf{site statistic} of site $j$ computed using a summary function $f()$
-and a set of sample weights $\iw$
-to be the sum of $f()$ applied to each of the allele weights:
+Similarly, in the more general case of recurrent and back mutations, $\aw$ can
+be computed from subtree weights in a straightforward way.
+We then define the \textbf{site statistic} of site $j$ for a summary function $f()$
+and sample weights $\iw$ to be the sum of $f()$ applied to the weight of
+each allele, $a$:
 \begin{align}
     \site(f, \iw)_j
     &=
-    \sum_{a} f(\aw_j(a)) ,
+    \sum_{a} f(\aw_j(a)).
 \end{align}
-where the sum is over all unique alleles at site $j$.
-
-Of course, we often want to summarize statistics across regions of the genome (``windows'').
+We often want to summarize statistics across regions of the genome (``windows'').
 To do this, we overload notation somewhat and use a subscript $[i,j)$ to denote an average
 over the corresponding portion of the genome:
 \begin{align}
@@ -444,7 +441,7 @@ the sum will only be affected by polymorphic sites,
 although the normalization is always by total number of sites, to allow comparison between regions.
 
 
-In the definition above we simply sum over all alleles at each site.
+In the definition above we sum over all alleles at each site.
 However, sometimes it is useful to distinguish the \emph{ancestral} allele
 (i.e., the allele at the root of the tree) from the remaining derived alleles.
 This allows statistics in principle to differentiate ancestral from derived alleles,
@@ -468,7 +465,7 @@ However, since these situations depend on multiple mutations occurring at a sing
 they are relatively rare in practice.
 
 Having defined a general framework, we may now give concrete examples
-of how to compute common summary statistics
+of how to compute common summary statistics.
 
 \begin{example}[Nucleotide diversity] \label{ex:site_diversity}
     The nucleotide diversity of a group $S$ of $n$ samples
@@ -484,6 +481,11 @@ of how to compute common summary statistics
     \end{align*}
     Then $\site(f, \iw)_{[a,b)}$ is mean nucleotide diversity of $S$ in the region between $a$ and $b$.
 \end{example}
+
+\jk{I don't think there's anything to be gained by giving this example over
+an interval rather than saying ``Then $\site(f, \iw)_{j}$ is the nucleotide
+diversity within $S$ at site $j$". The windowing stuff is routine, I think, and is just
+distracting from the interesting stuff here. Ditto the next two examples.}
 
 \begin{example}[Nucleotide divergence] \label{ex:site_divergence}
     Now suppose we want to compute the mean pairwise density of nucleotide differences
@@ -523,7 +525,7 @@ This example corresponds to the calculations shown in \autoref{fig:divergence_di
 \begin{example}[Phenotypic correlations] \label{ex:site_correlations}
     Suppose that for each sample $u$ we have a numeric phenotype, denoted $z(u)$,
     and we want to compute the correlation between this phenotype
-    and the genotype at each site in the tree sequence.
+    and the genotype at each site.
     For convenience, suppose $z$ is normalized
     % so that $\sum_u z(u) = 0$ and $\sum_u z(u)^2/(n-1) = 1$.
     to have mean zero and variance 1.
@@ -615,14 +617,14 @@ precisely because it tells us about the underlying patterns of genealogical rela
 In other words, often the genomes are most useful in so far as they tell us about the trees.
 In the case where we actually have the trees, or a good proxy for them,
 it is natural to summarize them directly, rather than working indirectly with the genotypes.
-If we assume that no two mutations occur at the same genomic position --
-i.e., the \emph{infinite sites model} --
+If we assume that no two mutations occur at the same genomic position ---
+i.e., the \emph{infinite sites model} ---
 then there is a natural correspondence between summaries of genotypes and summaries of tree shape.
 If mutations occur at a constant rate in time and along the genome,
 then the \emph{expected} number of mutations that occur somewhere along a branch of a tree
 over some segment of genome
 is equal to the mutation rate multiplied by the length of the segment and by the length of the branch.
-In other words, the ``area'' of a branch in a tree of the tree sequence,
+In other words, the ``area'' of a branch in a tree,
 defined as its span (right minus left endpoint) multiplied by its length (parent time minus child time)
 and scaled by the mutation rate,
 is equal to the expected number of mutations that will land on it.
@@ -638,7 +640,7 @@ obtained from summary function $f()$
 and sample weights $\iw$ with total weight $\tiw = \sum_u \iw(u)$
 to be the sum of the length of each branch in each tree
 multiplied by the summary function applied to its subtree weight and its complement:
-\begin{align}
+\begin{align}\label{eqn:branch_stat_tree}
     \branch(f, \iw)_T
     &=
     \sum_{u \in T} \beta_{T}(u) \left( f(\nw_{T}(u)) + f(\tiw - \nw_{T}(u)) \right)  ,
@@ -652,10 +654,10 @@ if a single mutation occurred on the branch ancestral to $u$,
 and $f(\tiw - \nw_{T}(u))$ is the value that would be added due to its complementary allele,
 so $\branch(f, \iw)_T$ gives the expected contribution of the tree $T$ to $\site(f, \iw)$,
 per unit of sequence length that the tree covers.
-
-An example is shown in Figure~\ref{fig:branch_site_diagram},
-showing how the $f_4$ site statistic assigns a weight to each mutation
-depending on its' frequency in each of the four sample sets,
+An example of this correspondence between site and branch statistics
+is shown in Figure~\ref{fig:branch_site_diagram}. Here, we
+see how the $f_4$ site statistic assigns a weight to each mutation
+depending on its frequency in each of the four sample sets,
 and how the corresponding branch statistic assigns the same weight to those branches.
 
 \begin{figure}
@@ -677,13 +679,10 @@ and how the corresponding branch statistic assigns the same weight to those bran
     possible to fill it out as in fig 1, or is that just too much space?}
 \end{figure}
 
-
-This defines a statistic for a single window,
+Equation~\eqref{eqn:branch_stat_tree} defines a statistic for a single tree,
 but in practice it is more useful to average branch statistics
-over a region of the genome,
-which we do by averaging the tree statistics over the region
-with probabilities proportional to the trees' spans.
-We write this with similar notation:
+over a region of the genome. We do this by averaging the tree statistics over the region
+with probabilities proportional to the trees' spans:
 \begin{align}
     \branch(f, \iw)_{[c,d)}
     &=
@@ -692,7 +691,6 @@ We write this with similar notation:
 where $\ell_k(c,d)$ is the length of the region in $[c,d)$ that the tree $T_k$ covers
 (i.e., if $T$ covers the half-open interval $[a_{k-1},a_k)$,
 then $\ell_k(c,d) = \max(0, \min(d,a_k) - \max(c,a_{k-1}))$).
-
 The \emph{polarised} version of a Branch statistic
 is defined analogously to the Node and Site versions:
 \begin{align} \label{eqn:branch_polarised}
@@ -737,6 +735,8 @@ Similar strategies were explored by \citet{zollner2005coalescent} and \citet{min
     The statistic $\branch(f, \iw)$ therefore
     gives the difference in average lengths of these two types of branch,
     averaged over choices of samples from the sample sets and averaged across the genome.
+    \jk{I don't follow this last bit: how can we averate over choices in the
+sample sets if there's only one element in each?}
 \end{example}
 
 
@@ -744,6 +744,7 @@ Similar strategies were explored by \citet{zollner2005coalescent} and \citet{min
 \subsection*{General properties}
 
 \plr{not sure if we need this section}
+\jk{Compress and move to the discussion?}
 
 The statistics defined here are all \emph{additive} along the genome:
 if we have computed a statistic in equal-size windows along a chromsome,
@@ -806,13 +807,13 @@ Let's unpack the assumptions here: what exactly is the mutational model?
 First, we are taking the mutation rate to be 1, i.e.,
 the expected number of mutations that occur on a region of the genome of length $\ell$
 over $t$ units of time is equal to $\ell t$.
-This just amounts to a change of units --
+This just amounts to a change of units ---
 for instance, if genome length is measured in nucleotides,
 and the probability of mutation is $\mu$ per nucleotide and per generation,
 then we are measuring times in units of $1/\mu$ generations.
 Second, we are assuming that the probability of per-site mutation is low enough
 that no two mutations occur at the same site
--- the fact that they do, occasionally, means that this is an approximation.
+--- the fact that they do, occasionally, means that this is an approximation.
 Third, we are assuming that mutation rates are constant through time and across the genome.
 Of course, the statement remains true if we can measure distance along the genome and time
 in a way that mutation rates are constant, but how these vary is generally unknown.
@@ -822,14 +823,13 @@ $\E[\site(f, \iw) \site(g, \iw')]$
 is not equal to the product of the two branch statistics, $\branch(f, \iw) \branch(g, \iw')$,
 because they are not independent.
 However, it is always possible to define a branch statistic that
-gives the expected value of the product.
-How to do this is described in \citet{ralph2019empirical}.
+gives the expected value of the product~\citep{ralph2019empirical}.
 
 In this view,
 site statistics are noisy approximations to the corresponding branch statistic
--- but, how noisy?
+--- but, how noisy?
 How big is the contribution of mutation to the overall sampling variance of a statistic?
-Concretely the law of total variance lets us partition the variance of a site statistic
+The law of total variance lets us partition the variance of a site statistic
 into the contributions of mutation and demographic noise:
 \begin{align*}
     \var[\site(f, \iw)_{[a,b)}]
@@ -844,28 +844,24 @@ The first term, the variance of the statistic given the trees,
 is the contribution to variance of mutation,
 while the second term, the variance of the branch statistic,
 is the contribution of demographic variation, including drift.
-In the next section we examine this partitioning of variance using simulations.
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Branch statistics for population genetics}
+% JK: deleted the section here as it seemed superfluous.
 
 We examined the contributions of mutation and demography to noise
 in two simulations where population genetic (site) statistics
 are important in making inferences:
 detecting recent selective sweeps,
 and detecting introgression.
-
 Figure~\ref{fig:sweep_duality} shows windowed
 diversity along the chromosome following a few selective sweeps.
-The top two plots compare ``branch'' diversity -- i.e., as computed only with tree shape --
+The top two plots compare ``branch'' diversity --- i.e., as computed only with tree shape ---
 to ``site'' diversity computed from sequence generated by 20 independent assignments of mutations to the same tree sequence,
 with mutation rates $10^{-9}$ and $10^{-8}$, respectively.
 We see that as the mutation rate increases, the signal of decrease in diversity around swept loci becomes more clear,
 and approaches ``branch'' diversity.
 These were computed using the entire population of 1,000 individuals;
 how does sampling variance contribute?
-Not much, it turns out -- the bottom plot shows both site and branch diversity
+Not much, it turns out --- the bottom plot shows both site and branch diversity
 computed from 20 nonoverlapping groups of 100 samples.
 Neither site or branch diversity vary much between these samples,
 implying that the subsample gives us a good estimate of the whole-population values of each.
@@ -889,7 +885,7 @@ is unobservable, although estimable.
         and ``branch'' is the corresponding branch statistic described above.
         The tree sequence was produced by simulating mutations under positive selection with mutation rate $10^{-12}$
         in a population of size 1000 for 400 generations using SLiM,
-        followed by recapitation with $N_e=1000$.
+        followed by recapitation with $N_e=1000$~\citep{haller2018tree}.
         The selected alleles at the marked sites have selection coefficients between 0.08 and 0.25,
         and are at frequencies 96.8\%, 100\%, 16.25\%, 100\%, and 82.6\% in the final generation, respectively.
         All curves use the same tree sequence, including selected mutations,
@@ -938,7 +934,7 @@ so it remains to be seen if the improvement could be made in practice.
         \textbf{(left)} mutation rate,
         \textbf{(middle)} sample size, and
         \textbf{(right)} window width.
-        The recombination rate $10^{-8}$,
+        The recombination rate was $10^{-8}$,
         and unless otherwise stated, the mutation rate was $10^{-9}$,
         the window width was 10Kb,
         and the entire population (1000 diploids in each of four populations) were used.

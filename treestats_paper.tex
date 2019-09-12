@@ -218,7 +218,7 @@ For instance, we could calculate how many of a certain set $A$ of samples
 inherit from a particular branch in a tree
 by (a) assigning each of these samples weight 1 (and other nodes weight zero), then
 (b) finding the total weight of all nodes in the subtree inheriting from that branch.
-Any mutation falling on this branch would be inherited by 
+Any mutation falling on this branch would be inherited by
 This gives the number of samples that would inherit any mutation falling on this branch,
 so is analogous to the allele frequency spectrum.
 Figure~\ref{fig:divergence_diagram} shows a simple example of these procedures
@@ -1257,9 +1257,9 @@ balanced \citep{li2013coalescent}, the expected number of nodes
 on the path to root is $\log_2 n$.
 Therefore, the overall running time
 of Algorithms~\algref{B} is of order $n + \rho \log(n) \log_2(n)$, which is
-\[
+\begin{equation}\label{eqn:alg_complexity}
     O\left(n + \rho \log(n)^2 \right)
-\]
+\end{equation}
 Computing a site statistic will have the same complexity,
 as the same internal state is maintained,
 and the number of segregating sites is proportional to the number of edges
@@ -1273,6 +1273,7 @@ Similarly, edges are inserted in youngest-first order, ensuring that subtrees ar
 reconnected to the main tree when they are fully built.
 
 \begin{figure}
+\footnotesize
     % Run the script illustrate_algorithm.py to generate these pdfs and
     % the latex tables below.
     \begin{center}
@@ -1280,6 +1281,7 @@ reconnected to the main tree when they are fully built.
     \includegraphics[width=4cm]{figures/tree_0_init.pdf} & &
     \includegraphics[width=4cm]{figures/tree_0_out_0.pdf}
     \\
+    $s = 3.1$ & & $s = 2.9$\\
 
     \begin{tabular}{c|cccc}
     & $\pi$ & $\beta$ & $x$ & $F$\\
@@ -1317,15 +1319,14 @@ reconnected to the main tree when they are fully built.
     Illustration of the internal state for algorithm B for $\iw = \bone_S$ and
     $f(x) = x(5 - x) / 20$ as in Example~\ref{ex:site_diversity}. (A)
     Immediately before we remove the edge joining 6 to 7 and (B) immediately after.
-    See the text for descriptions of the arrays encoding the state.
-    \jk{TODO: the value of $s$ would be helpful here too.}
+    See the text for descriptions of the arrays encoding the state. Also shown
+    is the value of the running sum, $s = \sum_u \beta_u F_u$.
     \label{fig:algorithm_example}}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%
-\subsection*{Speed}
+\subsection*{Efficiency}
 
-\krt{need to sort out the big-O issue here}
 We used coalescent simulations to compare the performance of calculating Tajima's \citeyearpar{Tajima1989-de} $D$
 statistic from tree sequences to calculating it from integer matrices containing genotypes at all variable positions.
 \autoref{fig:stats_performance} shows that the tree sequence methods implemented in \texttt{tskit} processes variant data
@@ -1340,16 +1341,21 @@ For the largest samples size of $n=10^6$,
 the matrix is approximately 200 gigabytes, and thus not practical on many systems.
 The largest tree sequence simulated required less than one gigabyte of memory.
 
-For larger sample sizes, there is an uptick in the time required per variant
-by \texttt{tskit} shown in \autoref{fig:stats_performance}.
-This occurs because the $O(n)$ complexity of building the first tree
-begins to dominate run time for large $n$,
-a cost that is amortized in longer genomes where more recombination leads to more trees.
-
+To determine how well our theoretical model of time complexity predicts the
+running time in \tskit{}'s implementation of the site statistics algorithm,
+we fitted a model based on Equation~\eqref{eqn:alg_complexity}.
+\autoref{fig:stats_performance} shows that theoretical predictions match
+the observed running time very well. As the overall complexity is
+$O(n + \rho \log(n)^2)$, for sufficiently large $n$ the initial term
+(representing the cost of building the first tree) will come to dominate.
+In this case, we can see this happening at around $n = 10^5$, where there
+is a noticeable uptick in the time required per variant. For
+longer genomes (i.e., larger values of $\rho$), this cost is amortized over more trees
+and is less apparent.
 
 \begin{figure}
     \centering
-    \includegraphics{tskit_stat_benchmarks/benchmarks_without_copy_longer_genome.pdf}
+    \includegraphics[width=9cm]{tskit_stat_benchmarks/benchmarks_without_copy_longer_genome.pdf}
     \caption{Comparison of time required to compute site statistics
         between matrix and tree based methods. For each sample size, a single replicate
         was obtained using \texttt{msprime} with scaled neutral mutation rate $\theta = 4N_e\mu$ and
@@ -1359,13 +1365,28 @@ a cost that is amortized in longer genomes where more recombination leads to mor
         For each replicate, Tajima's $D$
         \citep{Tajima1989-de} statistic was calculated using \tskit, \texttt{libsequence}
         \citep{Thornton2003-wj}, and \texttt{scikit-allel} \citep{miles2017scikit}.
-        The solid green line shows the result of fitting the timing data to a model based on the expected complexity of the
-        algorithm used by \texttt{tskit}. \krt{need to revisit the correctness of this}
+        The solid green line shows the result of fitting the timing data to a model
+        based on the theoretical complexity of the algorithm used by \texttt{tskit}.
         \label{fig:stats_performance}
     }
 \end{figure}
 
-
+It should be noted here that this example based on simulated data
+represents a best-case scenario in terms of the performance advantages
+of \tskit{} over the matrix-based methods. For real data, inferred
+tree sequences currently contain substantially more edges than we
+would expect based on simple neutral theory~\citep{kelleher2019inferring},
+and therefore computing statistics will not be as efficient as
+for an equivalent simulation. Tree sequence inference
+methods are in their infancy, however, and it is likely that
+as they improve the number of edges required to encode data will
+be reduced. For data simulated natively in tree sequence format
+via packages such as \texttt{msprime}~\citep{kelleher2016efficient},
+\texttt{SLiM}~\citep{haller2018tree,haller2019slim} and
+\texttt{fwdpy11}~\citep{thornton2014c++}, the advice is straightforward.
+Computing statistics using the algorithms in \tskit{}
+will always be more efficient than decoding the genotype
+matrix, importing it into another package and computing from the matrix.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%

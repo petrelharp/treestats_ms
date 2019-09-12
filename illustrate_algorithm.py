@@ -55,6 +55,7 @@ def branch_stat_algorithm(ts, f, S, w):
                 v = pi[v]
 
             print("out", edge_num)
+            print("s = ", s)
             print_latex_table(pi, beta, x, F)
             edge_attrs[edge.child] = {"stroke-opacity": "0"}
             svg_file = f"figures/tree_{tree.index}_out_{edge_num}.svg"
@@ -83,6 +84,7 @@ def branch_stat_algorithm(ts, f, S, w):
 
         print("TREE IN")
         print_latex_table(pi, beta, x, F)
+        print("s = ", s)
         svg_file = f"figures/tree_{tree.index}_init.svg"
         tree.draw_svg(
             svg_file,

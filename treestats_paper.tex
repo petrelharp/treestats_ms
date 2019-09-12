@@ -947,33 +947,53 @@ so it remains to be seen if the improvement could be made in practice.
 \section*{Application to 1000 Genomes tree sequences}
 
 We do not know the true genealogies underlying real data,
-but recent methods are available to estimate them.
-Above, we showed that branch and site statistics matched well in simulated data,
-but these simulations made some simplifying assumptions, including constant mutation rates.
+but recent methods are available to estimate them at scale.
+In Figure~\ref{fig:sweep_duality}, we showed that branch and site statistics
+matched well in simulated data. However, these simulations make many
+simplifying assumptions, and, moreover,
+the underlying tree topologies and branch lengths are exactly
+correct, which no inference method can hope to achieve.
 To evaluate the correspondence between site and branch statistics
 in tree sequences inferred from real data,
 we calculated mean sequence diversity along chromosome 20 from the 1000 Genomes dataset
 in 1Mb windows separately in each of the five continental groupings,
 calculated using the site statistic described in Example~\ref{ex:site_diversity},
 and compared this to the dual branch statistic (of Example~\ref{ex:branch_diversity})
-as calculated from three inferred tree sequences:
-by \tsinfer{} \citep{kelleher2019inferring}, which only aims to estimate tree topologies,
-not well-calibrated node times,
-(2) by GEVA \citep{albers2019dating}, which aims to calibrate the node times reported by \tsinfer,
-and (3) by Relate \citep{speidel2019method}, an independently developed method.
+as calculated from three inferred tree sequences.
+Firstly, we used the tree sequence estimated by \tsinfer{}
+\citep{kelleher2019inferring}. By default, \tsinfer{} uses the frequency of the
+derived allele at each site as a proxy for its age (and, therefore, the age
+corresponding ancestor and node), aiming only to estimate accurate
+tree topologies. We therefore expect the correspondence between branch
+length and site statistics in this case to be poor. Secondly,
+we used allele age estimates for each site supplied by GEVA~\citep{albers2019dating},
+as input to \tsinfer{}. In this case, ancestor ages were determined by
+the GEVA allele age estimates rather than the default frequency
+based heuristic used by \tsinfer{}; inference was run as usual
+otherwise. Thirdly, we used trees and node times estimated
+by Relate~\citep{speidel2019method}.
 All calculations were done only using the portions of the chromosome
 passing the 1000 Genomes Phase 1 ``strict'' mask for sequencing accessibility.
 % from ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase1/analysis_results/supporting/accessible_genome_masks/README.20120515_phase1_pop_gen_mask
 Separate curves for each of the 26 sampling locations are shown in Supplemental Figure \ref{fig:chr20_full}.
 
 The comparisons are shown in Figure~\ref{fig:chr20}.
-Of these methods, branch diversity from \tsinfer{} shows the worst agreement with site diversity,
-which is unsurprising as \tsinfer{} uses allele frequency as a proxy for age.
+As expected, branch diversity from \tsinfer{} shows the worst agreement with
+site diversity.
 The two methods that infer node times differ substantially,
-with Relate showing a significantly tighter agreement than GEVA.
-Does this mean that Relate is doing a better job at inferring the tree sequence than \tsinfer/GEVA?
+with Relate showing a significantly tighter agreement than
+GEVA+\tsinfer{}.
+Does this mean that Relate is doing a better job at inferring the tree sequence
+than GEVA+\tsinfer?
 Answering this question requires a deeper understanding of the processes that shape
 genetic diversity along the genome.
+
+\jk{I'm not particularly happy with this to be honest: it's all very
+hand-wavey. Can we be more precise about the correspondence between
+site and branch statistics? Relate looks a bit better, but I don't
+think we can say "significantly" (sounds like p-values or something).
+Is there some sort of time-series analysis we could do to show how
+similar sets of squiggly lines are to each other?}
 
 \begin{figure}
     \includegraphics[width=0.5\textwidth]{{figures/1kg/relate_chr20.site.1000000.region.diversity}.pdf}
@@ -986,7 +1006,7 @@ genetic diversity along the genome.
         and the dual branch statistic as calculated from tree sequences inferred by
         \textbf{(top right)} \tsinfer,
         \textbf{(bottom left)} Relate, and
-        \textbf{(bottom right)} GEVA/\tsinfer.
+        \textbf{(bottom right)} GEVA+\tsinfer.
         Separate curves are plotted for each sampling location.
         \label{fig:chr20}
     }
@@ -1020,9 +1040,9 @@ with remaining variation explained by direct selection and/or mutation rate vari
 Thus far we have examined how statistics vary along the genome,
 but a tree sequence allows us access to another dimension: time.
 Next, we examine the \emph{time} distribution of admixture signal
-in the tree sequence inferred by \tsinfer/GEVA.
-The branch $f_4(A, B; C, D)$ statistic for four sample sets $A$, $B$, $C$, and $D$
-is the sum of $(p_A - p_B)(p_C - p_D)$ across branches, multiplied by span and height,
+in the tree sequence inferred by GEVA+\tsinfer.
+The Branch $f_4(A, B; C, D)$ statistic for four sample sets $A$, $B$, $C$, and $D$
+is the sum of $(p_A - p_B)(p_C - p_D)$ across branches, multiplied by span and length,
 where $p_X$ is the proportion of samples in sample set $X$ that inherit from that node.
 A branch with a large value is expected to contribute a large amount to the Site $f_4$,
 which is calculated from genotyping data
@@ -1061,7 +1081,8 @@ to understand the various sources of bias and uncertainty.
     \includegraphics{{figures/1kg/tgp_geva_chr20.node.time.f4}.pdf}
     \caption{
         Time distribution of signal for four $f_4$ statistics
-        in the tree sequence for chromosome 20 inferred from 1000 genomes data by GEVA.
+        in the tree sequence for chromosome 20 inferred from 1000 genomes data
+        by GEVA+\tsinfer{}.
         The branch $f_4$ statistics for these four are:
         PUR,TSI;GWD,JPT: 1603,
         ASW,CEU;MSL,CHB: 12587,
@@ -1095,7 +1116,7 @@ to compute branch length statistics. This is a generalization
 of the algorithm used to maintain the number of samples from a
 given set that derive from each node in a tree
 sequence \cite[Algorithm L]{kelleher2016efficient}. The central
-problem which is shared across site, branch and node statistics
+problem shared across site, branch and node statistics
 is to efficiently maintain the ``state'' $x_u$ (where $x_u$ is the
 sum of the weights for all samples descending
 from, and including, node $u$; see Figure~\ref{fig:divergence_diagram}).
@@ -1104,7 +1125,7 @@ By carefully ordering these insertions and removals,
 we ensure that this state can be correctly maintained
 using only small adjustments for each tree.
 Computing the statistics is then a straightforward matter of applying the summary function $f$
-to the node states and aggregating the results appropiately for the
+to the node states and aggregating the results appropriately for the
 particular statistics mode and windowing options.
 
 Formally, we represent a tree sequence using a set of tables~\citep{kelleher2018efficient}.
@@ -1127,7 +1148,6 @@ sorted by left endpoint, and among edges with the same left endpoint,
 sorted so that edges closer to the root appear later.
 The ``edge removal'' vector $\indexout$ is similar, except gives the ordering of edges
 by right endpoint and with edges closer to the root appearing sooner.
-\plr{is that right?}
 As we move along the tree sequence, the topology of the current tree is recorded in the
 ``parent vector'' $\pi$: the parent of each node $u$ is the node $\pi_u$,
 with $\pi_u = -1$ if $u$ is a root.
@@ -1229,7 +1249,7 @@ Figure~\ref{fig:algorithm_example}B, removing an edge will result
 in the subtree rooted at $u$ become disconnected from the rest of the
 tree. Step \algref{B5} ensures that the state of the rest of the tree
 is correctly maintained by propagating the loss of the state $x_u$
-up the tree from $v$. Thus, for each direct ancestor $v$ that was a
+up the tree from $v$. Thus, for each node $v$ that was a
 direct ancestor of $u$ in the previous tree, we first subtract
 its contribution from the running sum $s$ and remove the contribution
 of $x_u$ from its state. Since the state of $v$ has changed, we must
@@ -1259,7 +1279,7 @@ To analyse Algorithm~\algref{B} we will assume that the tree sequence has
 been simulated under the standard coalescent with a sample of size
 $n$ and population scaled recombination rate $\rho = 4 N_e r$,
 where $r$ is the mean number of recombinations per chromosome per unit of time.
-Under these conditions, there are $O(n + \rho \ln n)$ edges in the tree sequence
+Under these conditions, there are $O(n + \rho \log n)$ edges in the tree sequence
 \citep{kelleher2016efficient}.  Clearly, each edge is examined
 exactly once in steps \algref{B6} and \algref{B7} in order to create
 the trees, and at most once in steps \algref{B3} and \algref{B4} (we do
@@ -1355,10 +1375,10 @@ For the largest samples size of $n=10^6$,
 the matrix is approximately 200 gigabytes, and thus not practical on many systems.
 The largest tree sequence simulated required less than one gigabyte of memory.
 
-\autoref{fig:stats_performance} shows that \texttt{tskit} requires more time per variant once the sample size is larger
-than $n \approx 10^4$.
-This occurs because for large sample sizes,
-the $O(n)$ complexity of building the first tree dominates the run time,
+For larger sample sizes, there is an uptick in the time required per variant
+by \texttt{tskit} shown in \autoref{fig:stats_performance}.
+This occurs because the $O(n)$ complexity of building the first tree
+begins to dominate run time for large $n$,
 a cost that is amortized in longer genomes where more recombination leads to more trees.
 
 
@@ -1394,8 +1414,8 @@ and makes it easy to explore more.
 Many of these statistics are functions of the joint allele frequency spectrum,
 but the framework is more general,
 and can be used to quantify associations between genotypes and phenotypes.
-This generality was motivated in part by laziness --
-adding new statistics is now almost as easy as working out the appropriate summary function --
+This generality was motivated in part by laziness ---
+adding new statistics is now almost as easy as working out the appropriate summary function ---
 but also makes it easy to computationally explore new classes of statistics.
 The range of statistics available to describe variation in a single exchangeable sample
 (i.e., a single population) are well-understood,
@@ -1409,8 +1429,8 @@ is to improve efficiency of existing pipelines,
 as tree sequences allow storage and processing of large genomic data sets
 with orders of magnitude less space and time than most other methods.
 All statistics described here (and more) are implemented
-in the fast, rigorously tested python library \tskit{}
-that also provides tools for working with tree sequences.
+in the fast, rigorously tested library \tskit{}
+that also provides tools for working with tree sequences in Python and C.
 The largest efficiency gains are found for very large sample sizes
 only likely to be available in real data sets for humans in the near future,
 but the ability to analyze millions of whole genomes
@@ -1436,7 +1456,7 @@ instead of calculating (Site) statistics from the genotype matrix,
 we can calculate precisely analogous (Branch) statistics from the trees themselves,
 thus hopefully bypassing the extra layer of noise induced by mutation.
 How well this works will depend on the ability of inference methods
-to infer the true tree sequence.
+to estimate the true tree sequence.
 This might plausibly produce less noisy estimates because tree sequence inference
 essentially uses the signal from nearby patterns of variation
 to interpret relationships at a given site,
@@ -1467,9 +1487,8 @@ is still mostly composed of statistics designed for analysis of a handful of loc
 in a small number of discrete, mostly separated populations.
 Both our data and our understanding of the world have moved beyond this.
 We hope that the tools we develop here will help make it possible
-to visualize and analyze genetic variation and genealogical realtedness
+to visualize and analyze genetic variation and genealogical relatedness
 along the genome, across space, and through time.
-\plr{okay rein me in here}
 
 
 \paragraph{Future work}
@@ -1486,7 +1505,7 @@ Haplotype-based statistics may require different classes of algorithms.
 %%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Acknowledgements}
 Thanks to Graham Coop, Andrew Kern, Nick Patterson, and Kelley Harris for useful suggestions
-and to Wilder Wohns and Leo Speidel for providing inferred tree sequences.
+and to Wilder Wohns, Yan Wong and Leo Speidel for providing inferred tree sequences.
 
 
 \bibliography{references}

@@ -204,11 +204,15 @@ which is available as an open-source Python package at \url{https://github.com/t
 %%%%%%%%%%%%%%%%%%%%%%%
 \section*{Framework and statistics}
 
+\jk{These two intro paragraphs aren't working for me. There's too many
+parenthetical comments, mixing high-level overview with getting into
+the weeds. Does the first para actually help? Perhaps we're just confusing
+people by talking about the AFS here?}
 Many population genetic summary statistics can be defined using the allele frequency spectrum
 of a collection of homologous sequences.
 Concretely, write $p_i(a)$ for the frequency of allele $a$ at a site $i$,
 and $h(p)$ for the allele frequency spectrum
--- i.e., the number of alleles whose frequency is $p$ in our sample --
+--- i.e., the number of alleles whose frequency is $p$ in our sample ---
 and suppose that for some function $f()$, we want to compute $\sum_p h(p) f(p)$.
 (For instance, mean genetic diversity is computed with $f(p) = p (1-p)$.)
 Since this is a simple sum over sites,
@@ -221,18 +225,16 @@ If we know where each mutation has occurred on the genealogy,
 we can easily find the frequency of the corresponding allele by counting how many samples
 inherit from that mutation in the tree (and accounting for those that subsequently mutate).
 
-This paper presents one way of generalizing of this idea.
+% 2-3 sentances of intro before this?
 Roughly speaking, to compute a statistic we will
 propagate ``weights'' additively up each tree,
 summarize these weights on each branch with a ``summary function'',
-and aggregate these summaries to produce statistics
-(e.g., averaged in windows).
+and aggregate these summaries to produce statistics.
 For instance, we could calculate how many of a certain set $A$ of samples
 inherit from a particular edge in a tree
 by (a) assigning each of these samples weight 1 (and other nodes weight zero), then
 (b) finding the total weight of all nodes in the subtree inheriting from that edge.
-It turns out to be useful to allow more general weights (including negative ones).
-Figure \ref{fig:divergence_diagram} shows a simple example of these procedures
+Figure~\ref{fig:divergence_diagram} shows a simple example of these procedures
 of propagating weights up a tree and summarising them,
 used to calculate mean sequence divergence over a short sequence spanned by a single tree.
 
@@ -249,7 +251,7 @@ as for instance if a portion of an ancestor's genome was not inherited by any of
     to every sample node.
     Given these and a tree $T$,
     the \emph{subtree weight} $\nw_T(u)$ for a node $u$ is the sum of all sample weights
-    of every sample node that is descended $u$ in the tree (including $u$, if it is a sample):
+    of every sample node that is descended from $u$ in the tree (including $u$, if it is a sample):
     \begin{align*}
         \nw_T(u) = \sum_{v \,:\, v \le_T u} \iw(v) ,
     \end{align*}
@@ -321,7 +323,7 @@ We refer to the branches in each tree using the most recent node,
 so for instance a branch between an ancestor $v$ and descendant $u$
 is associated with the node $u$.
 The \emph{length} of this branch is the difference in birth times of $v$ and $u$,
-and is denoted $t_T(u)$ (dropping $T$ if it is clear from context).
+and is denoted $\beta_T(u)$.
 Note that although the same parent-child relationship may exist across many adjacent trees
 (this is called an ``edge''),
 rearrangements of genealogical relationships due to recombination
@@ -625,7 +627,7 @@ defined as its span (right minus left endpoint) multiplied by its length (parent
 and scaled by the mutation rate,
 is equal to the expected number of mutations that will land on it.
 If the mutation rate is constant,
-then this gives us an isometry --
+then this gives us an isometry ---
 measuring tree distances in branch lengths versus in numbers of mutations
 are equal in expectation, up to a constant.
 
@@ -639,9 +641,9 @@ multiplied by the summary function applied to its subtree weight and its complem
 \begin{align}
     \branch(f, \iw)_T
     &=
-    \sum_{u \in T} t_{u} \left( f(\nw_{T}(u)) + f(\tiw - \nw_{T}(u)) \right)  ,
+    \sum_{u \in T} \beta_{T}(u) \left( f(\nw_{T}(u)) + f(\tiw - \nw_{T}(u)) \right)  ,
 \end{align}
-where $t_{u}$ is the length of the branch ancestral to node $u$ in tree $T$
+where $\beta_{T}(u)$ is the length of the branch ancestral to node $u$ in tree $T$
 and $\nw_{T}(u)$ is the total weight of the subtree of $T$ inheriting from $u$ (as defined above).
 The term $\tiw - \nw_{T}(u)$ gives the total weight \emph{not} in the subtree of $T$ inheriting from $u$,
 because the sum of all weights in the tree is always $\tiw$.

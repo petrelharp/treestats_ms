@@ -1273,6 +1273,7 @@ Similarly, edges are inserted in youngest-first order, ensuring that subtrees ar
 reconnected to the main tree when they are fully built.
 
 \begin{figure}
+\footnotesize
     % Run the script illustrate_algorithm.py to generate these pdfs and
     % the latex tables below.
     \begin{center}
@@ -1280,6 +1281,7 @@ reconnected to the main tree when they are fully built.
     \includegraphics[width=4cm]{figures/tree_0_init.pdf} & &
     \includegraphics[width=4cm]{figures/tree_0_out_0.pdf}
     \\
+    $s = 3.1$ & & $s = 2.9$\\
 
     \begin{tabular}{c|cccc}
     & $\pi$ & $\beta$ & $x$ & $F$\\
@@ -1317,8 +1319,8 @@ reconnected to the main tree when they are fully built.
     Illustration of the internal state for algorithm B for $\iw = \bone_S$ and
     $f(x) = x(5 - x) / 20$ as in Example~\ref{ex:site_diversity}. (A)
     Immediately before we remove the edge joining 6 to 7 and (B) immediately after.
-    See the text for descriptions of the arrays encoding the state.
-    \jk{TODO: the value of $s$ would be helpful here too.}
+    See the text for descriptions of the arrays encoding the state. Also shown
+    is the value of the running sum, $s = \sum_u \beta_u F_u$.
     \label{fig:algorithm_example}}
 \end{figure}
 

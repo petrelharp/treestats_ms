@@ -12,7 +12,6 @@
 \include{macros}
 
 \newcommand{\tskit}{{\texttt{tskit}}}
-\newcommand{\tsinfer}{{\texttt{tsinfer}}}
 \newcommand{\branch}{\mbox{Branch}} % branch stat
 \newcommand{\branchp}{\mbox{Branch}_+} % polarised
 \newcommand{\site}{\mbox{Site}} % site stat
@@ -924,59 +923,26 @@ we calculated mean sequence diversity along chromosome 20 from the 1000 Genomes 
 in 1Mb windows separately in each of the five continental groupings,
 calculated using the site statistic described in Example~\ref{ex:site_diversity},
 and compared this to the dual branch statistic (of Example~\ref{ex:branch_diversity})
-as calculated from three inferred tree sequences.
-Firstly, we used the tree sequence estimated by \tsinfer{}
-\citep{kelleher2019inferring}. By default, \tsinfer{} uses the frequency of the
-derived allele at each site as a proxy for its age (and, therefore, the age
-corresponding ancestor and node), aiming only to estimate accurate
-tree topologies. We therefore expect the correspondence between branch
-length and site statistics in this case to be poor. Secondly,
-we used allele age estimates for each site supplied by GEVA~\citep{albers2019dating},
-as input to \tsinfer{}. In this case, ancestor ages were determined by
-the GEVA allele age estimates rather than the default frequency
-based heuristic used by \tsinfer{}; inference was run as usual
-otherwise. Thirdly, we used trees and node times estimated
-by Relate~\citep{speidel2019method}.
+from the trees and node times estimated by Relate~\citep{speidel2019method}.
 All calculations were done only using the portions of the chromosome
 passing the 1000 Genomes Phase 1 ``strict'' mask for sequencing accessibility.
 % from ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase1/analysis_results/supporting/accessible_genome_masks/README.20120515_phase1_pop_gen_mask
-Separate curves for each of the 26 sampling locations are shown in Supplemental Figure \ref{fig:chr20_full}.
-
-The comparisons are shown in Figure~\ref{fig:chr20}.
-As expected, branch diversity from \tsinfer{} shows the worst agreement with
-site diversity.
-The two methods that infer node times differ substantially,
-with Relate showing a significantly tighter agreement than
-GEVA+\tsinfer{}.
+As shown in Figure~\ref{fig:chr20}, Branch and Site diversity along the genome are very similar.
 Does this mean that Relate is doing a better job at inferring the tree sequence
-than GEVA+\tsinfer?
+Is this an indication that Relate is doing a good job at inferring trees,
+or just a byproduct of the inference method (which, naturally, estimates branch lengths to be proportional to numbers of mutations)?
 Answering this question requires a deeper understanding of the processes that shape
 genetic diversity along the genome.
 
-\jk{I'm not particularly happy with this to be honest: it's all very
-hand-wavey. Can we be more precise about the correspondence between
-site and branch statistics? Relate looks a bit better, but I don't
-think we can say "significantly" (sounds like p-values or something).
-Is there some sort of time-series analysis we could do to show how
-similar sets of squiggly lines are to each other?}
-
-\krt{
-Overall, I have to squint at Fig S2 to see differences, and most of the issue seems to be near what I assume to be a
-centromere?}
-
 
 \begin{figure}
-    \includegraphics[width=0.5\textwidth]{{figures/1kg/relate_chr20.site.1000000.region.diversity}.pdf}
-    \includegraphics[width=0.5\textwidth]{{figures/1kg/1kg_chr20.branch.1000000.region.diversity}.pdf}
-    \includegraphics[width=0.5\textwidth]{{figures/1kg/relate_chr20.branch.1000000.region.diversity}.pdf}
-    \includegraphics[width=0.5\textwidth]{{figures/1kg/tgp_geva_chr20.branch.1000000.region.diversity}.pdf}
+    \includegraphics[width=0.8\textwidth]{{figures/1kg/relate_chr20.site.1000000.region.diversity}.pdf}
+    \includegraphics[width=0.8\textwidth]{{figures/1kg/relate_chr20.branch.1000000.region.diversity}.pdf}
     \caption{
-        \textbf{(top left)} Mean sequence diversity
+        \textbf{(top)} Mean sequence diversity
         in 1Mb windows along human chromosome 20 of the 1000 Genomes Project,
-        and the dual branch statistic as calculated from tree sequences inferred by
-        \textbf{(top right)} \tsinfer,
-        \textbf{(bottom left)} Relate, and
-        \textbf{(bottom right)} GEVA+\tsinfer.
+        and \textbf{(bottom)}
+        the dual branch statistic as calculated from tree sequences inferred by Relate~\citep{speidel2019method}.
         Separate curves are plotted for each sampling location.
         \label{fig:chr20}
     }
@@ -994,7 +960,7 @@ because it effectively reduces the mutation rate in the region
 and violates the assumption of independence of mutations given the trees.
 However, the second effect does \emph{not} affect the correspondence between site and branch statistics,
 since it is mediated by tree shape.
-However, it is generally unknown how much mutation rate varies along the genome
+It is generally unknown how much mutation rate varies along the genome
 \citep[but see][]{supek2015differential}
 or how dense are targets of selection \citep{leffler2012revisiting}.
 For this reason, it is very interesting to see how close a correspondence between site and branch
@@ -1003,76 +969,6 @@ it is tempting to say that the best tree sequence would obtain
 as tight a match between site and branch statistics as possible,
 with remaining variation explained by direct selection and/or mutation rate variation.
 
-
-%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Time stratification of statistics}
-
-Thus far we have examined how statistics vary along the genome,
-but a tree sequence allows us access to another dimension: time.
-Next, we examine the \emph{time} distribution of admixture signal
-in the tree sequence inferred by GEVA+\tsinfer.
-The Branch $f_4(A, B; C, D)$ statistic for four sample sets $A$, $B$, $C$, and $D$
-is the sum of $(p_A - p_B)(p_C - p_D)$ across branches, multiplied by span and length,
-where $p_X$ is the proportion of samples in sample set $X$ that inherit from that node.
-A branch with a large value is expected to contribute a large amount to the Site $f_4$,
-which is calculated from genotyping data
-and is used to infer historical connections between populations.
-To visualize the time signature, we assigned the contribution of each branch
-to its terminal node,
-and then summed these values across all nodes in 50 logarithmically-spaced bins by time.
-We then normalised these to sum to 1 by dividing by the total Branch $f_4$ value.
-
-The four-tuple of sample sets for the first two statistics (PUR,TSI;GWD,JPT and ASW,CEU;MSL,CHB)
-are from similar regions of the world,
-and show almost identical time signatures,
-even though the second set of sample sets has a value of $f_4$ nearly eight times higher.
-The second two statistics (IBS,GBR;FIN,JPT and TSI,CEU;FIN,CHB) are also comparable,
-and also show similar signals to each other.
-These curves are noisier, because the $f_4$ values are much smaller.
-For all four comparisons, the largest contribution to $f_4$ comes from
-ancestors living tens of thousands of generations ago.
-\plr{WHAT IS THE TIME UNIT?}
-This is surprising, because $f_4$ is expected to deviate from zero due to asymmetries in tree topology
-during recent history (e.g., more branches ancestral to ASW and MSL than CEU and MSL).
-Furthermore, we expected the different sample sets to have much more distinct time signatures.
-The shared, ancient time signatures may be because nonzero $f_4$ statistics
-are due to differentially sorting ancestral variation,
-or inacurracies in tree sequence inference.
-It is tempting but propably unwarranted to attribute the
-large downward spike between 2000 and 3000 generations in the TSI,CEU;FIN,CHB comparison
-to a historical connection between the ancestors of CEU and the Finnish not shared by the Tuscans
-during that time period.
-Making rigorous conclusions from this sort of visualization
-will require substantial validation work
-to understand the various sources of bias and uncertainty.
-
-
-\begin{figure}
-    \includegraphics{{figures/1kg/tgp_geva_chr20.node.time.f4}.pdf}
-    \caption{
-        Time distribution of signal for four $f_4$ statistics
-        in the tree sequence for chromosome 20 inferred from 1000 genomes data
-        by GEVA+\tsinfer{}.
-        The branch $f_4$ statistics for these four are:
-        PUR,TSI;GWD,JPT: 1603,
-        ASW,CEU;MSL,CHB: 12587,
-        IBS,GBR;FIN,JPT: -129, and
-        TSI,CEU;FIN,CHB: -96.
-        Population codes are
-        `PUR': Puerto Ricans from Puerto Rico;
-        `TSI': Toscani in Italia;
-        `GWD': Gambian in Western Divisions in the Gambia;
-        `JPT': Japanese in Tokyo, Japan;
-        `ASW': Americans of African Ancestry in SW USA;
-        `CEU': Utah Residents (CEPH) with Northern and Western European Ancestry,
-        `MSL': Mende in Sierra Leone;
-        `CHB': Han Chinese in Beijing, China;
-        `IBS': Iberian Population in Spain;
-        `GBR': British in England and Scotland;
-        and `FIN': Finnish in Finland.
-        \label{fig:node_f4}
-    }
-\end{figure}
 
 
 
@@ -1458,6 +1354,15 @@ if tree sequence inference can be made insensitive to local variation in mutatio
 calculation of branch statistics would provide a summary method
 that is not affected by this potentially important confounding factor.
 
+Many genomic datasets only contain genotype information at a subset of sites
+that do not represent an unbiased look at genome-wide variation,
+introducing an ascertainment bias that difficulty for many applications.
+If, however, unbiased tree sequences can be inferred using these data,
+then Branch statistics could provide unbiased estimates of genome-wide quantities.
+This is in principle possible, as \citet{kelleher2019inferring} inferred tree sequences
+with UK BioBank data, produced using genotyping arrays \citep{bycroft2018genome}.
+This would be similar to imputation, and would likely face similar challenges.
+
 % visualization and time decomposition adding a new dimension
 Genomic data are naturally distributed along two axes: along the genome, and across geography.
 The tree sequence extends this to a third axis: time.
@@ -1481,6 +1386,8 @@ We hope that the tools we develop here will help make it possible
 to visualize and analyze genetic variation and genealogical relatedness
 along the genome, across space, and through time.
 
+
+
 %%%%%%%%%%%%%%%%%%
 \subsection*{Duality in practice?}
 
@@ -1498,7 +1405,7 @@ might plausibly have a stronger effect on the correspondence,
 because a Branch and Site statistic are equal in expectation up to multiplication by the mutation rate.
 For instance, if we knew that the inferred tree sequences of \autoref{fig:chr20} were correct,
 then dividing the Site statistic by the Branch statistic
-would give us an estimate of relative average mutation rate in windows along the genome.
+could give us an estimate of relative average mutation rate in windows along the genome.
 Similarly, Branch statistics from well-calibrated tree sequences
 would provide a way to assess variation in population genetic summaries along the genome
 in a way independent of local mutation rate.
@@ -1729,87 +1636,8 @@ however, this would be more involved
     }
 \end{figure}
 
-\begin{figure}
-    \includegraphics[width=0.5\textwidth]{{figures/1kg/relate_chr20.site.1000000.diversity}.pdf}
-    \includegraphics[width=0.5\textwidth]{{figures/1kg/1kg_chr20.branch.1000000.diversity}.pdf}
-    \includegraphics[width=0.5\textwidth]{{figures/1kg/tgp_geva_chr20.branch.1000000.diversity}.pdf}
-    \includegraphics[width=0.5\textwidth]{{figures/1kg/relate_chr20.branch.1000000.diversity}.pdf}
-    \caption{
-        \textbf{(top left)} Mean sequence diversity
-        in 1Mb windows along human chromosome 20 of the 1000 Genomes Project,
-        and the dual branch statistic as calculated from tree sequences inferred by
-        \textbf{(top right)} \tsinfer,
-        \textbf{(bottom left)} GEVA, and
-        \krt{This should be tsinfer+GEVA, no?}
-        \textbf{(bottom right)} Relate.
-        \label{fig:chr20_full}
-    }
-\end{figure}
-
-
 
 \end{document}
-
-
-%%%%%%%%%%%%%%%%%%
-\subsection*{Genomic PCA}
-
-Let $G$ denote the genotype matrix, so that $G_{ja} \in \{0,1\}$
-is the genotype of the $a^\text{th}$ individual
-at the $j^\text{th}$ site, with `1` denoting the derived state
-(we assume here biallelic markers).
-Also let $P_j = (1/n) \sum_a G{ja}$ denote the vector of allele frequencies.
-Then the \emph{genetic covariance} between samples $a$ and $b$ is
-\begin{align*}
-    C_{ab}
-        &= \frac{1}{L} \sum_j (G_{ja} - P_j) (G_{jb} - P_j) . %  \\
-        % &= \frac{1}{L} \left( (G - P \bone^T)^T (G - P \bone^T) \right)_{ab} .
-\end{align*}
-This can be computed by letting
-$\iw_a = \delta_a$ and $\iw_b = \delta_b$
-(these weights mark nodes ancestral to $a$ and $b$ respectively)
-and $\iw_t = \bone / n$
-(this weight gives the proportion of samples inheriting from each node).
-Then, with
-$f(\nw_a, \nw_b, \nw_t) = (\nw_a - \nw_t) (\nw_b - \nw_t)$,
-we can compute the covariance as
-\begin{align*}
-    C_{ab} = \frac{1}{2} \bar \site(f, (\iw_a, \iw_b, \iw_t)) .
-\end{align*}
-This follows, including the factor of two,
-because the summary function applied to the ancestral allele
-at a site with derived allele frequencies $p_a$, $p_b$, and $p_t$
-in sample $a$, sample $b$, and total, respectively, is
-$f(1 - p_a, 1 - p_b, 1 - p_t) = f(p_a, p_b, p_t)$.
-
-Computing the full covariance matrix for a large number of samples may be infeasible.
-However, we can efficiently find $y^T C z$ for arbitrary vectors $y$ and $z$.
-This works because if we set the initial weights to $y$,
-then each allele's weight is equal to the sum of the entries of $y$
-corresponding to samples carrying that allele.
-Then, if we define
-$f_{yz}(u, v, t) = (u - (\sum_a y_a) t) (v - (\sum_b z_b) t)$,
-then
-\begin{align} \label{eqn:yCz}
-    \frac{1}{2} \bar \site(f_{yz}, (y, z, \iw_t))
-        &= \frac{1}{L} \sum_j (\sum_a y_a G_{ja} - (\sum_a y_a) P_j)
-                    (\sum_b z_b G_{jb} - (\sum_b z_b) P_j) \\
-        &= y^T C z .
-\end{align}
-
-\plr{Hmph: to actually compute $Cz$ we need one weight vector for each sample, again.
-    TODO: look up if you can do Krylov just by computing $y^t C z$ for a reasonable number of vectors.
-    We could compute $Cz$ quickly if we could propagate down the tree:
-    we'd have $(Cz)_a$ equal to the sum of the weights at all nodes \emph{ancestral to} $a$. }
-
-Where does the signal from an eigenvector come from?
-Let $y$ be an eigenvector of $C$ with eigenvalue $\lambda$, normalized so that $\|y\|^2 = 1$.
-Since $Cy = \lambda y$,
-we can write $1 = \sum_a y_a^2 = (1/\lambda) y^T C y$.
-However, equation \eqref{eqn:yCz} gives $y^T C y$ as a sum over \emph{sites},
-and thus distributes the variance in $G$ associated with $y$
-across the tree sequence.
-(This is true because of the singular value decomposition of $G$.)
 
 \paragraph{Diploid statistics}
 The statistics we develop here are in essence \emph{haploid} statistics.

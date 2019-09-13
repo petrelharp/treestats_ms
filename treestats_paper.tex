@@ -1361,20 +1361,17 @@ with UK BioBank data, produced using genotyping arrays \citep{bycroft2018genome}
 This procedure would be similar to imputation, and would likely face similar challenges.
 
 % visualization and time decomposition adding a new dimension
-\krt{this para needs to go, right, now that the related results are offloaded
-into a new tex file? Perhaps say that we can do this sort of thing?}
 Genomic data are naturally distributed along two axes: along the genome, and across geography.
 The tree sequence extends this to a third axis: time.
 A great many methods in population genetics aim to describe aspects of history,
 and accurate (or at least unbiased) tree sequence inference
 may shift the focus of these problems from inference to descriptive analysis.
-In this paper, we have made an exploratory foray in this direction,
-by describing the time of origin of the ``admixture'' signal of nonzero $f_4$
-between several subsets of the 1000 Genomes dataset,
-in several inferred tree sequences.
-It is not yet clear whether these time profiles tell us more about history
-or about biases of the inference methods,
-but either result would be useful.
+The methods we develop here distribute the contribution to various statistics across each tree,
+and so could also be used to summarise contributions to various statistics across \emph{time}.
+This could provide, for instance, the time distribution of mutations or branches
+contributing positively or negatively to $f_4$ statistics of introgression,
+which could help historical interpretations of these signals.
+This additional summarization mode, however, is postponed for future work.
 
 % moving past a few summaries in discrete groups to a genome/time/space view of relatedness
 The historical toolbox of population genetics

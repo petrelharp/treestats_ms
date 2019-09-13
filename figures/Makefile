@@ -2,9 +2,14 @@
 
 
 figs : swept.1000.999.1e-09.diversity.pdf swept.10000.765.1e-09.diversity.pdf divergence_diagram.pdf branch_site_diagram.pdf 
-	
-1kgfigs : figures/tgp_geva_chr20.branch.1000000.diversity.pdf 1kg_chr20.branch.1000000.diversity.pdf
-	$(MAKE) -C 1kg
+
+1kg_figs : 1kg/relate_chr20.site.1000000.region.diversity.pdf 1kg/relate_chr20.branch.1000000.region.diversity.pdf
+
+%.site.1000000.region.diversity.pdf :
+	./plot_1kg_diversity.py $*.trees chr20.strictMask.binary.gz site 1000000
+
+%.branch.1000000.region.diversity.pdf :
+	./plot_1kg_diversity.py $*.trees chr20.strictMask.binary.gz branch 1000000
 
 ### Selective sweep simulations
 

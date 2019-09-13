@@ -176,7 +176,7 @@ for j, p in enumerate(pop_names):
     nsp[k] += 1
 
 
-fig = plt.figure(figsize=(4 * len(windows) / 64, 3))
+fig = plt.figure(figsize=(7 * len(windows) / 64, 3))
 ax = fig.add_subplot(111)
 ax.set_xlabel("chr20 position")
 for j in range(sbdiv.shape[1]):

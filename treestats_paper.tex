@@ -174,7 +174,7 @@ Naturally, the genealogical perspective on population genetics statistics has a 
 The sequence of trees describing genealogical relationships as one moves along the genome
 are also described by the Ancestral Recombination
 Graph~\citep{griffiths1991two,griffiths1996ancestral,rasmussen2014genome}.
-These genealogical trees can be fairly precisely inferred in nonrecombining regions
+These genealogical trees can be accurately inferred in nonrecombining regions
 \citep{felsenstein2004inferring},
 as for instance the mitochondria,
 and substantial theoretical work has been done in the context of phylogenetics \citep{semple2003phylogenetics}.
@@ -1364,6 +1364,8 @@ with UK BioBank data, produced using genotyping arrays \citep{bycroft2018genome}
 This would be similar to imputation, and would likely face similar challenges.
 
 % visualization and time decomposition adding a new dimension
+\krt{this para needs to go, right, now that the related results are offloaded
+into a new tex file? Perhaps say that we can do this sort of thing?}
 Genomic data are naturally distributed along two axes: along the genome, and across geography.
 The tree sequence extends this to a third axis: time.
 A great many methods in population genetics aim to describe aspects of history,
@@ -1458,8 +1460,8 @@ However, in practice this requirement can be relaxed.
 \subsection*{Dynamic graph algorithms}
 
 The tree sequence describes trees that change as one moves along the genome,
-and so is a special case of a \emph{dynamic graph}
-\citep[also called a \emph{graph timeline}][]{lacki2013reachability}.
+and so is a special case of a \emph{dynamic graph}, 
+also called a \emph{graph timeline} \citep{lacki2013reachability}.
 Much of the work on dynamic graphs is focused on connectivity,
 e.g., maintaining a minimum spanning tree \citep{eppstein1994offline, eppstein1997sparsification, holm2001polylogarithmic},
 but development of parallel algorithms for more general operations on large dynamic graphs
@@ -1626,9 +1628,11 @@ however, this would be more involved
 % # and the final answer
 % stopifnot(abs(a - lm_a) < 2e-15)
 
+\clearpage
+\newpage
 \section*{Supplementary figures}
 
-\begin{figure}
+\begin{figure}[!h]
     \includegraphics{{figures/swept.10000.765.1e-09.diversity}.pdf}
     \caption{
         As in Figure~\ref{fig:sweep_duality}, but in a population of size 10,000.

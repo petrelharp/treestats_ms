@@ -65,21 +65,18 @@ different statistics result from different choices of weight and function.
 Results can be reported in two (dual) ways:
 by \emph{site}, which corresponds to statistics calculated from genome
 sequence; and by \emph{branch}, which gives the expected value of the site statistic
-with a large number of mutations under the infinite-sites model.
+under the infinite-sites model.
 We use the framework to implement many currently-defined statistics of genome
 sequence (making the statistics' relationship to the underlying genealogical trees
 concrete and explicit) and suggest several new statistics.
 We evaluate computational performance using simulated data, and
 show that calculating statistics from tree sequences using this general
 framework is several orders of magnitude more efficient than
-bespoke matrix-based methods in terms of both run time and memory requirements.
+optimised matrix-based methods in terms of both run time and memory requirements.
 We also explore how well the duality between site and branch statistics holds
 in practice on trees inferred from the 1000 Genomes Project dataset,
 and discuss ways in which deviations may hold interesting biological
 signals.
-
-\jk{Not sure if the last bit is expressed the right way}
-
 
 %%% OUTLINE
 % 1. Framework and algorithms for computing general stats
@@ -695,7 +692,7 @@ is defined analogously to the Node and Site versions:
 \end{align}
 and $\branchp(f, \iw)_{[c,d)}$ is defined using $\branchp(f, \iw)_T$ as before.
 However, the correspondence between the polarized statistics is less tight
-than for the unpolished ones.
+than for the unpolarized ones.
 
 \jk{What does this last sentence mean?}
 
@@ -1114,7 +1111,7 @@ run once for each tree in the sequence. As we are processing each
 tree, we keep track of the edges that need to be processed with
 the $t_l$ variable, which stores the left-most genome coordinate
 in the current tree. The first thing we do for a new tree is to
-remove any edges that were in the previous and tree are not in the
+remove any edges that were in the previous tree and are not in the
 current tree. These must be the edges in which the right coordinate
 is equal to $t_l$, and so \algref{B3} loops over these edges using
 the edge removal index $\indexout$. Step \algref{B4} then removes
@@ -1476,7 +1473,8 @@ is an active area of research \citep[e.g.,][]{srinivasan2018sharedmemory}.
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Acknowledgments}
-Thanks to Graham Coop, Andrew Kern, Nick Patterson, and Kelley Harris for useful suggestions
+Thanks to Graham Coop, Andrew Kern, Nick Patterson, Kelley Harris and
+Aaron Ragsdale for useful suggestions
 and Leo Speidel for providing the inferred 1000 Genomes tree sequence.
 
 

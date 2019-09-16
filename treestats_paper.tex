@@ -669,8 +669,6 @@ and how the corresponding branch statistic assigns the same weight to those bran
     (and the span of the tree, not depicted).
         \label{fig:branch_site_diagram}
     }
-    \krt{This figure is not as helpful as fig 1. It takes a lot of fiddling to work out the values in each panel. Is it
-    possible to fill it out as in fig 1, or is that just too much space?}
 \end{figure}
 
 Equation~\eqref{eqn:branch_stat_tree} defines a statistic for a single tree,
@@ -945,8 +943,9 @@ genetic diversity along the genome.
         in 1Mb windows along human chromosome 20 of the 1000 Genomes Project,
         in units of mean number of pairwise differences per nucleotide,
         and \textbf{(bottom)}
-        the dual branch statistic as calculated from tree sequences inferred by Relate~\citep{speidel2019method},
-        in units of generations \plr{XXX confirm this}.
+        the dual branch statistic as calculated from tree sequences inferred by
+        Relate~\citep{speidel2019method},
+        in units of generations.
         Separate curves are plotted for each sampling location.
         Note that the Site statistic divided by the Branch statistic is close to $2 \times 10^{-8}$,
         the mutation rate used by Relate \plr{XXX total speculation here}.
@@ -1463,7 +1462,7 @@ However, in practice this requirement can be relaxed.
 \subsection*{Dynamic graph algorithms}
 
 The tree sequence describes trees that change as one moves along the genome,
-and so is a special case of a \emph{dynamic graph}, 
+and so is a special case of a \emph{dynamic graph},
 also called a \emph{graph timeline} \citep{lacki2013reachability}.
 Much of the work on dynamic graphs is focused on connectivity,
 e.g., maintaining a minimum spanning tree \citep{eppstein1994offline, eppstein1997sparsification, holm2001polylogarithmic},
@@ -1636,7 +1635,7 @@ however, this would be more involved
 \section*{Supplementary figures}
 
 \begin{figure}[!h]
-    \includegraphics{{figures/swept.10000.765.1e-09.diversity}.pdf}
+    \includegraphics[width=\textwidth]{{figures/swept.10000.765.1e-09.diversity}.pdf}
     \caption{
         As in Figure~\ref{fig:sweep_duality}, but in a population of size 10,000.
         \label{sfig:sweep_duality_10K}
@@ -1644,13 +1643,13 @@ however, this would be more involved
 \end{figure}
 
 \begin{figure}[!h]
-    \includegraphics{{figures/intro/introgressed.1000.23.1000000.1e-09.f4}.pdf}
+    \includegraphics[width=\textwidth]{{figures/intro/introgressed.1000.23.1000000.1e-09.f4}.pdf}
     \caption{
         Values of the $f_4$ statistic in megabase windows along the genome
         from the simulations of introgression described in the text.
         Statistics are shown in units of generations:
         Branch statistics are computed in units of time, which is in generations for these simulations;
-        and Site statistics are reported in units of mutations per unit of sequence length, 
+        and Site statistics are reported in units of mutations per unit of sequence length,
         which we divide by mutation rate per unit of sequence length and per generation
         to obtain units of generations.
         \label{fig:introf4}

@@ -55,28 +55,30 @@
 As a genetic mutation is passed down across generations,
 it distinguishes those genomes that have inherited it from those that have not,
 providing a glimpse of the genealogical tree relating the genomes to each other at that site.
-Summaries of genetic variation therefore also describe the underlying genealogies.
-Here we exploit this duality to create a method that efficiently computes single-site statistics
+Statistical summaries of genetic variation therefore also describe the underlying genealogies.
+We exploit this duality here to create a method that efficiently computes single-site statistics
 from population genetic data using the succinct tree sequence encoding
 of genealogies and genome sequence.
-We use the framework to provide efficient implementations of
-many currently-defined statistics, and to suggest several new statistics.
-The general approach aggregates ``sample weights'' up each marginal tree,
-which are then summarised using a ``summary function'';
-different statistics result from different choices of weight or function.
-The results can be summarised in three different ways:
+The general approach accumulates ``sample weights'' within each marginal tree,
+which are then combined using a ``summary function'';
+different statistics result from different choices of weight and function.
+Results can be reported in two (dual) ways:
 by \emph{site}, which corresponds to statistics calculated from genome
-sequence;
-by \emph{branch}, which gives the expected value of the site statistic
-with a large number of mutations under the infinite-sites model;
-or by \emph{node}, which summarises the contribution of each node in the tree to the statistics.
-This formulation also makes it apparent what statistic of the underlying genealogical trees
-each sequence-based statistic is estimating.  By using simulations to evaluate performance, we
-show that calculating statistics from tree sequences is several orders of magnitude more efficient than
-methods traversing the entire data matrix in terms of both run time and memory requirements.
-We also use tree sequences inferred from the 1000 Genomes Project dataset,
-to evaluate how well this duality between site and branch statistics holds
-and to describe the temporal origin of some admixture statistics.
+sequence; and by \emph{branch}, which gives the expected value of the site statistic
+with a large number of mutations under the infinite-sites model.
+We use the framework to implement many currently-defined statistics of genome
+sequence (making the statistics' relationship to the underlying genealogical trees
+concrete and explicit) and suggest several new statistics.
+We evaluate computational performance using simulated data, and
+show that calculating statistics from tree sequences using this general
+framework is several orders of magnitude more efficient than
+bespoke matrix-based methods in terms of both run time and memory requirements.
+We also explore how well the duality between site and branch statistics holds
+in practice on trees inferred from the 1000 Genomes Project dataset,
+and discuss ways in which deviations may hold interesting biological
+signals.
+
+\jk{Not sure if the last bit is expressed the right way}
 
 
 %%% OUTLINE

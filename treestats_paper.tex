@@ -371,13 +371,13 @@ and $\tiw - \nw_{T_k}(u)$ is the sum of all weights \emph{not} in the subtree of
 % then $L_k$ is replaced by the length of the portion of that window
 % that $T$ extends for.
 
-\paragraph{Polarisation}
+\paragraph{Polarization}
 The node statistic defined above is appropriate for statistics such as nucleotide diversity, which is a function
 of all alleles at given variable site.  For other statistics, one is only concerned with the derived state(s)
-at a site, and we may define a \emph{polarised} node statistic without the second term from our previous definition:
+at a site, and we may define a \emph{polarized} node statistic without the second term from our previous definition:
 
 \begin{align}
-    \text{(polarised)} \qquad
+    \text{(polarized)} \qquad
     \nodep(f, \iw)_u
     =
     \frac{1}{L} \sum_{k=1}^{n(\treeseq)} L_k f(\nw_{T_k}(u)) .
@@ -452,10 +452,10 @@ This allows statistics in principle to differentiate ancestral from derived alle
 information which is available in practice (albeit noisily),
 and one way to make use of this information is to sum over only derived alleles.
 Analogously to the above,
-we say a site statistic is \textbf{polarised} if we do this,
+we say a site statistic is \textbf{polarized} if we do this,
 defining
 \begin{align} \label{eqn:site_polarised}
-    \text{(polarised)} \qquad
+    \text{(polarized)} \qquad
     \sitep(f, \iw)_j
     &=
     \sum_{a \in D_j} f(\aw_j(a)) ,
@@ -664,7 +664,7 @@ and how the corresponding branch statistic assigns the same weight to those bran
     \textbf{(a)} Each mutation is given weight equal to $(p_A - p_B)(p_C - p_D)$,
     where $p_X$ is the proportion of the samples inheriting that mutation (colored stars) in set $X$
     (shown in labels at the bottom).
-    Note that each of the mutations shown occurs at a distinct site, so there is no backmutation.
+    Note that each of the mutations shown occurs at a distinct site, so there is no back mutation.
     \textbf{(b)} Each branch is assigned weight equal to the weight that would be assigned
     to any mutation falling in it (colored lines), and then the branch $f_4$ statistic
     is the sum over these weights, multiplied by the length of the branch
@@ -685,17 +685,17 @@ with probabilities proportional to the trees' spans:
 where $\ell_k(c,d)$ is the length of the region in $[c,d)$ that the tree $T_k$ covers
 (i.e., if $T$ covers the half-open interval $[a_{k-1},a_k)$,
 then $\ell_k(c,d) = \max(0, \min(d,a_k) - \max(c,a_{k-1}))$).
-The \emph{polarised} version of a Branch statistic
+The \emph{polarized} version of a Branch statistic
 is defined analogously to the Node and Site versions:
 \begin{align} \label{eqn:branch_polarised}
-    \text{(polarised)} \qquad
+    \text{(polarized)} \qquad
     \branchp(f, \iw)_T
     &=
     \sum_{u \in T} \beta_T(u) f(\nw_{T}(u)) ,
 \end{align}
 and $\branchp(f, \iw)_{[c,d)}$ is defined using $\branchp(f, \iw)_T$ as before.
-However, the correspondence between the polarised statistics is less tight
-than for the unpolarised ones.
+However, the correspondence between the polarized statistics is less tight
+than for the unpolished ones.
 
 \jk{What does this last sentence mean?}
 
@@ -766,7 +766,7 @@ averaging over infinite-sites mutations
 with rate $\mu$ per unit time and per unit of sequence length.
 In other words, the Site statistic can be thought of an estimator of its corresponding Branch statistic,
 which is itself a summary of local tree shapes.
-Because we have normalised these statistics by the length of the genome under consideration,
+Because we have normalized these statistics by the length of the genome under consideration,
 both sides of this equation are in units of \emph{time}:
 Branch statistics give mean weighted branch lengths;
 Site statistics give mean densities of mutations per unit of sequence length,
@@ -927,7 +927,7 @@ in tree sequences inferred from real data,
 we calculated statistics for chromosome 20
 of the 1000 Genomes dataset~\citep{1k2015global} using dated trees estimated
 by Relate~\citep{speidel2019method}.
-Specifically, we calculated diveristy using the site statistic
+Specifically, we calculated diversity using the site statistic
 described in Example~\ref{ex:site_diversity},
 and compared this to the dual branch statistic (Example~\ref{ex:branch_diversity})
 in 1Mb windows in each of the five continental groupings.
@@ -988,7 +988,7 @@ with remaining variation explained by direct selection and/or mutation rate vari
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection*{Algorithms}
-In this section we describe and analyse the algorithm used
+In this section we describe and analyze the algorithm used
 to compute Branch statistics. This is a generalization
 of the algorithm used to maintain the number of samples from a
 given set that derive from each node in a tree
@@ -1042,13 +1042,13 @@ and \autoref{fig:algorithm_example} for an example of the internal state of the 
 \begin{taocpalg}{B}{General branch statistics}
 {Given a list of $n$ sample nodes $S$, corresponding weights $w$ and
 summary function $f: \R \rightarrow \R$
-compute the span-normalised statistic $\sigma$
+compute the span-normalized statistic $\sigma$
 over a tree sequence with sequence length $L$
 defined by the node and edge tables $\Nt$ and $\Et$. We assume
 that the index vectors $\indexin$ and $\indexout$ have been precomputed.
 }
 
-\algstep{B1.}{Initialisation.}{
+\algstep{B1.}{Initialization.}{
     For $0 \leq u < |\Et|$ set $\beta_u \leftarrow x_u
     \leftarrow F_u \leftarrow 0$ and $\pi_u \leftarrow -1$.
     Then, for $0 \leq j < n$ set $u \leftarrow S_j$,
@@ -1108,7 +1108,7 @@ of $x_u$ and $F_u$ for each of the samples $u$ in $S$.
 Afterwards, we set our ``running sum'' $s$ and output statistic $\sigma$ to zero, along
 with the ``tree left'' variable $t_l$. The $j$ and $k$ variables are
 used to keep track of our position in the edge insertion and edge
-removal indexes, respectively. After completing initialisation in
+removal indexes, respectively. After completing initialization in
 \algref{B1}, we enter the main tree loop in \algref{B2} which is
 run once for each tree in the sequence. As we are processing each
 tree, we keep track of the edges that need to be processed with
@@ -1149,9 +1149,9 @@ complicated by the possible presence of ``gaps'' in the tree sequence, spanned
 by no edges). Then, we add the running sum $s$ weighted by the span of the
 current tree $t_r - t_l$ to $\sigma$, and return to \algref{B2} to process the
 next tree. If we have reached the end of the sequence, we then divide $\sigma$
-by the sequence length to normalise and exit.
+by the sequence length to normalize and exit.
 
-To analyse Algorithm~\algref{B} we will assume that the tree sequence has
+To analyze Algorithm~\algref{B} we will assume that the tree sequence has
 been simulated under the standard coalescent with a sample of size
 $n$ and population scaled recombination rate $\rho = 4 N_e r$,
 where $r$ is the mean number of recombinations per chromosome per unit of time.
@@ -1345,7 +1345,7 @@ This general correspondence is well-known,
 but the common framework implemented here makes it easy to translate between the two.
 One way to use this translation is to answer:
 what aspect of tree shape is a particular population genetics statistic summarizing?
-This can help when interpreting results, especially if reality may not fit an idealised model
+This can help when interpreting results, especially if reality may not fit an idealized model
 of separate populations.
 However, methods to infer tree sequences from real data
 make it now possible to work in the other direction:
@@ -1445,12 +1445,12 @@ Multilocus statistics that measure linkage disequilibrium or haplotype lengths
 do not fall in this category.
 Extensions to statistics involving the pairwise joint distribution of genotypes across sites
 \citep[as used by][]{hudson2001twolocus},
-such as linkage disequlibrium are planned for future work.
+such as linkage disequilibrium are planned for future work.
 Haplotype-based statistics may require different classes of algorithms.
 
 We also require that site statistics be computable from the genotype matrix
 (i.e., without knowledge of the trees),
-and, if the statistic is polarised, knowledge of the ancestral allele.
+and, if the statistic is polarized, knowledge of the ancestral allele.
 We often would also like our statistics to be unaffected by the addition of monomorphic sites,
 which are usually omitted from genetic variation data.
 To ensure this we have required that the summary function returns zero when give both zero weight
@@ -1511,7 +1511,7 @@ Then, let $a$ be the number and $b$ be the $k$-vector satisfying
 \begin{align*}
     a, b = \text{argmin}\left\{ \sum_i \left( w_i - a g_i - \sum_j Z_{ij} b_j \right)^2 \right\}
 \end{align*}
-Writing this in block matrix notation, $a$ and $b$ minimise
+Writing this in block matrix notation, $a$ and $b$ minimize
 \begin{align*}
     \left\|
         \left[ \begin{array}{@{}c@{}} h \end{array}\right]
@@ -1578,7 +1578,7 @@ with $h_g = g^T h$,
 To compute this in the framework above,
 first add a column of 1s to the covariates $Z$,
 then decorrelate the resulting matrix, so that now $Z^T Z = I$.
-Then, put this normalised version of $Z$
+Then, put this normalized version of $Z$
 into the first $k$ columns of the weight matrix (so that $w_j(u) = Z_{uj}$),
 set the $(k+1)^\text{st}$ column to the trait (so that $w_{k+1}(u) = w_u$),
 and the final column to all $1$s (so $w_{k+2}(u) = 1$).

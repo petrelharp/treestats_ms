@@ -207,6 +207,30 @@ under the terms of the MIT open source license.
 %%%%%%%%%%%%%%%%%%%%%%%
 \section*{Framework and statistics}
 
+\begin{figure}
+    \centering
+    \includegraphics{figures/divergence_diagram}
+    \caption{
+        An example of computing sequence divergence between red nodes and blue nodes
+        from seven mutations at distinct sites in a sequence of length 10 using the tree.
+        The summary function, $f(a,b) = (a/3)(1-b/2)$ gives the probability that
+        an allele found in $a$ of the red nodes and $b$ of the blue nodes is present in
+        a randomly chosen red node but not in a randomly chosen blue node.
+        \textbf{(a)} Weights are assigned to each subtree by adding together the weights of any children,
+        plus the weight of the node itself, if it is a sample.
+        \textbf{(b)} In this example, subtree weights $(a,b)$ record how many red nodes ($a$)
+        and how many blue nodes ($b$) lie in that subtree.
+        \textbf{(c)} The summary function shown is applied to both the weight of the subtree
+        and the remaining weight of each mutation,
+        so for instance the mutation above the node with weights $(2,1)$
+        contributes $f(2,1) + f(1,1) = 1/3 + 1/6 = 1/2$.
+        The final value for divergence is the sum of these values divided by 10,
+        the total number of sites.
+        \label{fig:divergence_diagram}
+    }
+\end{figure}
+
+
 Before formal definitions, we will give an overview of the general framework.
 Roughly speaking, to compute a statistic we will
 propagate ``weights'' additively up each tree,
@@ -217,9 +241,8 @@ is only a small generalization of a familiar operations in population genetics:
 summarizing the allele frequency spectrum.
 For instance, we could calculate how many of a certain set $A$ of samples
 inherit from a particular branch in a tree
-by (a) assigning each of these samples weight 1 (and other nodes weight zero), then
-(b) finding the total weight of all nodes in the subtree inheriting from that branch.
-Any mutation falling on this branch would be inherited by
+by (a) assigning each of these samples weight 1 (and other samples weight zero), then
+(b) finding the total weight of all samples in the subtree inheriting from that branch.
 This gives the number of samples that would inherit any mutation falling on this branch,
 so is analogous to the allele frequency spectrum.
 Figure~\ref{fig:divergence_diagram} shows a simple example of these procedures
@@ -241,7 +264,7 @@ we can compute this by summing over the $L$ loci, as
 \begin{align*}
     \sum_p h(p) f(p) = \sum_{i=1}^L \sum_a f(p_i(a)).
 \end{align*}
-(Note that since the ancestral allele is included, this function is invariant to relabeling of alleles.)
+% (Note that since the ancestral allele is included, this function is invariant to relabeling of alleles.)
 If we know where each mutation has occurred on the genealogy,
 we can easily find the frequency of the corresponding allele by counting how many samples
 inherit from that mutation in the tree (and accounting for those that subsequently mutate).
@@ -272,6 +295,12 @@ as for instance if a portion of an ancestor's genome was not inherited by any of
 We allow vector-valued weights,
 i.e., $\iw(v)$ may be a vector $(\iw_1(v), \ldots, \iw_m(v))$,
 so that when summarizing we have access to more than one aspect of each subtree.
+We will often be interested in statistics defined in terms of different
+subsets of our samples (corresponding to, e.g., different populations); it
+is useful to have some additional notation to define these statistics.
+Given a subset set $S$ of samples,
+the \emph{indicator weights of $S$} are the sample weights $\bone_S$ with
+$\bone_S(u) = 1$ if $u \in S$ and $\bone_S(u) = 0$ otherwise.
 
 \begin{definition}[Summary function]
     For a set of $k$-dimensional weights with total weight $\tiw$,
@@ -285,29 +314,6 @@ of them.
 % Below, in section XXX, we describe how to efficiently
 % maintain a list of the weights of the subtrees inherit from each node
 % as we iterate through the tree sequence.
-
-\begin{figure}
-    \centering
-    \includegraphics{figures/divergence_diagram}
-    \caption{
-        An example of computing sequence divergence between red nodes and blue nodes
-        from seven mutations at distinct sites in a sequence of length 10 using the tree.
-        The summary function, $f(a,b) = (a/3)(1-b/2)$ gives the probability that
-        an allele found in $a$ of the red nodes and $b$ of the blue nodes is present in
-        a randomly chosen red node but not in a randomly chosen blue node.
-        \textbf{(a)} Weights are assigned to each subtree by adding together the weights of any children,
-        plus the weight of the node itself, if it is a sample.
-        \textbf{(b)} In this example, subtree weights $(a,b)$ record how many red nodes ($a$)
-        and how many blue nodes ($b$) lie in that subtree.
-        \textbf{(c)} The summary function shown is applied to both the weight of the subtree
-        and the remaining weight of each mutation,
-        so for instance the mutation above the node with weights $(2,1)$
-        contributes $f(2,1) + f(1,1) = 1/3 + 1/6 = 1/2$.
-        The final value for divergence is the sum of these values divided by 10,
-        the total number of sites.
-        \label{fig:divergence_diagram}
-    }
-\end{figure}
 
 
 %%%%%%%%%%%%%%%%%%
@@ -376,12 +382,6 @@ at a site, and we may define a \emph{polarised} node statistic without the secon
     =
     \frac{1}{L} \sum_{k=1}^{n(\treeseq)} L_k f(\nw_{T_k}(u)) .
 \end{align}
-
-We will use weights that count number of samples inheriting from each node
-sufficiently often that we give them a special name ---
-for a subset set $S$ of samples,
-the \emph{indicator weights of $S$} are the sample weights $\bone_S$ with
-$\bone_S(u) = 1$ if $u \in S$ and $\bone_S(u) = 0$ otherwise.
 
 \begin{example}[Ancestry proportions] \label{ex:ancestry_props}
     If $\iw$ are the indicator weights of the set $S$ of $n$ samples,
@@ -697,6 +697,7 @@ and $\branchp(f, \iw)_{[c,d)}$ is defined using $\branchp(f, \iw)_T$ as before.
 However, the correspondence between the polarised statistics is less tight
 than for the unpolarised ones.
 
+\jk{What does this last sentence mean?}
 
 \begin{example}[Mean TMRCA] \label{ex:branch_diversity}
     If we take $\iw$ and $f$ exactly as in the ``Nucleotide diversity'' example above,
@@ -840,7 +841,8 @@ is unobservable, although estimable.
 
 
 \begin{figure}
-    \includegraphics{{figures/swept.1000.999.1e-09.diversity}.pdf}
+\centering
+    \includegraphics[width=0.8\textwidth]{{figures/swept.1000.999.1e-09.diversity}.pdf}
     \caption{
         Mean genetic diversity and time to most recent common ancestor
         in 500Kb windows along a 50Mb genome (0.5 Morgans) following several selective sweeps.
@@ -913,24 +915,26 @@ so it remains to be seen if the improvement could be made in practice.
 \section*{Application to 1000 Genomes tree sequences}
 
 We do not know the true genealogies underlying real data,
-but recent methods are available to estimate them at scale.
+but recent methods are available to estimate them at
+scale~\citep{harris2019database,kelleher2019inferring,speidel2019method}.
 In Figure~\ref{fig:sweep_duality}, we showed that branch and site statistics
 matched well in simulated data. However, these simulations make many
 simplifying assumptions, and, moreover,
 the underlying tree topologies and branch lengths are exactly
-correct, which no inference method can hope to achieve.
+correct (which inference methods can only hope to approximate).
 To evaluate the correspondence between site and branch statistics
 in tree sequences inferred from real data,
-we calculated mean sequence diversity along chromosome 20 from the 1000 Genomes dataset
-in 1Mb windows separately in each of the five continental groupings,
-calculated using the site statistic described in Example~\ref{ex:site_diversity},
-and compared this to the dual branch statistic (of Example~\ref{ex:branch_diversity})
-from the trees and node times estimated by Relate~\citep{speidel2019method}.
+we calculated statistics for chromosome 20
+of the 1000 Genomes dataset~\citep{1k2015global} using dated trees estimated
+by Relate~\citep{speidel2019method}.
+Specifically, we calculated diveristy using the site statistic
+described in Example~\ref{ex:site_diversity},
+and compared this to the dual branch statistic (Example~\ref{ex:branch_diversity})
+in 1Mb windows in each of the five continental groupings.
 All calculations were done only using the portions of the chromosome
 passing the 1000 Genomes Phase 1 ``strict'' mask for sequencing accessibility.
 % from ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase1/analysis_results/supporting/accessible_genome_masks/README.20120515_phase1_pop_gen_mask
 As shown in Figure~\ref{fig:chr20}, Branch and Site diversity along the genome are very similar.
-Does this mean that Relate is doing a better job at inferring the tree sequence
 Is this an indication that Relate is doing a good job at inferring trees,
 or just a byproduct of the inference method (which, naturally, estimates branch lengths to be proportional to numbers of mutations)?
 Answering this question requires a deeper understanding of the processes that shape
@@ -971,7 +975,7 @@ It is generally unknown how much mutation rate varies along the genome
 \citep[but see][]{supek2015differential}
 or how dense are targets of selection \citep{leffler2012revisiting}.
 For this reason, it is very interesting to see how close a correspondence between site and branch
-statistics it is \emph{possible} to obtain --
+statistics it is \emph{possible} to obtain ---
 it is tempting to say that the best tree sequence would obtain
 as tight a match between site and branch statistics as possible,
 with remaining variation explained by direct selection and/or mutation rate variation.
@@ -985,7 +989,7 @@ with remaining variation explained by direct selection and/or mutation rate vari
 %%%%%%%%%%%%%%%%%%%%%
 \subsection*{Algorithms}
 In this section we describe and analyse the algorithm used
-to compute branch length statistics. This is a generalization
+to compute Branch statistics. This is a generalization
 of the algorithm used to maintain the number of samples from a
 given set that derive from each node in a tree
 sequence \cite[Algorithm L]{kelleher2016efficient}. The central
@@ -1052,11 +1056,10 @@ that the index vectors $\indexin$ and $\indexout$ have been precomputed.
     set $s \leftarrow \sigma \leftarrow j \leftarrow k \leftarrow t_l \leftarrow 0$.
 }
 
-\algstep{B2.}{Terminate.}{If $j \geq |\Et|$ or $t_l \geq L$,
-    return $\sigma / L$ and terminate.
+\algstep{B2.}{Terminate.}{If $j = |\Et|$ return $\sigma / L$ and terminate.
 }
 
-\algstep{B3.}{Edge removal loop.}{If $k \geq |\Et|$ or $t_l \neq
+\algstep{B3.}{Edge removal loop.}{If $k = |\Et|$ or $t_l \neq
     \Et[\indexout_k]\prop{right}$ go to \algref{B6}.}
 
 \algstep{B4.}{Remove edge.}{Set
@@ -1072,7 +1075,7 @@ that the index vectors $\indexin$ and $\indexout$ have been precomputed.
     and $v \leftarrow \pi_v$. Afterwards, go to \algref{B3}.
 }
 
-\algstep{B6.}{Edge insertion loop.}{If $j \geq |\Et|$ or $t_l \neq
+\algstep{B6.}{Edge insertion loop.}{If $j = |\Et|$ or $t_l \neq
     \Et[\indexin_j]\prop{left}$ go to \algref{B9}.}
 
 \algstep{B7.}{Insert edge.}{Set
@@ -1111,7 +1114,7 @@ run once for each tree in the sequence. As we are processing each
 tree, we keep track of the edges that need to be processed with
 the $t_l$ variable, which stores the left-most genome coordinate
 in the current tree. The first thing we do for a new tree is to
-remove any edges that were in the previous tree are not in the
+remove any edges that were in the previous and tree are not in the
 current tree. These must be the edges in which the right coordinate
 is equal to $t_l$, and so \algref{B3} loops over these edges using
 the edge removal index $\indexout$. Step \algref{B4} then removes
@@ -1146,7 +1149,7 @@ complicated by the possible presence of ``gaps'' in the tree sequence, spanned
 by no edges). Then, we add the running sum $s$ weighted by the span of the
 current tree $t_r - t_l$ to $\sigma$, and return to \algref{B2} to process the
 next tree. If we have reached the end of the sequence, we then divide $\sigma$
-by the sequence length to renormalise and exit.
+by the sequence length to normalise and exit.
 
 To analyse Algorithm~\algref{B} we will assume that the tree sequence has
 been simulated under the standard coalescent with a sample of size
@@ -1166,7 +1169,7 @@ on the path to root is $\log_2 n$.
 Therefore, the overall running time
 of Algorithms~\algref{B} is of order $n + \rho \log(n) \log_2(n)$, which is
 \begin{equation}\label{eqn:alg_complexity}
-    O\left(n + \rho \log(n)^2 \right)
+    O\left(n + \rho \log(n)^2 \right).
 \end{equation}
 Computing a site statistic will have the same complexity,
 as the same internal state is maintained,
@@ -1238,13 +1241,13 @@ reconnected to the main tree when they are fully built.
 We used coalescent simulations to compare the performance of calculating Tajima's \citeyearpar{Tajima1989-de} $D$
 statistic from tree sequences to calculating it from integer matrices containing genotypes at all variable positions.
 \autoref{fig:stats_performance} shows that the tree sequence methods implemented in \texttt{tskit} processes variant data
-substantially faster than matrix-based approaches once the sample size is above $n \approx 500$ haploids --
+substantially faster than matrix-based approaches once the sample size is above $n \approx 500$ haploids ---
 three times faster for one thousand haplotypes,
 growing to nearly three orders of magnitude faster for one million haplotypes.
 The expected number of mutations for each replicate is $10^4 \times \sum_{i=1}^{n-1}\frac{1}{i}$, and thus ranges from
 $\approx 32,000$ to $\approx 138,000$ \citep{Watterson1975-ej}.
-\autoref{fig:stats_performance} only considers the time required to calculate the statistic,
-and does not include the time required to build the genotype matrix, nor the memory required to store it.
+\autoref{fig:stats_performance} only considers the time required to calculate the statistic
+once the data is present in each library's native format.
 For the largest samples size of $n=10^6$,
 the matrix is approximately 200 gigabytes, and thus not practical on many systems.
 The largest tree sequence simulated required less than one gigabyte of memory.
@@ -1323,13 +1326,13 @@ is to improve efficiency of existing pipelines,
 as tree sequences allow storage and processing of large genomic data sets
 with orders of magnitude less space and time than most other methods.
 All statistics described here (and more) are implemented
-in the fast, rigorously tested library \tskit{}
-that also provides tools for working with tree sequences in Python and C.
+in the rigorously tested \tskit{} library,
+which provides a suite tools for efficiently working with tree sequences in Python and C.
 The largest efficiency gains are found for very large sample sizes
 only likely to be available in real data sets for humans in the near future,
 but the ability to analyze millions of whole genomes
 is useful for understanding evolutionary simulations of any species
-\citep[see][for a recent example]{galloway2019stickleback}.
+\citep[see, e.g.,][]{martin2017human,galloway2019stickleback}.
 
 
 % duality: site stats ~ branch stat, but conversely branch more accurate version of site
@@ -1341,7 +1344,7 @@ the duality between Site and Branch statistics under the infinite-sites model.
 This general correspondence is well-known,
 but the common framework implemented here makes it easy to translate between the two.
 One way to use this translation is to answer:
-what aspect of tree shape is this population genetics statistic summarizing?
+what aspect of tree shape is a particular population genetics statistic summarizing?
 This can help when interpreting results, especially if reality may not fit an idealised model
 of separate populations.
 However, methods to infer tree sequences from real data
@@ -1352,7 +1355,7 @@ thus hopefully bypassing the extra layer of noise induced by mutation.
 How well this works will depend on the ability of inference methods
 to estimate the true tree sequence.
 This might plausibly produce less noisy estimates because tree sequence inference
-essentially uses the signal from nearby patterns of variation
+may use the signal from nearby patterns of variation
 to interpret relationships at a given site,
 thus transforming the simple binary split induced by a SNP
 into a much richer source of information at every variant site.
@@ -1476,7 +1479,7 @@ is an active area of research \citep[e.g.,][]{srinivasan2018sharedmemory}.
 %%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Acknowledgments}
 Thanks to Graham Coop, Andrew Kern, Nick Patterson, and Kelley Harris for useful suggestions
-and to Wilder Wohns, Yan Wong and Leo Speidel for providing inferred tree sequences.
+and Leo Speidel for providing the inferred 1000 Genomes tree sequence.
 
 
 \bibliography{references}

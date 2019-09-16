@@ -757,21 +757,23 @@ with $\treeseq_{[a,b)}$ the trees spanning that interval,
 \begin{align}
     \branch(f, \iw)_{[a,b)}
     =
+    \frac{1}{\mu}
     \E\left[ \site(f, \iw)_{[a,b)} \given \treeseq_{[a,b)} \right] ,
 \end{align}
-where the expected value averages over infinite-sites mutations with rate 1
-(and so lengths are measured in units of expected numbers of mutations)
-but leaves the genealogies fixed.
+where the expected value leaves the genealogies fixed,
+averaging over infinite-sites mutations
+with rate $\mu$ per unit time and per unit of sequence length.
 In other words, the Site statistic can be thought of an estimator of its corresponding Branch statistic,
 which is itself a summary of local tree shapes.
+Because we have normalised these statistics by the length of the genome under consideration,
+both sides of this equation are in units of \emph{time}:
+Branch statistics give mean weighted branch lengths;
+Site statistics give mean densities of mutations per unit of sequence length,
+which divided by $\mu$ is converted to time.
 Let's unpack the assumptions here: what exactly is the mutational model?
-First, we are taking the mutation rate to be 1, i.e.,
+First, we are taking the mutation rate to be $\mu$, i.e.,
 the expected number of mutations that occur on a region of the genome of length $\ell$
-over $t$ units of time is equal to $\ell t$.
-This just amounts to a change of units ---
-for instance, if genome length is measured in nucleotides,
-and the probability of mutation is $\mu$ per nucleotide and per generation,
-then we are measuring times in units of $1/\mu$ generations.
+over $t$ units of time is equal to $\mu \ell t$.
 Second, we are assuming that the probability of per-site mutation is low enough
 that no two mutations occur at the same site
 --- the fact that they do, occasionally, means that this is an approximation.

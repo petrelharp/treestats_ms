@@ -41,7 +41,7 @@
 \begin{document}
 
 \title{
-    Efficiently summarising relationships in large samples:
+    Efficiently summarizing relationships in large samples:
     a general duality between statistics of genealogies and genomes}
 \author{Peter Ralph, Kevin Thornton, and Jerome Kelleher}
 \maketitle
@@ -140,8 +140,8 @@ but for many applications we are now interested in computing a large number of s
 or iteratively refining a single computation.
 Furthermore, even larger datasets are being collected,
 and millions of whole genomes will soon be available. In this case the
-genotype matrix simply cannot fit into memory, and complex distributed
-computations are required to calculate population genetic statistics.
+genotype matrix simply cannot fit into memory, and complex distributed computations
+are required.
 
 Fortunately, the genotype matrix is not the only way to encode genetic data.
 The \emph{succinct tree sequence} (or \emph{tree sequence}, for brevity) is a data
@@ -152,11 +152,11 @@ simulation~\citep{kelleher2016efficient}, and led to scalability increases of
 several orders of magnitude over existing methods. The methods were subsequently extended
 and refined for forwards-time
 simulations~\citep{kelleher2018efficient,haller2018tree}, with similar efficiency gains.
-Recent work~\citep{kelleher2019inferring} has shown that tree sequence algorithms can
+Recent work has shown that tree sequence algorithms can
 also be used to massively increase the scalability of methods for inferring
 genome-wide genealogies, and making it possible to infer trees for millions of
-samples.
-The key to the remarkable scalability and efficiency of tree sequence
+samples~\citep{kelleher2019inferring}.
+The key to the remarkable efficiency of tree sequence
 algorithms is the way that shared structure in adjacent trees along the genome is encoded.
 As one looks across the genome, genealogies change at recombination breakpoints in ancestors.
 However, nearby trees tend to share a lot of common structure,
@@ -223,7 +223,7 @@ Any mutation falling on this branch would be inherited by
 This gives the number of samples that would inherit any mutation falling on this branch,
 so is analogous to the allele frequency spectrum.
 Figure~\ref{fig:divergence_diagram} shows a simple example of these procedures
-of propagating weights up a tree and summarising them,
+of propagating weights up a tree and summarizing them,
 used to calculate mean sequence divergence over a short sequence spanned by a single tree.
 
 % Many population genetic summary statistics can be defined using the allele frequency spectrum of a collection of homologous sequences.
@@ -271,7 +271,7 @@ as for instance if a portion of an ancestor's genome was not inherited by any of
 
 We allow vector-valued weights,
 i.e., $\iw(v)$ may be a vector $(\iw_1(v), \ldots, \iw_m(v))$,
-so that when summarising we have access to more than one aspect of each subtree.
+so that when summarizing we have access to more than one aspect of each subtree.
 
 \begin{definition}[Summary function]
     For a set of $k$-dimensional weights with total weight $\tiw$,
@@ -341,7 +341,7 @@ can cause the precise set of samples that inherit from that edge to differ acros
 %%%%%%%%%%%%%%%%%%
 \subsection*{Node statistics}
 
-Perhaps the most natural way to summarise weights on the tree
+Perhaps the most natural way to summarize weights on the tree
 is simply to examine the values at each node.
 This would allow us, for instance, to
 count the number of samples that inherit from each node in the tree.
@@ -405,7 +405,7 @@ but the trees are used only for efficiency --- the results will not depend on
 the trees in any way. The summaries we defined above for nodes
 extend directly to genetic variants: just as a node weight contains information about
 which samples inherit from the node and which do not,
-so we can summarise patterns of genetic variation by summing up weights of all samples
+so we can summarize patterns of genetic variation by summing up weights of all samples
 that carry a given allele.
 Therefore, we define \emph{allele weights} to be
 the total weight of all sample nodes that have inherited that allele.
@@ -1301,7 +1301,7 @@ matrix, importing it into another package and computing from the matrix.
 \section*{Discussion}
 
 % overview: general definition that is mostly functions of jAFS but includes others
-In this paper, we have described a general framework for summarising genetic variation
+In this paper, we have described a general framework for summarizing genetic variation
 and the underlying genealogies
 that encompasses many standard population genetic statistics
 and makes it easy to explore more.
@@ -1341,7 +1341,7 @@ the duality between Site and Branch statistics under the infinite-sites model.
 This general correspondence is well-known,
 but the common framework implemented here makes it easy to translate between the two.
 One way to use this translation is to answer:
-what aspect of tree shape is this population genetics statistic summarising?
+what aspect of tree shape is this population genetics statistic summarizing?
 This can help when interpreting results, especially if reality may not fit an idealised model
 of separate populations.
 However, methods to infer tree sequences from real data
@@ -1377,7 +1377,7 @@ A great many methods in population genetics aim to describe aspects of history,
 and accurate (or at least unbiased) tree sequence inference
 may shift the focus of these problems from inference to descriptive analysis.
 The methods we develop here distribute the contribution to various statistics across each tree,
-and so could also be used to summarise contributions to various statistics across \emph{time}.
+and so could also be used to summarize contributions to various statistics across \emph{time}.
 This could provide, for instance, the time distribution of mutations or branches
 contributing positively or negatively to $f_4$ statistics of introgression,
 which could help historical interpretations of these signals.

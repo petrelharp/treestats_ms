@@ -1347,14 +1347,42 @@ and makes it easy to explore more.
 Many of these statistics are functions of the joint allele frequency spectrum,
 but the framework is more general,
 and can be used to quantify associations between genotypes and phenotypes.
-This generality was motivated in part by laziness ---
-adding new statistics is now almost as easy as working out the appropriate summary function ---
-but also makes it easy to computationally explore new classes of statistics.
+This generality was partially motivated by laziness ---
+implementing new statistics is now simply a matter of devising the appropriate summary function ---
+but it also allows us to easily explore new classes of statistics.
 The range of statistics available to describe variation in a single exchangeable sample
 (i.e., a single population) are well-understood,
 but there are much larger and less well-explored classes of statistics
 describing genetic variation between many populations
 or across geographical space.
+The statistics defined here are all \emph{additive} along the genome:
+if we have computed a statistic in equal-size windows along a chromosome,
+then the value of the statistic for the entire chromosome is equal to
+the average of the values in those windows.
+Some commonly-used statistics (e.g., $F_{ST}$ or Tajima's $D$)
+are not additive, but are ratios of additive statistics, so can be easily computed in this way.
+% We have also defined site statistics to be additive across \emph{alleles},
+% to allow the definitions to apply to sites with more than two alleles.
+% This decision has some nice properties, but is not the only reasonable choice.
+% Multilocus statistics that measure linkage disequilibrium or haplotype lengths
+% do not fall in this category.
+Extensions to statistics involving the pairwise joint distribution of genotypes across
+sites~\citep{hudson2001twolocus} such as linkage disequilibrium are planned for future work.
+Haplotype-based statistics may require different classes of algorithms.
+
+% jk: Cut this: too technical for the discussion
+% We also require that site statistics be computable from the genotype matrix
+% (i.e., without knowledge of the trees),
+% and, if the statistic is polarized, knowledge of the ancestral allele.
+% We often would also like our statistics to be unaffected by the addition of monomorphic sites,
+% which are usually omitted from genetic variation data.
+% To ensure this we have required that the summary function returns zero when give both zero weight
+% and the total weight: $f(0) = f(\tiw) = 0$.
+% This also makes branch and node statistics unchanged by portions of the tree that do not lie on a path
+% between any of the samples that have nonzero weight,
+% so that in particular,
+% \emph{simplification} of the tree sequence will not change the value of the statistic.
+% However, in practice this requirement can be relaxed.
 
 % speed/efficiency: big data sets; large simulations
 The most obvious application of these methods on current practice
@@ -1443,39 +1471,9 @@ along the genome, across space, and through time.
 % Moved this to the 1000G section where we're already discussing it.
 
 %%%%%%%%%%%%%%%%%%
-\subsection*{General properties}
+% \subsection*{General properties}
 
-The statistics defined here are all \emph{additive} along the genome:
-if we have computed a statistic in equal-size windows along a chromosome,
-then the value of the statistic for the entire chromosome is equal to
-the average of the values in those windows.
-Some commonly-used statistics (e.g., $F_{ST}$ or Tajima's $D$)
-are not additive, but are ratios of additive statistics, so can be easily computed in this way.
-We have also defined site statistics to be additive across \emph{alleles},
-to allow the definitions to apply to sites with more than two alleles.
-This decision has some nice properties, but is not the only reasonable choice.
-
-Multilocus statistics that measure linkage disequilibrium or haplotype lengths
-do not fall in this category.
-Extensions to statistics involving the pairwise joint distribution of genotypes across sites
-\citep[as used by][]{hudson2001twolocus},
-such as linkage disequilibrium are planned for future work.
-Haplotype-based statistics may require different classes of algorithms.
-
-We also require that site statistics be computable from the genotype matrix
-(i.e., without knowledge of the trees),
-and, if the statistic is polarized, knowledge of the ancestral allele.
-We often would also like our statistics to be unaffected by the addition of monomorphic sites,
-which are usually omitted from genetic variation data.
-To ensure this we have required that the summary function returns zero when give both zero weight
-and the total weight: $f(0) = f(\tiw) = 0$.
-This also makes branch and node statistics unchanged by portions of the tree that do not lie on a path
-between any of the samples that have nonzero weight,
-so that in particular,
-\emph{simplification} of the tree sequence will not change the value of the statistic.
-However, in practice this requirement can be relaxed.
-
-
+% Merged in with disco content above.
 
 %%%%%%%%%%%%%%%%%%
 % Moved this content into the "Algorithms" section

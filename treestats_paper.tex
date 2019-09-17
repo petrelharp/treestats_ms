@@ -977,7 +977,36 @@ it is tempting to say that the best tree sequence would obtain
 as tight a match between site and branch statistics as possible,
 with remaining variation explained by direct selection and/or mutation rate variation.
 
+% This paragraph is essentially saying the same thing as the previous one,
+% so am cutting it. Perhaps we could merge some of the content into the
+% the paragtraph above?
 
+% The duality between Site and Branch statistics depends crucially on two assumptions:
+% that each new mutation is distinguishable, as in the infinite-sites model,
+% and that mutation rates are constant along the genome.
+% Neither of these things are true, but are they good approximations?
+% Multiple mutations at the same site, causing back mutations,
+% are present in real datasets but are generally thought to be uncommon,
+% especially if hypervariable sites are excluded.
+% The effect of multiple mutations on Site statistics
+% can be bounded by a function of the proportion of sites at which these occur.
+% Large-scale variation in mutation rate (at, say, the megabase scale)
+% might plausibly have a stronger effect on the correspondence,
+% because a Branch and Site statistic are equal in expectation up to multiplication by the mutation rate.
+% For instance, if we knew that the inferred tree sequences of \autoref{fig:chr20} were correct,
+% then dividing the Site statistic by the Branch statistic
+% could give us an estimate of relative average mutation rate in windows along the genome.
+% Similarly, Branch statistics from well-calibrated tree sequences
+% would provide a way to assess variation in population genetic summaries along the genome
+% in a way independent of local mutation rate.
+
+A final crucial assumption underlying the duality between Site and Branch
+statistics is that mutations can be treated as independent of the trees themselves.
+This is clearly not always true --- for instance,
+a sweeping beneficial mutation strongly affects the local trees (as in \autoref{fig:sweep_duality}) ---
+but seems likely to be approximately true.
+\citet{ralph2019empirical} contains more discussion of variation in mutation rate,
+but more work needs to be done, particularly on models with large proportions of sites under selection.
 
 
 %%%%%%%%%%%%%%%%%%
@@ -1232,6 +1261,16 @@ reconnected to the main tree when they are fully built.
     \label{fig:algorithm_example}}
 \end{figure}
 
+The tree sequence describes trees that change as one moves along the genome,
+and so is a special case of a \emph{dynamic graph},
+also called a \emph{graph timeline} \citep{lacki2013reachability}.
+Much of the work on dynamic graphs is focused on connectivity,
+e.g., maintaining a minimum spanning tree \citep{eppstein1994offline, eppstein1997sparsification, holm2001polylogarithmic},
+but development of parallel algorithms for more general operations on large dynamic graphs
+is an active area of research \citep[e.g.,][]{srinivasan2018sharedmemory}.
+An interesting direction for future work is to develop
+parallel versions of tree sequence algorithms such as Algorithm B.
+
 %%%%%%%%%%%%%%%%%%%%%
 \subsection*{Efficiency}
 
@@ -1400,35 +1439,8 @@ to visualize and analyze genetic variation and genealogical relatedness
 along the genome, across space, and through time.
 
 %%%%%%%%%%%%%%%%%%
-\subsection*{Duality in practice?}
-
-The duality between Site and Branch statistics depends crucially on two assumptions:
-that each new mutation is distinguishable, as in the infinite-sites model,
-and that mutation rates are constant along the genome.
-Neither of these things are true, but are they good approximations?
-Multiple mutations at the same site, causing back mutations,
-are present in real datasets but are generally thought to be uncommon,
-especially if hypervariable sites are excluded.
-The effect of multiple mutations on Site statistics
-can be bounded by a function of the proportion of sites at which these occur.
-Large-scale variation in mutation rate (at, say, the megabase scale)
-might plausibly have a stronger effect on the correspondence,
-because a Branch and Site statistic are equal in expectation up to multiplication by the mutation rate.
-For instance, if we knew that the inferred tree sequences of \autoref{fig:chr20} were correct,
-then dividing the Site statistic by the Branch statistic
-could give us an estimate of relative average mutation rate in windows along the genome.
-Similarly, Branch statistics from well-calibrated tree sequences
-would provide a way to assess variation in population genetic summaries along the genome
-in a way independent of local mutation rate.
-
-A final crucial assumption underlying this duality is that mutations can be treated
-as independent of the trees themselves.
-This is clearly not always true --- for instance,
-a sweeping beneficial mutation strongly affects the local trees (as in \autoref{fig:sweep_duality}) ---
-but seems likely to be approximately true.
-\citet{ralph2019empirical} contains more discussion of variation in mutation rate,
-but more work needs to be done, particularly on models with large proportions of sites under selection.
-
+% \subsection*{Duality in practice?}
+% Moved this to the 1000G section where we're already discussing it.
 
 %%%%%%%%%%%%%%%%%%
 \subsection*{General properties}
@@ -1466,16 +1478,8 @@ However, in practice this requirement can be relaxed.
 
 
 %%%%%%%%%%%%%%%%%%
-\subsection*{Dynamic graph algorithms}
-
-The tree sequence describes trees that change as one moves along the genome,
-and so is a special case of a \emph{dynamic graph},
-also called a \emph{graph timeline} \citep{lacki2013reachability}.
-Much of the work on dynamic graphs is focused on connectivity,
-e.g., maintaining a minimum spanning tree \citep{eppstein1994offline, eppstein1997sparsification, holm2001polylogarithmic},
-but development of parallel algorithms for more general operations on large dynamic graphs
-is an active area of research \citep[e.g.,][]{srinivasan2018sharedmemory}.
-
+% Moved this content into the "Algorithms" section
+% \subsection*{Dynamic graph algorithms}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%

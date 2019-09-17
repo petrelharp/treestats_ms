@@ -56,13 +56,13 @@ As a genetic mutation is passed down across generations,
 it distinguishes those genomes that have inherited it from those that have not,
 providing a glimpse of the genealogical tree relating the genomes to each other at that site.
 Statistical summaries of genetic variation therefore also describe the underlying genealogies.
-We exploit this duality here to create a method that efficiently computes single-site statistics
-from population genetic data using the succinct tree sequence encoding
-of genealogies and genome sequence.
+We exploit this correspondence here to define a general framework that
+efficiently compute single-site population genetic statistics
+using the succinct tree sequence encoding of genealogies and genome sequence.
 The general approach accumulates ``sample weights'' within each marginal tree,
 which are then combined using a ``summary function'';
 different statistics result from different choices of weight and function.
-Results can be reported in two (dual) ways:
+Results can be reported in two dual ways:
 by \emph{site}, which corresponds to statistics calculated from genome
 sequence; and by \emph{branch}, which gives the expected value of the site statistic
 under the infinite-sites model.
@@ -72,10 +72,10 @@ concrete and explicit) and suggest several new statistics.
 We evaluate computational performance using simulated data, and
 show that calculating statistics from tree sequences using this general
 framework is several orders of magnitude more efficient than
-optimised matrix-based methods in terms of both run time and memory requirements.
+optimized matrix-based methods in terms of both run time and memory requirements.
 We also explore how well the duality between site and branch statistics holds
 in practice on trees inferred from the 1000 Genomes Project dataset,
-and discuss ways in which deviations may hold interesting biological
+and discuss ways in which deviations may encode interesting biological
 signals.
 
 %%% OUTLINE
@@ -145,10 +145,10 @@ The \emph{succinct tree sequence} (or \emph{tree sequence}, for brevity) is a da
 structure that efficiently encodes the genealogical trees describing how a set of
 individuals are related to each other at each point along their genome.
 It was introduced in the context of coalescent
-simulation~\citep{kelleher2016efficient}, and led to scalability increases of
+simulation~\citep{kelleher2016efficient}, and lead to scalability increases of
 several orders of magnitude over existing methods. The methods were subsequently extended
 and refined for forwards-time
-simulations~\citep{kelleher2018efficient,haller2018tree}, with similar efficiency gains.
+simulations~\citep{kelleher2018efficient,haller2018tree}, with similarly large efficiency gains.
 Recent work has shown that tree sequence algorithms can
 also be used to massively increase the scalability of methods for inferring
 genome-wide genealogies, and making it possible to infer trees for millions of
@@ -1329,11 +1329,16 @@ The largest efficiency gains are found for very large sample sizes
 only likely to be available in real data sets for humans in the near future,
 but the ability to analyze millions of whole genomes
 is useful for understanding evolutionary simulations of any species
-\citep[see, e.g.,][]{martin2017human,galloway2019stickleback}.
+\citep[see, e.g.,][]{martin2017human,browning2018one,galloway2019stickleback}.
+% TODO rephrase this: large scale simulations are useful for lots of things.
+% No need for the slightly negative note about large datasets only being
+% relevant for humans, I think.
 
 
 % duality: site stats ~ branch stat, but conversely branch more accurate version of site
 %  maybe analogous to imputation
+
+% TODO: too negative.
 We hope a more broadly interesting and useful aspect of this paper
 is a more in-depth look at the correspondence between statistics calculated with genome sequence
 and properties of the underlying genealogies, i.e.,
@@ -1361,6 +1366,8 @@ if tree sequence inference can be made insensitive to local variation in mutatio
 calculation of branch statistics would provide a summary method
 that is not affected by this potentially important confounding factor.
 
+% Not sure about this: tangent? Perhaps combine this point with some others
+% in a compressed form?
 Many genomic datasets only contain genotype information at a subset of sites
 that do not represent an unbiased look at genome-wide variation,
 introducing an ascertainment bias that is difficult to account for in for many applications.
@@ -1381,7 +1388,7 @@ and so could also be used to summarize contributions to various statistics acros
 This could provide, for instance, the time distribution of mutations or branches
 contributing positively or negatively to $f_4$ statistics of introgression,
 which could help historical interpretations of these signals.
-This additional mode of reporting statistics, however, is postponed for future work.
+This additional mode of reporting statistics is an important subject for future work.
 
 % moving past a few summaries in discrete groups to a genome/time/space view of relatedness
 The historical toolbox of population genetics

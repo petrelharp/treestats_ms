@@ -127,11 +127,11 @@ sample~\citep[e.g.][]{Kreitman1983-xr}.
 Today's vast quantity of whole-genome sequence
 makes it possible to confidently estimate many more properties of genealogical relationships
 in local regions of genomes, both between
-individuals~\citep[e.g.,][]{browning2010highresolution,speed2014relatedness,aguillon2017deconstructing},
+individuals~\citep[e.g.,][]{browning2010highresolution,speed2014relatedness,aguillon2017deconstructing}
 and within
 populations~\citep[e.g,][]{booker2018understanding,haenel2018metaanalysis,stankowski2019widespread}.
 Computation is beginning to be a major problem:
-projects on the scale of the UK Biobank~\citep{bycroft2018genome}
+projects such as UK Biobank~\citep{bycroft2018genome}
 and gnomAD~\citep{karczewski2019variation} hold genetic data for
 hundreds of thousands of samples at tens to hundreds of millions of variant sites.
 Such large genotype matrices are extremely unwieldy and difficult to process.
@@ -142,14 +142,23 @@ quickly than is possible using single-computer methods such as
 paid for, however, and running calculations concurrently on thousands of cores quickly
 becomes expensive. Larger datasets still, consisting of millions of whole
 genomes, are currently being collected, and it is clear that processing
-these genotype matrices will be very costly.
+and storing these genotype matrices will be very costly.
 
-The genotype matrix, fortunately, is not the only way to encode genetic data.
-The \emph{succinct tree sequence} (or \emph{tree sequence}, for brevity) is a data
-structure that efficiently encodes the genealogical trees describing how a set of
-individuals are related to each other at each point along their genome.
+Fortunately, the genotype matrix is not the only way to encode genetic data.
+Trees describe the ancestral relationships between
+samples~\citep{felsenstein2004inferring,semple2003phylogenetics},
+and provide a natural and elegant way of encode genetic data,
+not only recording the history of a sample but also massively compressing
+the genotype matrix~\citep{ane2005missing}. Until recently, however,
+tree based approaches could not be used to encode data from sexually
+reproducing organisms as recombination results in many trees along the
+genome~\citep{griffiths1991two,griffiths1996ancestral,rasmussen2014genome},
+and there was no efficient way of representing this information.
+The \emph{succinct tree sequence} (or \emph{tree sequence}, for brevity)
+is a recently introduced data structure that
+encodes these genealogical trees along a genome concisely.
 It was introduced in the context of coalescent
-simulation~\citep{kelleher2016efficient}, and lead to scalability increases of
+simulation~\citep{kelleher2016efficient}, leading to scalability increases of
 several orders of magnitude over existing methods. The methods were subsequently extended
 and refined for forwards-time
 simulations~\citep{kelleher2018efficient,haller2018tree}, with similarly large efficiency gains.
@@ -157,6 +166,7 @@ Recent work has shown that tree sequence algorithms can
 also be used to massively increase the scalability of methods for inferring
 genome-wide genealogies, and making it possible to infer trees for millions of
 samples~\citep{kelleher2019inferring}.
+
 The key to the remarkable efficiency of tree sequence
 algorithms is the way that shared structure in adjacent trees along the genome is encoded.
 As one looks across the genome, genealogies change at recombination breakpoints in ancestors.
@@ -173,40 +183,40 @@ supporting arbitrary tree topologies and patterns of allelic variation.
 % Want to emphasise generality here: people might assume we're only dealing
 % with the biallelic case.
 
-Naturally, the genealogical perspective on population genetics statistics has a long history.
-The sequence of trees describing genealogical relationships as one moves along the genome
-are also described by the Ancestral Recombination
-Graph~\citep{griffiths1991two,griffiths1996ancestral,rasmussen2014genome}.
-These genealogical trees can be accurately inferred in nonrecombining regions
-\citep{felsenstein2004inferring},
-as for instance the mitochondria,
-and substantial theoretical work has been done in the context of phylogenetics \citep{semple2003phylogenetics}.
-% describing how each mutation gives a small piece of information about the tree at that site
-% However, population genetics has the task of summarizing relationships across \emph{many} trees,
-% each only partially known because mutations are sparse in the data.
-The basic relationship between tree shape and summaries of genetic variation
-is that if mutations are neutral then the expected number that occur on a given branch
-is proportional to the length of that branch,
-thus establishing a duality between genealogical and genetic summaries,
-a fact used extensively in deriving properties of statistics in models of random mating
-\citep[e.g.][]{tajima1983evolutionary,tavare1984lineofdescent,fu1995statistical}.
-The fact that the duality applies regardless of the underlying demographic model was also used
-\citep[e.g.][]{gillespie1979evolutionary,hudson1983properties,slatkin1991inbreeding,mcvean2002genealogical,ralph2019empirical},
-but only recently have datasets made it possible to move beyond a few numerical summaries.
-
 % summary
-In this paper, we study only ``single-site'' genetic statistics,
+In this paper, we study ``single-site'' genetic statistics,
 i.e., statistics of aligned genome sequence that can be expressed as averages over values computed
-separately for each site,
-leaving other statistics (e.g., pairwise statistics such as linkage disequilibrium
-or haplotype statistics) for later work.
+separately for each site. We develop a theoretical and computational framework
+that encompasses a large class of population genetic statistics, generalising
+many classical summaries of genetic variation. We define
+and explore a duality between ``Site'' and ``Branch'' statistics, and
+provide a detailed description (and analysis) of an efficient algorithm
+to compute statistics in this general setting.
 The methods we describe are implemented, tested, and validated in the \tskit{}
 Python and C libraries, available at \url{https://github.com/tskit-dev/tskit}
 under the terms of the MIT open source license.
 
-
 %%%%%%%%%%%%%%%%%%%%%%%
 \section*{Framework and statistics}
+
+The basic relationship between tree shape and summaries of genetic variation
+is this: if mutations are neutral then the expected number that occur on a
+given branch of a tree is proportional to the length of that branch.
+This ``duality'' (we will use the term more precisely later) has been
+used extensively in deriving properties of statistics in models of random mating
+\citep[e.g.][]{tajima1983evolutionary,tavare1984lineofdescent,fu1995statistical},
+as has the fact that it applies regardless of the underlying demographic model
+\citep[e.g.][]{gillespie1979evolutionary,hudson1983properties,slatkin1991inbreeding,
+mcvean2002genealogical,ralph2019empirical}. We build on this central
+insight to define a flexible and computationally efficient framework for
+population genetic statistics on tree sequences.
+Roughly speaking, to compute a statistic we will
+propagate ``weights'' additively up each tree,
+summarize these weights on each branch with a ``summary function'',
+and aggregate these summaries to produce statistics.
+Figure~\ref{fig:divergence_diagram} shows a simple example of these procedures
+of propagating weights up a tree and summarizing them,
+used to calculate mean sequence divergence over a short sequence spanned by a single tree.
 
 \begin{figure}
     \centering
@@ -231,14 +241,8 @@ under the terms of the MIT open source license.
     }
 \end{figure}
 
-
-Before formal definitions, we will give an overview of the general framework.
-Roughly speaking, to compute a statistic we will
-propagate ``weights'' additively up each tree,
-summarize these weights on each branch with a ``summary function'',
-and aggregate these summaries to produce statistics.
 The abstract idea of summarizing weights propagated up each tree
-is only a small generalization of a familiar operations in population genetics:
+is only a small generalization of a familiar operation in population genetics:
 summarizing the allele frequency spectrum.
 For instance, we could calculate how many of a certain set $A$ of samples
 inherit from a particular branch in a tree
@@ -246,14 +250,9 @@ by (a) assigning each of these samples weight 1 (and other samples weight zero),
 (b) finding the total weight of all samples in the subtree inheriting from that branch.
 This gives the number of samples that would inherit any mutation falling on this branch,
 so is analogous to the allele frequency spectrum.
-Figure~\ref{fig:divergence_diagram} shows a simple example of these procedures
-of propagating weights up a tree and summarizing them,
-used to calculate mean sequence divergence over a short sequence spanned by a single tree.
-
-% Many population genetic summary statistics can be defined using the allele frequency spectrum of a collection of homologous sequences.
 If we only considered summaries of the allele frequency spectrum of a single sample,
-our statistics would be equivalent to that described by \citet{fu1995statistical}.
-To connect the framework to familiar notions,
+our statistics would be equivalent to the framework described by \citet{fu1995statistical}.
+To connect our  generalization to familiar ideas,
 here is a reframing of \citeauthor{fu1995statistical}'s statistics.
 Write $p_i(a)$ for the frequency of allele $a$ at a site $i$,
 and $h(p)$ for the allele frequency spectrum
@@ -261,22 +260,40 @@ and $h(p)$ for the allele frequency spectrum
 and suppose that for some function $f()$, we want to compute $\sum_p h(p) f(p)$.
 (For instance, mean genetic diversity is computed with $f(p) = p (1-p)$.)
 Since this is a simple sum over sites,
-we can compute this by summing over the $L$ loci, as
+we can compute this by summing over the $L$ loci and all alleles
+(including the ancestral allele),
 \begin{align*}
     \sum_p h(p) f(p) = \sum_{i=1}^L \sum_a f(p_i(a)).
 \end{align*}
-% (Note that since the ancestral allele is included, this function is invariant to relabeling of alleles.)
 If we know where each mutation has occurred on the genealogy,
 we can easily find the frequency of the corresponding allele by counting how many samples
 inherit from that mutation in the tree (and accounting for those that subsequently mutate).
 
-Before defining the statistics, we need a few definitions.
-In a tree sequence, each haplotype, modern or ancestral, is associated with a \emph{node},
+Our framework is more general as we can also define statistics that are
+\emph{not} functions of the allele frequency spectrum.
+Before we define the framework, we need some notation and definitions.
+A tree sequence describes how a set of $n$ sampled chromosomes
+are related to each other along a (linear) genome of length $L$ \citep{kelleher2016efficient,kelleher2018efficient}.
+Each haplotype, modern or ancestral, is associated with a \emph{node},
 and the trees at each position along the genome have vertexes labeled by these nodes.
 A tree sequence describes the relationships between a special set of nodes, the \emph{samples},
 that appear in the trees at every point along the genome.
 The other (non-sample) nodes may not appear in every tree,
 as for instance if a portion of an ancestor's genome was not inherited by any of the samples.
+From the tree sequence can be extracted a sequence of trees,
+$\treeseq = (T_1, T_2, \ldots, T_{n(\treeseq)})$
+and a sequence of breakpoints $0 = a_0 < a_1 < \cdots < a_{n(\treeseq)} = L$,
+where $T_k$ describes the genealogical relationships of the samples
+over the segment of genome between $a_{k-1}$ (inclusive) and $a_k$ (exclusive).
+We say that tree $T_k$ \emph{covers} the (half-open) segment $[a_{k-1}, a_k)$,
+and call the length of this segment its \emph{span}, denoted $L_k = a_k - a_{k-1}$.
+We refer to the branches in each tree using the most recent node,
+so for instance a branch between an ancestor $v$ and descendant $u$
+is associated with the node $u$.
+Note that although the same parent-child relationship may exist across many adjacent trees
+(this is called an ``edge''),
+rearrangements of genealogical relationships due to recombination
+can cause the precise set of samples that inherit from that edge to differ across trees.
 
 \begin{definition}[Sample and subtree weights] \label{defn:weights}
     A list of \emph{sample weights} $\iw$ assigns a numeric value $\iw(v)$
@@ -318,32 +335,7 @@ of them.
 
 
 %%%%%%%%%%%%%%%%%%
-\subsection*{Tree sequences}
-
-Before defining the different classes of statistic,
-it will help to establish a little more notation.
-A tree sequence efficiently describes how a set of $n$ sampled chromosomes
-are related to each other along a (linear) genome of length $L$ \citep{kelleher2016efficient,kelleher2018efficient}.
-% These trees are highly correlated,
-% a fact which allows them to be stored and processed very efficiently,
-% as described in \citet{kelleher2018efficient}.
-From the tree sequence can be extracted a sequence of trees,
-$\treeseq = (T_1, T_2, \ldots, T_{n(\treeseq)})$
-and a sequence of breakpoints $0 = a_0 < a_1 < \cdots < a_{n(T)} = L$,
-where $T_k$ describes the genealogical relationships of the samples
-over the segment of genome between $a_{k-1}$ (inclusive) and $a_k$ (exclusive).
-We say that tree $T_k$ \emph{covers} the (half-open) segment $[a_{k-1}, a_k)$,
-and call the length of this segment its \emph{span}, denoted $L_k = a_k - a_{k-1}$.
-We refer to the branches in each tree using the most recent node,
-so for instance a branch between an ancestor $v$ and descendant $u$
-is associated with the node $u$.
-The \emph{length} of this branch is the difference in birth times of $v$ and $u$,
-and is denoted $\beta_T(u)$.
-Note that although the same parent-child relationship may exist across many adjacent trees
-(this is called an ``edge''),
-rearrangements of genealogical relationships due to recombination
-can cause the precise set of samples that inherit from that edge to differ across trees.
-
+% \subsection*{Tree sequences}
 
 %%%%%%%%%%%%%%%%%%
 \subsection*{Node statistics}
@@ -1391,16 +1383,16 @@ as tree sequences allow storage and processing of large genomic data sets
 with orders of magnitude less space and time than standard matrix-based methods.
 All statistics described here (and more) are implemented
 in the rigorously tested \tskit{} library,
-which provides a suite tools for efficiently working with tree sequences in Python and C.
+which provides a suite of tools for working with tree sequences in Python and C.
 Large-scale simulations are useful in many contexts
 \citep[e.g.,][]{martin2017human,browning2018one,galloway2019stickleback}
 and the ability to quickly compute a wide range of statistics from
 these (previously prohibitively large) datasets opens up new possibilities.
-At smaller scales, the statistics are still highly efficient and avoiding
-these cost of exporting data to a genotype matrix will in practice greatly
-speed up applications such as deep learning \jk{cite} and ABC~\jk{cite}
-that compute many statistics from simulated data. The ability to
-efficiently compute statistics from real data is also welcome, of course.
+At smaller scales the statistics are still highly efficient, and avoiding
+the cost of exporting simulated data to a genotype matrix will in practice greatly
+speed up inference based on summaries computed from simulated
+data~\citep{beaumont2002approximate,csillery2010approximate,schrider2018supervised,flagel2018unreasonable}.
+The ability to efficiently compute statistics from real data is, of course, also welcome.
 
 The correspondence between genome sequence and properties of the
 underlying genealogies we have used here is well-known. The general framework

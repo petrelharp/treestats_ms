@@ -144,7 +144,10 @@ becomes expensive. Larger datasets still, consisting of millions of whole
 genomes, are currently being collected, and it is clear that processing
 and storing these genotype matrices will be very costly.
 
-Fortunately, the genotype matrix is not the only way to encode genetic data.
+A key area of inefficiency in existing methods is that they focus on representing
+the genotype data as a \emph{matrix}.  As such, computational complexity if often linear
+in the matrix size. An alternative would be to take advantage of the relatedness amongst
+individuals in the sample and represent the data as trees.
 Trees describe the ancestral relationships between
 samples~\citep{felsenstein2004inferring,semple2003phylogenetics},
 and provide a natural and elegant way of encode genetic data,

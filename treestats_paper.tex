@@ -1336,22 +1336,21 @@ matrix, importing it into another package and computing from the matrix.
 \section*{Discussion}
 
 % overview: general definition that is mostly functions of jAFS but includes others
-In this paper, we have described a general framework for summarizing genetic variation
+In this paper we have described a general framework for summarizing genetic variation
 and the underlying genealogies
-that encompasses many standard population genetic statistics
-and makes it easy to explore more.
+that encompasses many standard population genetic statistics.
 Many of these statistics are functions of the joint allele frequency spectrum,
 but the framework is more general,
-and can be used to quantify associations between genotypes and phenotypes.
-This generality was partially motivated by laziness ---
-implementing new statistics is now simply a matter of devising the appropriate summary function ---
-but it also allows us to easily explore new classes of statistics.
+and can be used, for example, to quantify associations between genotypes and phenotypes.
+This generality greatly reduces the software development effort in
+implementing statistics efficiently,
+and it also allows users to easily explore new classes of statistics.
 The range of statistics available to describe variation in a single exchangeable sample
 (i.e., a single population) are well-understood,
 but there are much larger and less well-explored classes of statistics
 describing genetic variation between many populations
 or across geographical space.
-The statistics defined here are all \emph{additive} along the genome:
+The statistics defined here are all additive along the genome:
 if we have computed a statistic in equal-size windows along a chromosome,
 then the value of the statistic for the entire chromosome is equal to
 the average of the values in those windows.
@@ -1380,6 +1379,7 @@ Haplotype-based statistics may require different classes of algorithms.
 % \emph{simplification} of the tree sequence will not change the value of the statistic.
 % However, in practice this requirement can be relaxed.
 
+
 % speed/efficiency: big data sets; large simulations
 The most obvious application of these methods on current practice
 is to improve efficiency of existing pipelines,
@@ -1398,17 +1398,17 @@ is useful for understanding evolutionary simulations of any species
 % relevant for humans, I think.
 
 
-% duality: site stats ~ branch stat, but conversely branch more accurate version of site
-%  maybe analogous to imputation
-
 % TODO: too negative.
-We hope a more broadly interesting and useful aspect of this paper
-is a more in-depth look at the correspondence between statistics calculated with genome sequence
-and properties of the underlying genealogies, i.e.,
-the duality between Site and Branch statistics under the infinite-sites model.
-This general correspondence is well-known,
-but the common framework implemented here makes it easy to translate between the two.
-One way to use this translation is to answer:
+% We hope a more broadly interesting and useful aspect of this paper
+% is a more in-depth look at the correspondence between statistics calculated with genome sequence
+% and properties of the underlying genealogies, i.e.,
+% the duality between Site and Branch statistics under the infinite-sites model.
+The correspondence between genome sequence and properties of the
+underlying genealogies we have used here is well-known. The general framework
+that we have defined, however, codifies this relationship in a
+mathematically elegant and computationally efficient way, and may lead to
+new perspectives on well-studied problems.
+One way to use the duality between Site and Branch statistics is to answer:
 what aspect of tree shape is a particular population genetics statistic summarizing?
 This can help when interpreting results, especially if reality may not fit an idealized model
 of separate populations.
@@ -1420,25 +1420,32 @@ thus hopefully bypassing the extra layer of noise induced by mutation.
 How well this works will depend on the ability of inference methods
 to estimate the true tree sequence.
 This might plausibly produce less noisy estimates because tree sequence inference
-may use the signal from nearby patterns of variation
+should use the signal from nearby patterns of variation
 to interpret relationships at a given site,
 thus transforming the simple binary split induced by a SNP
-into a much richer source of information at every variant site.
+into a much richer source of information.
 Furthermore,
 if tree sequence inference can be made insensitive to local variation in mutation rate,
 calculation of branch statistics would provide a summary method
 that is not affected by this potentially important confounding factor.
+Similarly, if tree sequences inferred from
+genotype array data~\citep{kelleher2019inferring} are unbiased,
+then Branch statistics could provide a way
+to estimate genome-wide quantities without ascertainment bias.
+This procedure would be similar to imputation, and would likely face similar challenges.
 
+% duality: site stats ~ branch stat, but conversely branch more accurate version of site
+%  maybe analogous to imputation
 % Not sure about this: tangent? Perhaps combine this point with some others
 % in a compressed form?
-Many genomic datasets only contain genotype information at a subset of sites
-that do not represent an unbiased look at genome-wide variation,
-introducing an ascertainment bias that is difficult to account for in for many applications.
-If, however, unbiased tree sequences can be inferred using these data,
-then Branch statistics could provide unbiased estimates of genome-wide quantities.
-This is in principle possible, as \citet{kelleher2019inferring} inferred tree sequences
-with UK BioBank data, produced using genotyping arrays \citep{bycroft2018genome}.
-This procedure would be similar to imputation, and would likely face similar challenges.
+% Many genomic datasets only contain genotype information at a subset of sites
+% that do not represent an unbiased look at genome-wide variation,
+% introducing an ascertainment bias that is difficult to account for in for many applications.
+% If, however, unbiased tree sequences can be inferred using these data,
+% then Branch statistics could provide unbiased estimates of genome-wide quantities.
+% This is in principle possible, as \citet{kelleher2019inferring} inferred tree sequences
+% with UK BioBank data, produced using genotyping arrays \citep{bycroft2018genome}.
+% This procedure would be similar to imputation, and would likely face similar challenges.
 
 % visualization and time decomposition adding a new dimension
 Genomic data are naturally distributed along two axes: along the genome, and across geography.
@@ -1446,15 +1453,14 @@ The tree sequence extends this to a third axis: time.
 A great many methods in population genetics aim to describe aspects of history,
 and accurate (or at least unbiased) tree sequence inference
 may shift the focus of these problems from inference to descriptive analysis.
-The methods we develop here distribute the contribution to various statistics across each tree,
-and so could also be used to summarize contributions to various statistics across \emph{time}.
+The methods developed here distribute the contribution to various statistics across each tree,
+and so could also be used to summarize contributions to various statistics across time.
 This could provide, for instance, the time distribution of mutations or branches
 contributing positively or negatively to $f_4$ statistics of introgression,
-which could help historical interpretations of these signals.
-This additional mode of reporting statistics is an important subject for future work.
-
+enabling historical interpretations of these signals.
+% This additional mode of reporting statistics is an important subject for future work.
 % moving past a few summaries in discrete groups to a genome/time/space view of relatedness
-The historical toolbox of population genetics
+The computational toolbox of population genetics
 is still mostly composed of statistics designed for analysis of a handful of loci
 in a small number of discrete, mostly separated populations.
 Both our data and our understanding of the world have moved beyond this.

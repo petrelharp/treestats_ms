@@ -56,8 +56,8 @@ As a genetic mutation is passed down across generations,
 it distinguishes those genomes that have inherited it from those that have not,
 providing a glimpse of the genealogical tree relating the genomes to each other at that site.
 Statistical summaries of genetic variation therefore also describe the underlying genealogies.
-We exploit this correspondence here to define a general framework that
-efficiently compute single-site population genetic statistics
+We use this correspondence to define a general framework that
+efficiently computes single-site population genetic statistics
 using the succinct tree sequence encoding of genealogies and genome sequence.
 The general approach accumulates ``sample weights'' within each marginal tree,
 which are then combined using a ``summary function'';
@@ -120,27 +120,31 @@ signals.
 \section*{Introduction}
 
 It was once a major undertaking to collect data sufficient to estimate a single summary
-of the many genetic relationships between the individuals of a sample,
-e.g., to estimate levels of sequence diversity from a few dozen alleles at an allozyme locus
-\citep{Kreitman1983-xr}.
+of the genetic relationships between the individuals of a
+sample~\citep[e.g.][]{Kreitman1983-xr}.
+% e.g., to estimate levels of sequence diversity from a few dozen alleles at an allozyme locus
+% \citep{Kreitman1983-xr}.
 Today's vast quantity of whole-genome sequence
 makes it possible to confidently estimate many more properties of genealogical relationships
-in local regions of genomes \citep[e.g,][]{booker2018understanding,haenel2018metaanalysis,stankowski2019widespread},
-or between individuals rather than populations \citep[e.g.,][]{browning2010highresolution,speed2014relatedness,aguillon2017deconstructing}.
+in local regions of genomes, both between
+individuals~\citep[e.g.,][]{browning2010highresolution,speed2014relatedness,aguillon2017deconstructing},
+and within
+populations~\citep[e.g,][]{booker2018understanding,haenel2018metaanalysis,stankowski2019widespread}.
 Computation is beginning to be a major problem:
-genetic data on the scale of the UK Biobank~\citep{bycroft2018genome},
-for instance, might have 500K individuals genotyped at 10M loci,
-resulting in a genotype matrix of $5 \times 10^{12}$ entries.
-Computing a single summary from this matrix is still relatively quick,
-once loaded into memory,
-but for many applications we are now interested in computing a large number of statistics,
-or iteratively refining a single computation.
-Furthermore, even larger datasets are being collected,
-and millions of whole genomes will soon be available. In this case the
-genotype matrix simply cannot fit into memory, and complex distributed computations
-are required.
+projects on the scale of the UK Biobank~\citep{bycroft2018genome}
+and gnomAD~\citep{karczewski2019variation} hold genetic data for
+hundreds of thousands of samples at tens to hundreds of millions of variant sites.
+Such large genotype matrices are extremely unwieldy and difficult to process.
+Tools such as \texttt{hail} (\url{https://hail.is}) allow computations to be sharded
+across many machines in parallel, thereby calculating statistics far more
+quickly than is possible using single-computer methods such as
+\texttt{plink}~\citep{purcell2007plink}. Computer time must still be
+paid for, however, and running calculations concurrently on thousands of cores quickly
+becomes expensive. Larger datasets still, consisting of millions of whole
+genomes, are currently being collected, and it is clear that processing
+these genotype matrices will be very costly.
 
-Fortunately, the genotype matrix is not the only way to encode genetic data.
+The genotype matrix, fortunately, is not the only way to encode genetic data.
 The \emph{succinct tree sequence} (or \emph{tree sequence}, for brevity) is a data
 structure that efficiently encodes the genealogical trees describing how a set of
 individuals are related to each other at each point along their genome.
@@ -1340,8 +1344,8 @@ In this paper we have described a general framework for summarizing genetic vari
 and the underlying genealogies
 that encompasses many standard population genetic statistics.
 Many of these statistics are functions of the joint allele frequency spectrum,
-but the framework is more general,
-and can be used, for example, to quantify associations between genotypes and phenotypes.
+but the framework is more general and can be used,
+for example, to quantify associations between genotypes and phenotypes.
 This generality greatly reduces the software development effort in
 implementing statistics efficiently,
 and it also allows users to easily explore new classes of statistics.
@@ -1384,25 +1388,20 @@ Haplotype-based statistics may require different classes of algorithms.
 The most obvious application of these methods on current practice
 is to improve efficiency of existing pipelines,
 as tree sequences allow storage and processing of large genomic data sets
-with orders of magnitude less space and time than most other methods.
+with orders of magnitude less space and time than standard matrix-based methods.
 All statistics described here (and more) are implemented
 in the rigorously tested \tskit{} library,
 which provides a suite tools for efficiently working with tree sequences in Python and C.
-The largest efficiency gains are found for very large sample sizes
-only likely to be available in real data sets for humans in the near future,
-but the ability to analyze millions of whole genomes
-is useful for understanding evolutionary simulations of any species
-\citep[see, e.g.,][]{martin2017human,browning2018one,galloway2019stickleback}.
-% TODO rephrase this: large scale simulations are useful for lots of things.
-% No need for the slightly negative note about large datasets only being
-% relevant for humans, I think.
+Large-scale simulations are useful in many contexts
+\citep[e.g.,][]{martin2017human,browning2018one,galloway2019stickleback}
+and the ability to quickly compute a wide range of statistics from
+these (previously prohibitively large) datasets opens up new possibilities.
+At smaller scales, the statistics are still highly efficient and avoiding
+these cost of exporting data to a genotype matrix will in practice greatly
+speed up applications such as deep learning \jk{cite} and ABC~\jk{cite}
+that compute many statistics from simulated data. The ability to
+efficiently compute statistics from real data is also welcome, of course.
 
-
-% TODO: too negative.
-% We hope a more broadly interesting and useful aspect of this paper
-% is a more in-depth look at the correspondence between statistics calculated with genome sequence
-% and properties of the underlying genealogies, i.e.,
-% the duality between Site and Branch statistics under the infinite-sites model.
 The correspondence between genome sequence and properties of the
 underlying genealogies we have used here is well-known. The general framework
 that we have defined, however, codifies this relationship in a

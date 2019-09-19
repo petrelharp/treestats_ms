@@ -78,7 +78,7 @@ mts = msprime.mutate(ts, rate=mut_rate, keep=True)
 sub_branch_div = ts.diversity(sample_sets, windows=windows, mode='branch')
 sub_site_div = (1/mut_rate) * mts.diversity(sample_sets, windows=windows, mode='site')
 
-maxy = 0.7 * max(np.max(np.abs(all_site_div)), np.max(np.abs(all_branch_div)),
+maxy = 1.1 * max(np.max(np.abs(all_site_div)), np.max(np.abs(all_branch_div)),
                  np.max(np.abs(sub_site_div)), np.max(np.abs(sub_branch_div)))
 
 

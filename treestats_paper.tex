@@ -135,22 +135,29 @@ projects such as UK Biobank~\citep{bycroft2018genome}
 and gnomAD~\citep{karczewski2019variation} hold genetic data for
 hundreds of thousands of samples at tens to hundreds of millions of variant sites.
 Such large genotype matrices are extremely unwieldy and difficult to process,
-and computational complexity is often linear in the size of the matrix. 
-Tools such as \texttt{hail} (\url{https://hail.is}) allow computations to be sharded
+and computational complexity is usually linear in the size of the matrix.
+Tools such as \texttt{Hail} (\url{https://hail.is}) allow computations to be sharded
 across many machines in parallel, thereby calculating statistics far more
 quickly than is possible using single-computer methods such as
 \texttt{plink}~\citep{purcell2007plink}. Computer time must still be
 paid for, however, and running calculations concurrently on thousands of cores quickly
 becomes expensive. Larger datasets still, consisting of millions of whole
-genomes, are currently being collected, and it is clear that processing
+genomes, are currently being collected and it is clear that processing
 and storing these genotype matrices will be very costly.
 
-Fortunately, the genotype matrix is not the only way to encode genetic data:
-an alternative would be to take advantage of the relatedness amongst
-individuals and represent the data using trees.
-Trees describe the ancestral relationships between
-samples~\citep{felsenstein2004inferring,semple2003phylogenetics},
-and provide a natural and elegant way of encode genetic data,
+% Fortunately, the genotype matrix is not the only way to encode genetic data:
+% an alternative would be to take advantage of the relatedness amongst
+% individuals and represent the data using trees.
+Genotype matrices are massively redundant, however, and several specialised
+compression methods
+%JK Note for later: I think there's an earlier citation I'm missing here, but
+% I can't find it right now. Look it up when doing later corrections.
+have been proposed~\citep{durbin2014efficient,layer2016efficient,danek2018gtc,lin2019sparse}.
+The fundamental reason for this redundancy is that samples share ancestry:
+related individuals will tend to share the same state at a particular variant site.
+Trees describe these ancestral
+relationships~\citep{felsenstein2004inferring,semple2003phylogenetics},
+and provide a natural and elegant way of encoding genetic data,
 not only recording the history of a sample but also massively compressing
 the genotype matrix~\citep{ane2005missing}. Until recently, however,
 tree based approaches could not be used to encode data from sexually
@@ -169,7 +176,6 @@ Recent work has shown that tree sequence algorithms can
 also be used to massively increase the scalability of methods for inferring
 genome-wide genealogies, and making it possible to infer trees for millions of
 samples~\citep{kelleher2019inferring}.
-
 The key to the remarkable efficiency of tree sequence
 algorithms is the way that shared structure in adjacent trees along the genome is encoded.
 As one looks across the genome, genealogies change at recombination breakpoints in ancestors.
@@ -196,8 +202,8 @@ and explore a duality between ``Site'' and ``Branch'' statistics, and
 provide a detailed description (and analysis) of an efficient algorithm
 to compute statistics in this general setting.
 The methods we describe are implemented, tested, and validated in the \tskit{}
-Python and C libraries, available at \url{https://github.com/tskit-dev/tskit}
-under the terms of the MIT open source license.
+Python and C libraries, freely available at \url{https://github.com/tskit-dev/tskit}
+under the terms of the MIT license.
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \section*{Framework and statistics}
@@ -210,11 +216,11 @@ used extensively in deriving properties of statistics in models of random mating
 \citep[e.g.,][]{tajima1983evolutionary,tavare1984lineofdescent,fu1995statistical},
 as has the fact that it applies regardless of the underlying demographic model
 \citep[e.g.,][]{gillespie1979evolutionary,hudson1983properties,slatkin1991inbreeding,
-mcvean2002genealogical,ralph2019empirical}. We build on this central
+mcvean2002genealogical,lohse2016efficient,ralph2019empirical}. We build on this central
 insight to define a flexible and computationally efficient framework for
 population genetic statistics on tree sequences.
 Roughly speaking, to compute a statistic we will
-propagate ``weights'' additively up each tree,
+propagate ``weights'' additively up each marginal tree,
 summarize these weights on each branch with a ``summary function'',
 and aggregate these summaries to produce statistics.
 \autoref{fig:divergence_diagram} shows a simple example of these procedures
@@ -484,7 +490,8 @@ of how to compute common summary statistics.
 \end{example}
 
 An alternative and possibly more familiar way to compute heterozygosity
-would be to use a polarized Site statistic with summary function $f(x) = 2 x(n-x)/n(n-1)$.
+would be to use a polarized Site statistic with summary function $f(x) = 2
+x(n-x)/\left(n(n-1)\right)$.
 However, this approach fails with more than two alleles per site.
 
 \begin{example}[Nucleotide divergence] \label{ex:site_divergence}
@@ -558,9 +565,10 @@ against genotype with additional covariates.
 % c(cor(g,z), sum(g*z)/sqrt(n*(n-1)*p*(1-p)))
 \begin{example}[Patterson's $f_4$] \label{ex:site_f4}
     Given four disjoint groups of samples, $S_1$, $S_2$, $S_3$, and $S_4$,
-    Patterson's $f_4(S_1, S_2; S_3, S_4)$ statistic for an allele with frequency $p_i$ in group $S_i$
-    is $(p_1 - p_2)(p_3 - p_4)$ (and then this is typically averaged over sites).
-    To rewrite this as a sum over alleles, note that
+    Patterson's $f_4(S_1, S_2; S_3, S_4)$
+    statistic~\citep{reich2009reconstructing,patterson2012ancient}
+    for an allele with frequency $p_i$ in group $S_i$
+    is $(p_1 - p_2)(p_3 - p_4)$. To rewrite this as a sum over alleles, note that
     $p_1 - p_2 = p_1 (1 - p_2) - (1 - p_1) p_2$,
     and so the statistic counts with positive value
     alleles that split $S_1$ and $S_3$ from $S_2$ and $S_4$,
@@ -613,7 +621,8 @@ Genetic variation is informative about many processes
 precisely because it tells us about the underlying patterns of genealogical relatedness.
 In other words, often the genomes are most useful in so far as they tell us about the trees.
 In the case where we actually have the trees, or a good proxy for them,
-it is natural to summarize them directly, rather than working indirectly with the genotypes.
+it is natural to summarize them directly rather than working indirectly with the
+genotypes~\citep{harris2019database}.
 If we assume that no two mutations occur at the same genomic position ---
 i.e., the \emph{infinite sites model} ---
 then there is a natural correspondence between summaries of genotypes and summaries of tree shape.
@@ -626,15 +635,14 @@ defined as its span (right minus left endpoint) multiplied by its length (parent
 and scaled by the mutation rate,
 is equal to the expected number of mutations that will land on it.
 If the mutation rate is constant,
-then this gives us an isometry ---
-measuring tree distances in branch lengths versus in numbers of mutations
+then this gives us an isometry:
+tree distances measured in branch lengths versus in numbers of mutations
 are equal in expectation, up to a multiplicative factor of the mutation rate.
 
 This makes it natural to define
 a statistic of tree shape by summing these expected contributions across its branches.
-We define the \textbf{branch statistic} of a single tree $T$
-obtained from summary function $f()$
-and sample weights $\iw$ with total weight $\tiw = \sum_u \iw(u)$
+We define the \textbf{branch statistic} of a single tree $T$,
+obtained from summary function $f()$ and sample weights $\iw$,
 to be the sum of the length of each branch
 multiplied by the summary function applied to its subtree weight and its complement:
 \begin{align}\label{eqn:branch_stat_tree}
@@ -642,7 +650,8 @@ multiplied by the summary function applied to its subtree weight and its complem
     &=
     \sum_{u \in T} \beta_{T}(u) \left( f(\nw_{T}(u)) + f(\tiw - \nw_{T}(u)) \right)  ,
 \end{align}
-where $\beta_{T}(u)$ is the length of the branch ancestral to node $u$ in tree $T$
+where $\beta_{T}(u)$ is the length of the branch ancestral to node $u$ in tree $T$,
+$\tiw = \sum_u \iw(u)$ is the total weight,
 and $\nw_{T}(u)$ is the total weight of the subtree of $T$ inheriting from $u$ (as defined above).
 The term $\tiw - \nw_{T}(u)$ gives the total weight \emph{not} in the subtree of $T$ inheriting from $u$.
 The value $f(\nw(u))$ is the summary value that would be added to a site statistic
@@ -734,17 +743,17 @@ Similar strategies were explored by \citet{zollner2005coalescent} and \citet{min
 
 Under a neutral, infinite-sites model of mutation with constant mutation rate across time,
 the expected number of mutations per branch is proportional to its length.
-This implies an isormorphism between ``site'' and ``branch'' statistics defined above,
+This implies an isormorphism between ``Site'' and ``Branch'' statistics defined above,
 which is discussed in more detail in \citet{ralph2019empirical}.
 For instance, the site statistic of Example \ref{ex:site_diversity} (genetic diversity)
 and the branch statistic of Example \ref{ex:branch_diversity} (mean TMRCA)
-use the same summary function $f(x) = x(n-x)/n(n-1)$.
+use the same summary function $f(x) = x(n-x)/\left(n(n-1)\right)$.
 These are closely related because under an infinite-sites model of mutation,
 two sequences differ at a site only if there has been a mutation somewhere on the branches going back
 to their most recent common ancestor,
 and so if mutations occur with constant rate,
 the expected value of genetic diversity,
-averaging over mutational noise give the tree sequence,
+averaging over mutational noise given the tree sequence,
 is equal to the mutation rate multiplied by the average distance between the two in the trees.
 
 This relationship is true more generally.
@@ -759,7 +768,14 @@ with $\treeseq_{[i,j)}$ the trees spanning that interval,
 where the expected value leaves the genealogies fixed,
 averaging over infinite-sites mutations
 with rate $\mu$ per unit time and per unit of sequence length.
-In other words, the Site statistic can be thought of an estimator of its corresponding Branch statistic,
+Note that the expected product of two site statistics,
+$\E[\site(f, \iw) \site(g, \iw')]$
+is not equal to the product of the two branch statistics, $\branch(f, \iw) \branch(g, \iw')$,
+because they are not independent.
+However, it is always possible to define a branch statistic that
+gives the expected value of the product~\citep{ralph2019empirical}.
+
+A Site statistic can therefore be thought of as an estimator of its corresponding Branch statistic,
 which is itself a summary of local tree shapes.
 Because we have normalized these statistics by the length of the genome under consideration,
 both sides of this equation are in units of \emph{time}:
@@ -776,13 +792,6 @@ that no two mutations occur at the same site
 Third, we are assuming that mutation rates are constant through time and across the genome.
 Of course, the statement remains true if we can measure distance along the genome and time
 in a way that mutation rates are constant, but how these vary is generally unknown.
-
-Note that the expected product of two site statistics,
-$\E[\site(f, \iw) \site(g, \iw')]$
-is not equal to the product of the two branch statistics, $\branch(f, \iw) \branch(g, \iw')$,
-because they are not independent.
-However, it is always possible to define a branch statistic that
-gives the expected value of the product~\citep{ralph2019empirical}.
 
 In this view,
 site statistics are noisy approximations to the corresponding branch statistic
@@ -813,11 +822,11 @@ detecting recent selective sweeps,
 and detecting introgression.
 Figure~\ref{fig:sweep_duality} shows windowed
 diversity along the chromosome following a few selective sweeps.
-The top two plots compare ``branch'' diversity --- i.e., as computed only with tree shape ---
-to ``site'' diversity computed from sequence generated by 20 independent assignments of mutations to the same tree sequence,
+The top two plots compare Branch diversity --- i.e., as computed only with tree shape ---
+to Site diversity computed from sequence generated by 20 independent assignments of mutations to the same tree sequence,
 with mutation rates $10^{-9}$ and $10^{-8}$, respectively.
 We see that as the mutation rate increases, the signal of decrease in diversity around swept loci becomes more clear,
-and approaches ``branch'' diversity.
+and approaches Branch diversity.
 These were computed using the entire population of 1,000 individuals;
 how does sampling variance contribute?
 Not much, it turns out --- the bottom plot shows both site and branch diversity
@@ -874,11 +883,11 @@ We expect a significantly negative $f_4(1,2;3,4)$ in this situation,
 which we indeed find
 (the genome-wide mean Branch $f_4$ is around -700,
 as is the Site $f_4$ divided by mutation rate;
-see Supplemental Figure \ref{fig:introf4} for a plot along the genome).
+see Supplemental Figure~\ref{fig:introf4} for a plot along the genome).
 Using various sample sizes, mutation rates, and window sizes, we then
 calculated this $f_4$ statistic in windows along a 100Mb genome,
-and show the standard deviation of both ``site'' and ``branch'' statistics across windows
-in Figure \ref{fig:introf4sd}.
+and show the standard deviation of both Site and Branch statistics across windows
+in Figure~\ref{fig:introf4sd}.
 Since the genome is uniform (no selection or variation in recombination or mutation),
 this standard deviation is a measure of noisiness.
 As expected, site statistics are noisier than branch statistics,
@@ -911,7 +920,7 @@ so it remains to be seen if the improvement could be made in practice.
 
 We do not know the true genealogies underlying real data,
 but recent methods are available to estimate them at
-scale~\citep{harris2019database,kelleher2019inferring,speidel2019method}.
+scale~\citep{kelleher2019inferring,speidel2019method}.
 In Figure~\ref{fig:sweep_duality}, we showed that branch and site statistics
 matched well in simulated data. However, these simulations make many
 simplifying assumptions, and, moreover,
@@ -954,25 +963,25 @@ genetic diversity along the genome.
     }
 \end{figure}
 
-In practice, we do not expect branch and site diversity to agree exactly,
+In practice, we do not expect Branch and Site diversity to agree exactly,
 because of local differences in mutation rate and intensities of selected mutations.
 For instance, regions in which a high proportion of potential mutations are deleterious
 are expected to have a lower diversity for two reasons:
 first, the deleterious mutations themselves are less likely to be found,
 and second, the indirect effect of deleterious mutations on nearby sites reduces typical tree height
 and thus diversity at even neutral, linked sites \citep{hudson1994levels,charlesworth1997effects}.
-The first effect would cause site and branch statistics to differ,
+The first effect would cause Site and Branch statistics to differ,
 because it effectively reduces the mutation rate in the region
 and violates the assumption of independence of mutations given the trees.
-However, the second effect does \emph{not} affect the correspondence between site and branch statistics,
+However, the second effect does \emph{not} affect the correspondence between Site and Branch statistics,
 since it is mediated by tree shape.
 It is generally unknown how much mutation rate varies along the genome
 \citep[but see][]{supek2015differential}
-or how dense are targets of selection \citep{leffler2012revisiting}.
-For this reason, it is very interesting to see how close a correspondence between site and branch
+or how dense targets of selection are~\citep{leffler2012revisiting}.
+For this reason, it is very interesting to see how close a correspondence between Site and Branch
 statistics it is \emph{possible} to obtain ---
 it is tempting to say that the best tree sequence would obtain
-as tight a match between site and branch statistics as possible,
+as tight a match between Site and Branch statistics as possible,
 with remaining variation explained by direct selection and/or mutation rate variation.
 
 % This paragraph is essentially saying the same thing as the previous one,
@@ -1017,7 +1026,7 @@ to compute Branch statistics. This is a generalization
 of the algorithm used to maintain the number of samples from a
 given set that derive from each node in a tree
 sequence \cite[Algorithm L]{kelleher2016efficient}. The central
-problem shared across site, branch and node statistics
+problem shared across Site, Branch and Node statistics
 is to efficiently maintain the ``state'' $x_u$ (where $x_u$ is the
 sum of the weights for all samples descending
 from, and including, node $u$; see Figure~\ref{fig:divergence_diagram}).
@@ -1063,9 +1072,9 @@ across the full span of the tree sequence; the extension to multiple windows is 
 See below for a description of the steps in words,
 and \autoref{fig:algorithm_example} for an example of the internal state of the algorithm.
 
-\begin{taocpalg}{B}{General branch statistics}
+\begin{taocpalg}{B}{General Branch statistics}
 {Given a list of $n$ sample nodes $S$, corresponding weights $w$ and
-summary function $f: \R \rightarrow \R$
+summary function $f: \R \rightarrow \R$,
 compute the span-normalized statistic $\sigma$
 over a tree sequence with sequence length $L$
 defined by the node and edge tables $\Nt$ and $\Et$. We assume
@@ -1146,7 +1155,7 @@ the branch $u \mapsto v$ corresponding to a single edge, by
 subtracting its contribution to the running sum $s$, setting the parent of
 $u$ to $-1$ and its branch length to $0$. As shown in
 Figure~\ref{fig:algorithm_example}B, removing an edge will result
-in the subtree rooted at $u$ become disconnected from the rest of the
+in the subtree rooted at $u$ becoming disconnected from the rest of the
 tree. Step \algref{B5} ensures that the state of the rest of the tree
 is correctly maintained by propagating the loss of the state $x_u$
 up the tree from $v$. Thus, for each node $v$ that was a
@@ -1195,7 +1204,7 @@ of Algorithms~\algref{B} is of order $n + \rho \log(n) \log_2(n)$, which is
 \begin{equation}\label{eqn:alg_complexity}
     O\left(n + \rho \log(n)^2 \right).
 \end{equation}
-Computing a site statistic will have the same complexity,
+Computing a Site statistic will have the same complexity,
 as the same internal state is maintained,
 and the number of segregating sites is proportional to the number of edges
 (with constant equal to the ratio of mutation to recombination rate).
@@ -1287,7 +1296,7 @@ the matrix is approximately 200 gigabytes, and thus not practical on many system
 The largest tree sequence simulated required less than one gigabyte of memory.
 
 To determine how well our theoretical model of time complexity predicts the
-running time in \tskit{}'s implementation of the site statistics algorithm,
+running time in \tskit{}'s implementation of the Site statistics algorithm,
 we fitted a model based on Equation~\eqref{eqn:alg_complexity}.
 \autoref{fig:stats_performance} shows that theoretical predictions match
 the observed running time very well. As the overall complexity is
@@ -1328,7 +1337,7 @@ as they improve the number of edges required to encode data will
 be reduced. For data simulated natively in tree sequence format
 via packages such as \texttt{msprime}~\citep{kelleher2016efficient},
 \texttt{SLiM}~\citep{haller2018tree,haller2019slim} and
-\texttt{fwdpy11}~\citep{thornton2014c++}, the advice is straightforward.
+\texttt{fwdpy11}~\citep{thornton2014c++}, however, the advice is straightforward.
 Computing statistics using the algorithms in \tskit{}
 will always be more efficient than decoding the genotype
 matrix, importing it into another package and computing from the matrix.
@@ -1445,7 +1454,7 @@ This procedure would be similar to imputation, and would likely face similar cha
 % This procedure would be similar to imputation, and would likely face similar challenges.
 
 % visualization and time decomposition adding a new dimension
-Genomic data are naturally distributed along two axes: along the genome, and across geography.
+Genomic data are naturally distributed on two axes: along the genome, and across geography.
 The tree sequence extends this to a third axis: time.
 A great many methods in population genetics aim to describe aspects of history,
 and accurate (or at least unbiased) tree sequence inference

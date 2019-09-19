@@ -797,23 +797,36 @@ In this view,
 site statistics are noisy approximations to the corresponding branch statistic
 --- but, how noisy?
 How big is the contribution of mutation to the overall sampling variance of a statistic?
-The law of total variance lets us partition the variance of a site statistic
-into the contributions of mutation and demographic noise:
+The law of total variance partitions the variance of a site statistic
+into the contributions of noise from demography and mutation:
 \begin{align*}
-    \var[\site(f, \iw)_{[a,b)}]
+    \var[\site(f, \iw)_{[i,j)}]
     &=
-        \E\left[ \var\left[\site(f, \iw)_{[a,b)} \given \treeseq_{[a,b)}\right] \right]
-        + \var\left[ \E\left[\site(f, \iw)_{[a,b)} \given \treeseq_{[a,b)}\right] \right] \\
+        \var\left[ \E\left[\site(f, \iw)_{[i,j)} \given \treeseq_{[i,j)}\right] \right] 
+            +
+        \E\left[ \var\left[\site(f, \iw)_{[i,j)} \given \treeseq_{[i,j)}\right] \right]
+        \\
     &=
-        \E\left[ \var\left[\site(f, \iw)_{[a,b)} \given \treeseq_{[a,b)}\right] \right]
-        + \var\left[ \branch(f, \iw)_{[a,b)} \right] .
+        \var\left[ \branch(f, \iw)_{[i,j)} \right]
+            +
+        \frac{1}{j-i} \E\left[ \branch(f^2, \iw)_{[i,j)} \right] .
 \end{align*}
-The first term, the variance of the statistic given the trees,
+The first term is the variance of the expected Site statistic given the trees,
+which by duality is the variance of the Branch statistic,
+i.e., the contribution of demographic noise, including genetic drift.
+The second term, the expected variance of the statistic given the trees,
 is the contribution to variance of mutation,
-while the second term, the variance of the branch statistic,
-is the contribution of demographic variation, including drift.
+and can itself be written as a Branch statistic,
+using the same weights and the summary function $f(x)^2$
+\citep[Lemma 2 in][]{ralph2019empirical}.
+The reason for this is straightforward ---
+the Site statistic is a sum across branches of the number of mutations on the branch
+multiplied by a summary, $f(x)$.
+Given the trees, these numbers of mutations are independent and Poisson,
+and the variance of $f(x)$ multiplied by a Poisson random variable with mean $m$ is $m f(x)^2$.
+The sum is divided by the length of the region, $j-i$,
+and so the variance is divided by $(j-i)^2$.
 
-% JK: deleted the section here as it seemed superfluous.
 
 We examined the contributions of mutation and demography to noise
 in two simulations where population genetic (site) statistics

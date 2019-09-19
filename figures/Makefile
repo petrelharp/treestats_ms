@@ -5,6 +5,9 @@ figs : swept.1000.999.1e-09.diversity.pdf swept.10000.765.1e-09.diversity.pdf di
 
 1kg_figs : 1kg/relate_chr20.site.1000000.region.diversity.pdf 1kg/relate_chr20.branch.1000000.region.diversity.pdf
 
+1kg/relate_chr20_site_div_branch.1000000.diversity.pdf : 1kg/relate_chr20.branch.1000000.diversity.tsv 1kg/relate_chr20.site.1000000.diversity.tsv
+	python3 compare_relate_diversity.py
+
 %.site.1000000.region.diversity.pdf :
 	./plot_1kg_diversity.py $*.trees chr20.strictMask.binary.gz site 1000000
 

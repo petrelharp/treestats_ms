@@ -961,16 +961,17 @@ genetic diversity along the genome.
 
 
 \begin{figure}
-    \includegraphics{{figures/1kg/relate_chr20.site.1000000.region.diversity}.pdf}
-    \includegraphics{{figures/1kg/relate_chr20.branch.1000000.region.diversity}.pdf}
+    \includegraphics{{figures/1kg/relate_chr20_site_div_branch.1000000.diversity}.pdf}
     \caption{
         \textbf{(top)} Mean sequence diversity
         in 1Mb windows along human chromosome 20 of the 1000 Genomes Project,
-        in units of mean number of pairwise differences per nucleotide,
-        and \textbf{(bottom)}
-        the dual Branch statistic as calculated from tree sequences inferred by
+        in units of mean number of pairwise differences per nucleotide.
+        \textbf{(middle)}
+        The dual Branch statistic as calculated from tree sequences inferred by
         Relate~\citep{speidel2019method},
         in units of generations.
+        \textbf{(bottom)} The ratio of the Site statistic to the Branch statistic,
+        which note hovers around typical per-generation estimates of the human mutation rate.
         Separate curves are plotted for each sampling location.
         \label{fig:chr20}
     }
@@ -1668,7 +1669,7 @@ however, this would be more involved
 \begin{figure}[!h]
     \includegraphics[width=\textwidth]{{figures/swept.10000.765.1e-09.diversity}.pdf}
     \caption{
-        As in Figure~\ref{fig:sweep_duality}, but in a population of size 10,000.
+        As in \autoref{fig:sweep_duality}, but in a population of size 10,000.
         \label{sfig:sweep_duality_10K}
     }
 \end{figure}

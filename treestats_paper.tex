@@ -122,8 +122,6 @@ signals.
 It was once a major undertaking to collect data sufficient to estimate a single summary
 of the genetic relationships between the individuals of a
 sample~\citep[e.g.,][]{Kreitman1983-xr}.
-% e.g., to estimate levels of sequence diversity from a few dozen alleles at an allozyme locus
-% \citep{Kreitman1983-xr}.
 Today's vast quantity of whole-genome sequence
 makes it possible to confidently estimate many more properties of genealogical relationships
 in local regions of genomes, both between
@@ -145,14 +143,10 @@ becomes expensive. Larger datasets still, consisting of millions of whole
 genomes, are currently being collected and it is clear that processing
 and storing these genotype matrices will be very costly.
 
-% Fortunately, the genotype matrix is not the only way to encode genetic data:
-% an alternative would be to take advantage of the relatedness amongst
-% individuals and represent the data using trees.
 Genotype matrices are massively redundant, however, and several specialised
-compression methods
-%JK Note for later: I think there's an earlier citation I'm missing here, but
-% I can't find it right now. Look it up when doing later corrections.
-have been proposed~\citep{durbin2014efficient,layer2016efficient,danek2018gtc,lin2019sparse}.
+compression methods have been proposed~\citep{
+christley2008human,qiao2012handling,durbin2014efficient,sambo2014compression,layer2016efficient,
+danek2018gtc,lin2019sparse}.
 The fundamental reason for this redundancy is that samples share ancestry:
 related individuals will tend to share the same state at a particular variant site.
 Trees describe these ancestral
@@ -802,7 +796,7 @@ into the contributions of noise from demography and mutation:
 \begin{align*}
     \var[\site(f, \iw)_{[i,j)}]
     &=
-        \var\left[ \E\left[\site(f, \iw)_{[i,j)} \given \treeseq_{[i,j)}\right] \right] 
+        \var\left[ \E\left[\site(f, \iw)_{[i,j)} \given \treeseq_{[i,j)}\right] \right]
             +
         \E\left[ \var\left[\site(f, \iw)_{[i,j)} \given \treeseq_{[i,j)}\right] \right]
         \\

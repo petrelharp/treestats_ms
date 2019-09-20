@@ -122,8 +122,6 @@ signals.
 It was once a major undertaking to collect data sufficient to estimate a single summary
 of the genetic relationships between the individuals of a
 sample~\citep[e.g.,][]{Kreitman1983-xr}.
-% e.g., to estimate levels of sequence diversity from a few dozen alleles at an allozyme locus
-% \citep{Kreitman1983-xr}.
 Today's vast quantity of whole-genome sequence
 makes it possible to confidently estimate many more properties of genealogical relationships
 in local regions of genomes, both between
@@ -145,14 +143,10 @@ becomes expensive. Larger datasets still, consisting of millions of whole
 genomes, are currently being collected and it is clear that processing
 and storing these genotype matrices will be very costly.
 
-% Fortunately, the genotype matrix is not the only way to encode genetic data:
-% an alternative would be to take advantage of the relatedness amongst
-% individuals and represent the data using trees.
-Genotype matrices are massively redundant, however, and several specialised
-compression methods
-%JK Note for later: I think there's an earlier citation I'm missing here, but
-% I can't find it right now. Look it up when doing later corrections.
-have been proposed~\citep{durbin2014efficient,layer2016efficient,danek2018gtc,lin2019sparse}.
+Genotype matrices are massively redundant, however, and several specialized
+compression methods have been proposed~\citep{
+christley2008human,qiao2012handling,durbin2014efficient,sambo2014compression,layer2016efficient,
+danek2018gtc,lin2019sparse}.
 The fundamental reason for this redundancy is that samples share ancestry:
 related individuals will tend to share the same state at a particular variant site.
 Trees describe these ancestral
@@ -196,7 +190,7 @@ supporting arbitrary tree topologies and patterns of allelic variation.
 In this paper, we study ``single-site'' genetic statistics,
 i.e., statistics of aligned genome sequence that can be expressed as averages over values computed
 separately for each site. We develop a theoretical and computational framework
-that encompasses a large class of population genetic statistics, generalising
+that encompasses a large class of population genetic statistics, generalizing
 many classical summaries of genetic variation. We define
 and explore a duality between ``Site'' and ``Branch'' statistics, and
 provide a detailed description (and analysis) of an efficient algorithm
@@ -802,7 +796,7 @@ into the contributions of noise from demography and mutation:
 \begin{align*}
     \var[\site(f, \iw)_{[i,j)}]
     &=
-        \var\left[ \E\left[\site(f, \iw)_{[i,j)} \given \treeseq_{[i,j)}\right] \right] 
+        \var\left[ \E\left[\site(f, \iw)_{[i,j)} \given \treeseq_{[i,j)}\right] \right]
             +
         \E\left[ \var\left[\site(f, \iw)_{[i,j)} \given \treeseq_{[i,j)}\right] \right]
         \\
@@ -971,8 +965,10 @@ genetic diversity along the genome.
         Relate~\citep{speidel2019method},
         in units of generations.
         \textbf{(bottom)} The ratio of the Site statistic to the Branch statistic,
-        which note hovers around typical per-generation estimates of the human mutation rate.
-        Separate curves are plotted for each sampling location.
+        which, we note, hovers around typical per-generation estimates of the human mutation
+        rate~\citep{narasimhan2017estimating}.
+        Separate curves are plotted for continental groupings:
+        AFR, Africa; AMR, America; EAS, east Asia; EUR, Europe; SAS, south Asia.
         \label{fig:chr20}
     }
 \end{figure}
@@ -1031,10 +1027,8 @@ but more work needs to be done, particularly on models with large proportions of
 
 
 %%%%%%%%%%%%%%%%%%
-\section*{Efficient algorithms and implementation}
+\section*{Algorithm and implementation}
 
-%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Algorithms}
 In this section we describe and analyze the algorithm used
 to compute Branch statistics. This is a generalization
 of the algorithm used to maintain the number of samples from a
@@ -1481,7 +1475,7 @@ enabling historical interpretations of these signals.
 % This additional mode of reporting statistics is an important subject for future work.
 % moving past a few summaries in discrete groups to a genome/time/space view of relatedness
 The computational toolbox of population genetics
-is still mostly composed of statistics orginally designed for analysis of a handful of loci
+is still mostly composed of statistics originally designed for analysis of a handful of loci
 in a small number of discrete, mostly separated populations.
 Both our data and our understanding of the world have moved beyond this.
 We hope that the tools developed here will help make it possible

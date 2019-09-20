@@ -255,9 +255,10 @@ by (a) assigning each of these samples weight 1 (and other samples weight zero),
 This gives the number of samples that would inherit any mutation falling on this branch,
 so is analogous to the allele frequency spectrum.
 If we only considered summaries of the allele frequency spectrum of a single sample,
-our statistics would be equivalent to the framework described by \citet{fu1995statistical}.
-To connect our  generalization to familiar ideas,
-here is a reframing of \citeauthor{fu1995statistical}'s statistics.
+our statistics would be equivalent to the linear functions of the frequency spectrum
+discussed by \citet{fu1995statistical} and \citet{achaz2009frequency}.
+To connect our generalization to familiar ideas,
+here is a reframing of these statistics of the frequency spectrum.
 Write $p_i(a)$ for the frequency of allele $a$ at a site $i$,
 and $h(p)$ for the allele frequency spectrum
 --- i.e., the number of alleles whose frequency is $p$ in our sample ---
@@ -817,7 +818,8 @@ The reason for this is straightforward ---
 the Site statistic is a sum across branches of the number of mutations on the branch
 multiplied by a summary, $f(x)$.
 Given the trees, these numbers of mutations are independent and Poisson,
-and the variance of $f(x)$ multiplied by a Poisson random variable with mean $m$ is $m f(x)^2$.
+and the variance of the product of the constant $f(x)$
+and a Poisson random variable with mean $m$ is $m f(x)^2$.
 The sum is divided by the length of the region, $j-i$,
 and so the variance is divided by $(j-i)^2$.
 
@@ -946,10 +948,18 @@ in 1Mb windows in each of the five continental groupings.
 All calculations were done only using the portions of the chromosome
 passing the 1000 Genomes Phase 1 ``strict'' mask for sequencing accessibility.
 % from ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase1/analysis_results/supporting/accessible_genome_masks/README.20120515_phase1_pop_gen_mask
-As shown in Figure~\ref{fig:chr20}, Branch and Site diversity along the genome are very similar.
-Is this an indication that Relate is doing a good job at inferring trees,
-or just a byproduct of the inference method
-(which, naturally, estimates branch lengths to be proportional to numbers of mutations)?
+As shown in Figure~\ref{fig:chr20}, the ratio of Site and Branch diversity
+is relatively constant, hovering around typical estimates for the average genome-wide human mutation rate~\citep{narasimhan2017estimating}.
+On the one hand, this is expected ---
+Relate estimates branch lengths in part assuming that mutations fall at a constant rate through time
+(although \citeauthor{speidel2019method} also showed signal of changing mutation rates,
+pointing the way towards a more general method).
+On the other hand,
+since estimated node ages are shared across long regions of the genome,
+a tight agreement may not be possible with poorly inferred trees.
+So, the relative constancy of the ratio of Site to Branch diversity
+suggests that Relate is doing a good job at inferring trees,
+but what to make of the twofold variation in this ratio?
 Answering this question requires a deeper understanding of the processes that shape
 genetic diversity along the genome.
 

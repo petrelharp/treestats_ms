@@ -1,0 +1,119 @@
+% Modified from the following by peter ralph, 11/4/2013
+
+\usepackage{graphicx}
+\usepackage{ifthen}
+\RequirePackage{times}
+
+%%%%%%%%%% EXACT 1in MARGINS %%%%%%%                                   %%
+\setlength{\textwidth}{6.5in}     %%                                   %%
+\setlength{\oddsidemargin}{0in}   %% (It is recommended that you       %%
+\setlength{\evensidemargin}{0in}  %%  not change these parameters,     %%
+\setlength{\textheight}{8.8in}    %%  at the risk of having your       %%
+\setlength{\topmargin}{0in}       %%  proposal dismissed on the basis  %%
+\setlength{\headheight}{0in}      %%  of incorrect formatting!!!)      %%
+\setlength{\headsep}{0in}         %%                                   %%
+\setlength{\footskip}{.2in}       %%                                   %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%                                   %%
+
+
+\setlength{\parskip}{1em plus4mm minus3mm}
+
+\newcommand*{\name}[1]{\def\fromname{#1}}
+\newcommand*{\signature}[1]{\def\fromsig{#1}}
+\newcommand*{\address}[1]{\def\fromaddress{#1}}
+\newcommand*{\location}[1]{\def\fromlocation{#1}}
+\newcommand*{\telephone}[1]{\def\telephonenum{#1}}
+\name{}
+\signature{}
+\address{}
+\location{}
+\telephone{}
+
+\newcommand{\ucluniv}{UO}
+\newcommand{\uclcampus}{}
+\newcommand{\uclschool}{Departments of Mathematics and Biology}
+\newcommand{\uclunivstreet}{335 Pacific Hall, University of Oregon}
+\newcommand{\uclunivtown}{Eugene, OR 97403-5289}
+\newcommand{\ucldept}{Institute for Ecology and Evolution}
+\newcommand{\ucldeptphone}{(541) 346-4532}
+\newcommand{\ucldeptfax}{}
+\newcommand{\ucldepturl}{http://ie2.uoregon.edu/}
+\newcommand{\ucltelephone}{}
+\newcommand{\uclemail}{}
+\newcommand{\uclfax}{}
+\newcommand{\dept}[1]{\renewcommand{\ucldept}{#1}}
+
+% These commands show up in the return address, but NOT in the footer on each page
+\newcommand{\email}[1]{\renewcommand{\uclemail}{#1}}
+\newcommand{\fax}[1]{\renewcommand{\uclfax}{#1}}
+
+
+\renewcommand{\telephone}[1]{\renewcommand{\ucltelephone}{#1}}
+\newcommand{\sixrm}{\fontfamily{ptm}\fontsize{6}{8}\selectfont}
+\newcommand{\svnrm}{\fontfamily{ptm}\fontsize{7}{9}\selectfont}
+\newcommand{\egtrm}{\fontfamily{ptm}\fontsize{8}{10}\selectfont}
+\newcommand{\twlrm}{\fontfamily{ptm}\fontsize{12}{14}\selectfont}
+\newcommand{\ctrdot}{\hspace*{1.4pt}$\cdot$\hspace*{1.4pt}}
+
+\newcommand{\uscaddress}{
+  \begin{minipage}[t]{2.0in}
+      \vspace{.2em}
+      \ifthenelse{\equal{\fromname}{}}{}{{\sc \fromname}\\}
+      \ifthenelse{\equal{\ucltelephone}{}}{}{{\sc Phone:} \ucltelephone\\}
+      \ifthenelse{\equal{\uclfax}{}}{}{{\sc Fax:} \uclfax\\}
+      \ifthenelse{\equal{\uclemail}{}}{}{{\sc Email:} \uclemail\\}
+  \end{minipage}
+}
+
+
+\newsavebox{\uscletterhead}
+\sbox{\uscletterhead}{\parbox[t]{6.5in}{
+    \parbox{2.925in}{\includegraphics{uo-logo}}
+        \begin{minipage}{3.975in}
+          \hfill
+          \begin{minipage}{3in}
+            \egtrm\MakeUppercase
+            \ucldept \\
+            \ifthenelse{\equal{\uclunivstreet}{}}{}{
+          \egtrm\MakeUppercase \uclunivstreet \\
+          }
+          \egtrm\MakeUppercase \uclunivtown \\
+            \ifthenelse{\equal{\ucldeptphone}{}}{}{\hspace\fill\ucldeptphone} 
+      \end{minipage}
+    \end{minipage}
+    \vspace{0.5em}
+    \hrule
+  }
+}
+
+
+\newdimen\longindentation
+\longindentation=.5\textwidth
+\newdimen\indentedwidth
+\indentedwidth=\textwidth
+\advance\indentedwidth -\longindentation
+
+\newcommand{\firstpage} { \centerline{\parbox{6.5in}{\usebox{\uscletterhead}}} }
+
+\newcommand{\closing}[1]{\par\nobreak\vspace{\parskip}%
+  \noindent
+  \ifx\empty\fromaddress\else
+  \hspace*{\longindentation}\fi
+  \parbox{\indentedwidth}{\raggedright
+       \ignorespaces #1\\[1\medskipamount]%
+       \ifx\empty\fromsig
+           \fromname
+       \else \fromsig \fi\strut}%
+   \par}
+
+\newcommand{\opening}[1]{
+  \firstpage
+  \vspace*{.05in}
+    \noindent\rule{4.25in}{0mm}
+    \uscaddress
+  \vspace{1ex}
+
+  \noindent #1
+  \vspace{1ex}
+}
+

@@ -10,6 +10,11 @@
 \bibliographystyle{plainnat}
 
 \include{macros}
+\newif\ifreviewresponses
+\reviewresponsestrue  % include them
+% \reviewresponsesfalse  % don't include them
+\newcommand{\responsefile}{review-responses.tex}  % name of the review reponses file
+\input{review-response-commands} % for line numbers only for now
 
 \newcommand{\tskit}{{\texttt{tskit}}}
 \newcommand{\branch}{\mbox{Branch}} % branch stat
@@ -1362,6 +1367,16 @@ Computing statistics using the algorithms in \tskit{}
 will always be more efficient than decoding the genotype
 matrix, importing it into another package and computing from the matrix.
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Data and code accessibility}
+
+All methods described here are implemented in python and C in the package \tskit{},
+available from \url{https://github.com/tskit-dev/tskit}
+under the terms of the MIT license.
+All code used to produce the figures in this paper
+is available from \url{https://github.com/petrelharp/treestats_ms}.
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \section*{Discussion}

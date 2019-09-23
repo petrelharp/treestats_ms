@@ -1,0 +1,71 @@
+\documentclass[12pt,letterpaper]{article}
+\input{plrletter-commands}
+\usepackage[hidelinks]{hyperref}
+
+
+\signature{
+    Peter Ralph, on behalf of Kevin Thornton and Jerome Kelleher.}
+\name{Peter Ralph}
+\address{Peter Ralph\\ Institute for Ecology and Evolution\\ and Departments of Mathematics and Biology,\\ University of Oregon\\
+plr@uoregon.edu}
+\telephone{(707) 502-5854}
+\email{plr@uoregon.edu}
+
+\begin{document}
+
+\pagestyle{plain}
+
+\noindent 
+  
+
+\opening{To the editor(s) --}
+\hspace{\stretch{1}}
+\today
+
+    We are writing to submit our manuscript, entitled
+    \emph{Efficiently summarizing relationships in large samples: a general
+        duality between statistics of genealogies and genomes},
+    for consideration for publication in \textit{Genetics}.
+
+    An important part of the paper is that it introduces fast methods for computation
+    of population genetic statistics from large numbers of genomes using tree sequences,
+    available through the tested and validated python package \texttt{tskit}.
+    However, that's not the main point ---
+    if it was, we'd be submitting to a more bioinformatics-focused journal. 
+    It is well-known that population genetics statistics say something about the underlying genealogies,
+    although it is not common for researchers to explicitly discuss this.
+    The bigger point of our manuscript is to describe a general framework that makes it clear
+    precisely what aspect of the underlying genealogies is described by each statistic,
+    under the infinite-sites model of mutation,
+    and to provide methods to compute these statistics of tree shape as well.
+    We think this makes population genetics statistics conceptually cleaner,
+    but has some other possible benefits, besides speed:
+    (1) we make it easy to invent and implement new statistics;
+    (2) the framework allows separation of mutational from demographic noise;
+    and (3) if unbiased tree sequences can be inferred from genomic data,
+    summarizing the trees themselves provides a descriptive method
+    insensitive to variation in substitution rate or perhaps even marker ascertainment.
+    The last is dependent on testing and improvement of tree sequence inference,
+    but would be tremendously useful, if it works out.
+
+    We have put a lot of effort into making the paper accessible to the readership of \textit{Genetics}.
+    The paper begins with a careful treatment of the theoretical framework and many examples,
+    then illustrates points with simulation and a tree sequence inferred from 1000 Genomes data
+    (by Speidel et al, 2019),
+    and finally describes the fundamental algorithm and compares computational efficiency
+    to other methods.
+    The definitions and framework might seem lengthy,
+    but in our assessment they are necessarily so:
+    there are many false paths that intuition can lead even experienced theoreticians down,
+    and choices we have made in our framework that might seem strange at first
+    turn out to be natural once carefully considered.
+
+    We are enthusiastic about the potential impact of this paper
+    and its interest to the readers of \textit{Genetics}.
+    We hope that you agree.
+
+\closing{Sincerely,}
+
+
+\end{document}
+

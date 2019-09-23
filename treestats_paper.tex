@@ -1456,10 +1456,15 @@ At smaller scales the statistics are still highly efficient, and avoiding
 the cost of exporting simulated data to a genotype matrix will in practice greatly
 speed up inference based on summaries computed from simulated
 data~\citep{beaumont2002approximate,csillery2010approximate,schrider2018supervised}.
+Efficient simulations coupled with the framework developed here allow us to
+explore the full distribution of summaries along the genome, which has
+important applications in (e.g.) speciation genomics~\citep{lohse2017come}.
 The ability to efficiently compute statistics from real data is, of course, also welcome.
 
 The correspondence between genome sequence and properties of the
-underlying genealogies we have used here is well-known. The general framework
+underlying genealogies we have used here is well-known,
+and is the basis for several inference methods~\citep{becquet2007new,beeravolu2018able}.
+The general framework
 that we have defined, however, codifies this relationship in a
 mathematically elegant and computationally efficient way, and may lead to
 new perspectives on well-studied problems.
@@ -1538,9 +1543,9 @@ along the genome, across space, and through time.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Acknowledgments and author contributions}
-Thanks to Graham Coop, Andrew Kern, Nick Patterson, Kelley Harris and
-Aaron Ragsdale for useful suggestions
+\subsection*{Acknowledgments}
+Thanks to Graham Coop, Andrew Kern, Nick Patterson, Kelley Harris,
+Aaron Ragsdale and Konrad Lohse for useful suggestions
 and to Leo Speidel for providing the inferred 1000 Genomes tree sequence.
 This work was supported by NSF grant \#1262645 (DBI) to PLR
 and by NIH grant R01-GM115564 to KRT. JK was supported by

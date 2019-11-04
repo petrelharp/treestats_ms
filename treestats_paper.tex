@@ -11,8 +11,8 @@
 
 \include{macros}
 \newif\ifreviewresponses
-% \reviewresponsestrue  % include them
-\reviewresponsesfalse  % don't include them
+\reviewresponsestrue  % include them
+% \reviewresponsesfalse  % don't include them
 \newcommand{\responsefile}{review-responses.tex}  % name of the review reponses file
 \input{review-response-commands} % for line numbers only for now
 
@@ -41,6 +41,7 @@
 \newcommand{\plr}[1]{{\color{blue}\textbf{plr:} \it #1}}
 \newcommand{\jk}[1]{{\color{red}\textbf{jk:} \it #1}}
 \newcommand{\krt}[1]{{\color{green}\textbf{krt:} \it #1}}
+
 
 
 \begin{document}
@@ -808,9 +809,9 @@ into the contributions of noise from demography and mutation:
         \E\left[ \var\left[\site(f, \iw)_{[i,j)} \given \treeseq_{[i,j)}\right] \right]
         \\
     &=
-        \var\left[ \branch(f, \iw)_{[i,j)} \right]
+        \mu^2 \var\left[ \branch(f, \iw)_{[i,j)} \right]
             +
-        \frac{1}{j-i} \E\left[ \branch(f^2, \iw)_{[i,j)} \right] .
+        \frac{\mu}{j-i} \E\left[ \branch(f^2, \iw)_{[i,j)} \right] .
 \end{align*}
 The first term is the variance of the expected Site statistic given the trees,
 which by duality is the variance of the Branch statistic,
@@ -1714,6 +1715,10 @@ however, this would be more involved
         \label{fig:introf4}
     }
 \end{figure}
+
+
+
+\includereviews
 
 
 \end{document}

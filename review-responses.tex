@@ -1,0 +1,203 @@
+%%%%%%
+%%
+%%  Don't reorder the reviewer points; that'll mess up the automatic referencing!
+%%
+%%%%%
+
+\begin{minipage}[b]{2.5in}
+  Resubmission Cover Letter \\
+    {\it Genetics}
+\end{minipage}
+\hfill
+\begin{minipage}[b]{2.5in}
+    Peter Ralph, \\
+    Kevin Thornton, \\
+    \emph{and} Jerome Kelleher \\
+  \today
+\end{minipage}
+ 
+\vskip 2em
+ 
+\noindent
+{\bf To the Editor(s) -- }
+ 
+\vskip 1em
+
+We are writing to submit a revised version of our manuscript, 
+``Efficiently summarizing relationships in large samples: a general duality between statistics of genealogies and genomes''.
+
+
+
+\vspace{5em}
+
+\noindent \hspace{4em}
+\begin{minipage}{3in}
+\noindent
+{\bf Sincerely,}
+
+\vskip 2em
+
+{\bf 
+Peter Ralph, Kevin Thornton, and Jerome Kelleher
+}\\
+\end{minipage}
+
+\vskip 4em
+
+\pagebreak
+\setcounter{page}{1}
+
+%%%%%%%%%%%%%%
+\reviewersection{AE}
+
+
+\begin{quote}
+It is most important that you address the following in a revised manuscript: thorough revisions of Figures 1 and 2, and the text in lines 80-101.
+\end{quote}
+
+
+
+%%%%%%%%%%%%%%
+\reviewersection{1}
+
+
+\begin{quote}
+Ralph et al.\ describe a duality between summary statistics obtained from marginal trees in ancestral recombination graphs (ARG) and site-based summary statistics.
+They use simulated data to demonstrate this leads to computational speed-ups and apply their methods using the ARG of 1000 Genomes data recently inferred by Speidel et al.
+As the authors point out, the idea of a duality between genotypic and genealogical data is not new and has been extensively exploited in the past both theoretically and in practice,
+but this paper presents a unified view that will likely be of interest to the readers of Genetics.
+\end{quote}
+
+
+\begin{point}{Figure 1:}
+    This is an important figure in the paper. I think the figure (and/or the legend) can be improved, mainly by adding a definition of all quantities being used (at the beginning of the legend or in a box within the figure).
+    \begin{itemize}
+        \item when first reading the paper, it takes some effort to understand what "a" and "b" represent in $f(a,b)$
+            (and it doesn't help that this is a multi-panel figure with panels named the same way).
+            It would also be good to make clear what the numbers "3" and "2" reflect, which requires some interpretation (this could be just stated explicitly, as for other parameters).
+        \item "seven mutations", I believe the authors mean "five mutations".
+        \item "plus the weight of the node itself, if it is a sample", this does not apply to this example and is confusing, it should probably be mentioned in Def 1 but not Fig 1.
+        \item "remaining weight of each mutation" has not been defined in the figure, which is referred to before Def 1 is encountered.
+    \end{itemize}
+\end{point}
+
+\reply{
+}
+
+\begin{point}{}
+    Perhaps "u" would work best as first argument rather than subscript in Eq 1's LHS. Similar for "j" in Eq 2, Eq 4, and related notation throughout.
+\end{point}
+
+\reply{
+}
+
+
+
+%%%%%%%%%%%%%%
+\reviewersection{2}
+
+
+\begin{quote}
+This is an important paper that explores summary statistics at the level of inferred genealogical trees along the genome, as opposed to the standard of summary statistics of SNPs (i.e.\ sites).
+The authors present a new framework of thinking about and generalising summary statistics such as pairwise nucleotide diversity or Patterson's f4 statistics.
+They use simulations and data analysis based on 1000 Genomes data to show how their newly introduced "branch statistics" differ from traditional "site" statistics.
+I think overall results are convincing, the methods are sound, and this is definitely impressive and important work!
+\end{quote}
+
+\begin{point}{}
+The entire section from around line 80 (starting with "Figure 1 shows a simple example of these procedures") up until line 101 (ending with "correlation between genotype and phenotype.") was utterly confusing to me. Sentences such as the one in L 84:
+    \begin{quote}
+"For instance, we could calculate how many of a certain set A of samples inherit from a particular branch in a tree by (a) assigning each of these samples weight 1 (and other samples weight zero), then (b) finding the total weight of all samples in the subtree inheriting from that branch."
+    \end{quote}
+were not at all understandable to me at that early point in the manuscript. And Figure 1 didn't help (see below). At this point, the reader doesn't even know what weights, branches and subtrees are, and what is being attempted here. Why are we talking about trees and not sequence data, which is usually the starting point in genomic analyses? Why are we summarising things along branches? If it were me, I would really start with site statistics, as it's something all readers can relate to, and which is already non-trivial given the generalisations using weights and summary functions and in particular the generalisation to for k-alleles. But Site statistics were literally the first thing in the paper I really understood. From there it was fairly easy for me to move on to branch statistics (as determining the expectation of site stats) and then understanding the essence of comparing the two. I still don't actually understand why "Node statistics" are even introduced. As far as I can see the paper is all about Site vs. Branch statistics, with Node statistics being introduced and then ignored for the rest of the paper. It's weird to start off with something that can never be computed from real data as such, since trees are fundamentally unobserved. At the least, these Node Statistics should be very carefully motivated and explained better.
+\end{point}
+
+\reply{
+}
+
+\begin{point}{}
+Figure 1 is not understandable. It's not even understandable to me now, having read the entire paper. Some feedback: I'm seeing trees with 5 samples, which are gray in the first, and blue/red in the second tree. I'm seeing five mutations as yellow stars (do the mutations relate to the red/blue?). I'm reading in the legend something about 7 mutations and 10 sites, and neither tof these two numbers are found somewhere in the figure. I see bracketed pairs of numbers next to nodes that I don't understand, and I see confusing equations. And the legend doesn't help.
+
+I absolutely share a sense with the authors that there should be such a figure, but I think the choice of what information to show in the graphic is simply not working (for me). I don't really know what to do about it, since - as written above - I don't even understand why "Node statistics" need to be introduced at that point in the text. I have two comments that might help improving or replacing that figure:
+- Consider using a different summary function. The sequence divergence is among the more complex statistics, which require two groups of samples. Why not taking something much simpler, such as pairwise nucleotide diversity?
+- Consider replacing this figure with one that explains how Site statistics are calculated using weights and a summary function.
+
+I don't know, but at the very least, if you want to keep that figure more or less as is, you need to spend an entire paragraph explaining it properly to the reader. What's written in main text and legend about that figure is simply not sufficient!
+\end{point}
+
+\reply{
+}
+
+\begin{point}{}
+Figure 2 is equally hard to understand as Figure 1, but in that case I could at least understand it after significant contemplation so hopefully can give more constructive feedback for improvement. I think it's great to show a figure that shows that correspondence between site and branch statistics that the whole paper is about. But I think in case of panel a) it would help enormously to also see the traditional representation via a genotype site matrix to pick up readers from a more familiar point. For example, in order to confirm the weights contributed from each mutation, I had to go through every sub-group (A,B,C,D) and see what the frequency of that mutation is in that subgroup, which is very indirect using the tree-representation. I then understand that the red mutation, for example, has frequency 1/2 in A, 1 in B, and 0 in both C and D. So then (pA-pC)(pB-pD) give -1/2 which is written next to the mutation. This kind of calculation is of course trivial, but the connection is very hard to make for a reader who tries to understand that figure. And by the way, the colouring is not explained. I get that you want to create the correspondence to the coloured branches in B), but that is not explained. With a genotype-site-matrix, with individual genomes ordered in A, B, C and D, one could somehow visualise better the allele frequency in each subgroup and how that statistics comes about.
+\end{point}
+
+\reply{
+}
+
+\begin{point}{Figure 2:}
+There is a problem, by the way, since the figure makes it look as if f4 statistics were extensive, i.e. summed up along the genome. But they are actually normalised by the number of sites. So the f4 statistics in panel a) shouldn't be 1.0, but 1 divided by the sequence length. Or am I missing something?
+\end{point}
+
+\reply{
+}
+
+
+
+\begin{point}{L 145}
+        The term "Ancestry Proportions" is in my view a poor choice of naming. This term usually refers to proportions of contributions from populations in mixture models rather than node-specific contributions. For example, the ancestry of African-Americans can be decomposed into an ancestry proportion from Europe and one from West-Africa.
+\end{point}
+
+\reply{
+}
+
+\begin{point}{L 198.}
+    I think there is a small bug in the notation. You introduce $p_1+\ldots+p_k=1$ as proportions, and then write $f(p_1)+\ldots+f(p_k)$. But $f(x)$ is defined in terms of allele counts $x$, not allele frequencies $p$, or am I misunderstanding? I think it would be more consistent to avoid $p_1,\ldots,p_k$ and instead work with $\bar{x}$ as you already had further above, or so.
+\end{point}
+
+\reply{
+}
+
+\begin{point}{L 224}
+    Patterson's f4: Is this definition of f4 generalised to k alleles, as is Example 4 (segregating sites)? If so, could this be briefly commented on in a sentence, as I think that would be new over previous definitions.
+\end{point}
+
+\reply{
+}
+
+\begin{point}{References}
+    should be alphabetically ordered in a author-year referencing style. It's hard to lookup a reference.
+\end{point}
+
+\reply{
+}
+
+\begin{point}{L 353:}
+I was surprised that the authors didn't use "tsinfer" on 1000 Genomes to get to the trees instead of Relate. I'm sure both methods are good, but given the overlap in authorship I would have expected "tsinfer"-ed trees to be analysed with "tskit".
+\end{point}
+
+\reply{
+}
+
+\begin{point}{Abstract L 16:}
+    "several new statistics"? I didn't see newly introduced statistics that aren't already known.
+\end{point}
+
+\reply{
+}
+
+\begin{point}{}
+    Some notes about how to deal with missing data might be useful to understand how this framework could be applied to incomplete real data.
+\end{point}
+
+\reply{
+}
+
+\begin{point}{L 343:}
+    "the genome-wide mean Branch f4 is around -700". What does that number mean? Shouldn't that be normalised by the number of sites considered? Usually, f4 statistics are reported with a Z-score that gives statistical support for how far away from 0 the statistics is. Is there any way to do that here?
+\end{point}
+
+\reply{
+}
+
+

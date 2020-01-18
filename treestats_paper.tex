@@ -74,7 +74,8 @@ sequence; and by \emph{branch}, which gives the expected value of the site stati
 under the infinite-sites model of mutation.
 We use the framework to implement many currently-defined statistics of genome
 sequence (making the statistics' relationship to the underlying genealogical trees
-concrete and explicit) and suggest several new statistics.
+concrete and explicit),
+as well as the analogous ``branch'' statistics of tree shape. \revpoint{2}{10}
 We evaluate computational performance using simulated data, and
 show that calculating statistics from tree sequences using this general
 framework is several orders of magnitude more efficient than
@@ -387,7 +388,7 @@ and we define a \emph{polarized} node statistic without the second term from our
     \frac{1}{L} \sum_{k=1}^{|\treeseq|} L_k f(\nw_{T_k}(u)) .
 \end{align}
 
-\begin{example}[Ancestry proportions] \label{ex:ancestry_props}
+\begin{example}[Ancestry proportions] \label{ex:ancestry_props} \revpoint{2}{5}
     If $\iw$ are the indicator weights of the set $S$ of $n$ samples,
     then $\nw(u) / n$ is the proportion of the samples in $S$ that inherit from $u$.
     Therefore, if $f(x) = x / n$,
@@ -523,8 +524,9 @@ This example corresponds to the calculations shown in \autoref{fig:divergence_di
     \end{align*}
     In computing $\site(f, \iw)_{[a,b)}$, the function $f()$ is given the number of samples in $S$
     that inherit each allele.
-    A site with $k$ distinct alleles that segregate in $S$ with proportions $p_1 + \cdots + p_k = 1$
-    contributes $f(p_1) + \cdots + f(p_k) = (1 - p_1) + \cdots + (1 - p_k) = k - 1$ to the statistic.
+    A site with $k$ distinct alleles that segregate in $S$ with counts $x_1 + \cdots + x_k = n$
+    contributes $f(x_1) + \cdots + f(x_k) = (1 - x_1/n) + \cdots + (1 - x_k/n) = k - 1$
+    to the statistic. \revpoint{2}{6}
     Therefore, $\site(f, \iw)_{[a,b)}$, is the minimum number of derived mutations per unit length,
     which is the density of segregating sites if all sites are biallelic.
     (The actual number of mutations per unit length will be greater if there have been backmutations.)
@@ -614,6 +616,17 @@ against genotype with additional covariates.
     for the region of the genome between $a$ and $b$.
 \end{example}
 
+Note that we have taken care in all of these definitions
+so that they make sense even with more than two alleles per site.
+For instance, the $f_4$ statistic is defined in \autoref{ex:site_f4} as follows:
+averaged across a random choice of individuals from the four groups of samples,
+let ``BABA'' be the proportion of sites at which samples 1 and 3 agree,
+but differ from samples 2 and 4 (which may differ from each other as well);
+and let ``ABBA'' be the proportion of sites at which 2 and 3 agree, but differ from 1 and 4;
+then $f_4$ is BABA minus ABBA.
+In this mnemnonic, B is standing in for a \emph{specific} allele, that must match;
+but A is standing in for ``any allele that is not B''.
+\revpoint{2}{7}
 
 
 %%%%%%%%%%%%%%%%%%
@@ -728,7 +741,7 @@ The previous example might be used to leverage local relatedness
 to improve the resolution of association studies.
 Similar strategies were explored by \citet{zollner2005coalescent} and \citet{minichiello2006mapping}.
 
-\begin{example}[Patterson's $f_4$] \label{ex:branch_f4}
+\begin{example}[Patterson's $f_4$] \label{ex:branch_f4} \revpoint{2}{7}
     Suppose that the four subsets each consist of only a single sample.
     The summary function $f(x_1, x_2, x_3, x_4)$ for the $f_4$ statistic
     then assigns weight 1 to any branch that separates $x_1$ and $x_3$ from $x_2$ and $x_4$,
@@ -899,7 +912,7 @@ and for the final $N$ generations populations 2 and 3
 have per-capita migration rates of $4/N$ to each other.
 We expect a significantly negative $f_4(1,2;3,4)$ in this situation,
 which we indeed find
-(the genome-wide mean Branch $f_4$ is around -700,
+(the genome-wide mean Branch $f_4$ is around -700 generations, \revpoint{2}{12}
 as is the Site $f_4$ divided by mutation rate;
 see Supplemental Figure~\ref{fig:introf4} for a plot along the genome).
 Using various sample sizes, mutation rates, and window sizes, we then
@@ -948,7 +961,7 @@ To evaluate the correspondence between Site and Branch statistics
 in tree sequences inferred from real data,
 we calculated statistics for chromosome 20
 of the 1000 Genomes dataset~\citep{1k2015global} using dated trees estimated
-by Relate~\citep{speidel2019method}.
+by Relate~\citep{speidel2019method}. \revpoint{2}{9}
 Specifically, we calculated diversity using the Site statistic
 described in Example~\ref{ex:site_diversity},
 and compared this to the dual Branch statistic (Example~\ref{ex:branch_diversity})
@@ -1373,7 +1386,7 @@ matrix, importing it into another package and computing from the matrix.
 %%%%%%%%%%%%%%%%%%%%%%%
 \section*{Data and code accessibility}
 
-All methods described here are implemented in python and C in the package \tskit{},
+All methods described here are implemented in Python and C in the package \tskit{},
 available from \url{https://github.com/tskit-dev/tskit}
 under the terms of the MIT license.
 All code used to produce the figures in this paper
@@ -1443,10 +1456,15 @@ At smaller scales the statistics are still highly efficient, and avoiding
 the cost of exporting simulated data to a genotype matrix will in practice greatly
 speed up inference based on summaries computed from simulated
 data~\citep{beaumont2002approximate,csillery2010approximate,schrider2018supervised}.
+Efficient simulations coupled with the framework developed here allow us to
+explore the full distribution of summaries along the genome, which has
+important applications in (e.g.) speciation genomics~\citep{lohse2017come}.
 The ability to efficiently compute statistics from real data is, of course, also welcome.
 
 The correspondence between genome sequence and properties of the
-underlying genealogies we have used here is well-known. The general framework
+underlying genealogies we have used here is well-known,
+and is the basis for several inference methods~\citep{becquet2007new,beeravolu2018able}.
+The general framework
 that we have defined, however, codifies this relationship in a
 mathematically elegant and computationally efficient way, and may lead to
 new perspectives on well-studied problems.
@@ -1525,9 +1543,9 @@ along the genome, across space, and through time.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Acknowledgments and author contributions}
-Thanks to Graham Coop, Andrew Kern, Nick Patterson, Kelley Harris and
-Aaron Ragsdale for useful suggestions
+\subsection*{Acknowledgments}
+Thanks to Graham Coop, Andrew Kern, Nick Patterson, Kelley Harris,
+Aaron Ragsdale and Konrad Lohse for useful suggestions
 and to Leo Speidel for providing the inferred 1000 Genomes tree sequence.
 This work was supported by NSF grant \#1262645 (DBI) to PLR
 and by NIH grant R01-GM115564 to KRT. JK was supported by

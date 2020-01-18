@@ -144,25 +144,27 @@ There is a problem, by the way, since the figure makes it look as if f4 statisti
 
 
 
-\begin{point}{L 145}
+\begin{point}{\revref}
         The term "Ancestry Proportions" is in my view a poor choice of naming. This term usually refers to proportions of contributions from populations in mixture models rather than node-specific contributions. For example, the ancestry of African-Americans can be decomposed into an ancestry proportion from Europe and one from West-Africa.
 \end{point}
 
 \reply{
 }
 
-\begin{point}{L 198.}
+\begin{point}{\revref}
     I think there is a small bug in the notation. You introduce $p_1+\ldots+p_k=1$ as proportions, and then write $f(p_1)+\ldots+f(p_k)$. But $f(x)$ is defined in terms of allele counts $x$, not allele frequencies $p$, or am I misunderstanding? I think it would be more consistent to avoid $p_1,\ldots,p_k$ and instead work with $\bar{x}$ as you already had further above, or so.
 \end{point}
 
 \reply{
+    Thanks for catching that! Fixed. \revref
 }
 
-\begin{point}{L 224}
+\begin{point}{\revref}
     Patterson's f4: Is this definition of f4 generalised to k alleles, as is Example 4 (segregating sites)? If so, could this be briefly commented on in a sentence, as I think that would be new over previous definitions.
 \end{point}
 
 \reply{
+    This does generalize the usual definition -- we have added some explanation of this (that ended up being longer than a sentence). \revref
 }
 
 \begin{point}{References}
@@ -170,20 +172,27 @@ There is a problem, by the way, since the figure makes it look as if f4 statisti
 \end{point}
 
 \reply{
+    We think you must have gotten confused by the first names --
+    the references actually \emph{are} ordered alphabetically, by last name of first author (as usual).
 }
 
-\begin{point}{L 353:}
+\begin{point}{\revref}
 I was surprised that the authors didn't use "tsinfer" on 1000 Genomes to get to the trees instead of Relate. I'm sure both methods are good, but given the overlap in authorship I would have expected "tsinfer"-ed trees to be analysed with "tskit".
 \end{point}
 
 \reply{
+    We would love to also! However, at time of writing,
+    tsinfer does not attempt to infer trees with well-calibrated branch lengths.
 }
 
-\begin{point}{Abstract L 16:}
+\begin{point}{Abstract \revref}
     "several new statistics"? I didn't see newly introduced statistics that aren't already known.
 \end{point}
 
 \reply{
+    Good point: we think the tree statistics and the definitions allowing for multiple alleles
+    are in some ways new, but we don't introduce new genotype statistics.
+    We've changed this phrase. \revref
 }
 
 \begin{point}{}
@@ -191,13 +200,20 @@ I was surprised that the authors didn't use "tsinfer" on 1000 Genomes to get to 
 \end{point}
 
 \reply{
+    We agree, but it's not something we've implemented yet in \tskit,
+    so we don't want to discuss it here (as people would get the wrong idea it was implemented already).
 }
 
-\begin{point}{L 343:}
+\begin{point}{\revref}
     "the genome-wide mean Branch f4 is around -700". What does that number mean? Shouldn't that be normalised by the number of sites considered? Usually, f4 statistics are reported with a Z-score that gives statistical support for how far away from 0 the statistics is. Is there any way to do that here?
 \end{point}
 
 \reply{
+    The Branch $f_4$ statistic is in units of generations, or really, net generations
+    (generations of BABA minus generations of ABBA).
+    We've added the units \revref, although this might be confusing.
+    We could $z$-normalize the scores, but then we couldn't
+    demonstrate that the Branch and Site values match when the right units are used.
 }
 
 

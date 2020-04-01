@@ -408,6 +408,9 @@ and we define a \emph{polarized} node statistic without the second term from our
     that are inherited from (ancestor) $u$.
 \end{example}
 
+Dividing this statistic by the total amount of the genome each node is ancestral to any samples,
+we would obtain the ``genomic descent'' statistic defined by \citet{scheib2019anglian}.
+
 Note that the summary function in this last example was not \emph{strict}, since $f(\tiw) \neq 0$.
 Strictness is less important for node statistics than for the remaining classes of statistic,
 because Node statistics only make sense in the context of the tree sequence.
@@ -703,15 +706,19 @@ and how the corresponding branch statistic assigns the same weight to those bran
     Computing the $f_4(A,B;C,D)$ statistic on a tree,
     for groups of genomes labeled $A$, $B$, $C$, and $D$
     (only group $A$ has more than one sample).
-    \textbf{(a)} Each mutation is given weight equal to $(p_A - p_B)(p_C - p_D)$,
-    where $p_X$ is the proportion of the samples inheriting that mutation (colored stars) in set $X$
-    (shown in labels at the bottom).
-    Note that each of the mutations shown occurs at a distinct site, so there is no back mutation.
-    \textbf{(b)} Each branch is assigned weight equal to the weight that would be assigned
-    to any mutation falling in it (colored lines), and then the branch $f_4$ statistic
+    \textbf{(a)} The genotype matrix, for five sampled genomes at five sites.
+    Also shown is the derived allele frequencies in each of the four groups,
+    denoted by $p_A$, $p_B$, $p_C$, and $p_D$ respectively.
+    \textbf{(b)} Each mutation is given weight equal to $(p_A - p_B)(p_C - p_D)$,
+    shown as a label next to each mutation (depicted as a star).
+    Note that each of the mutations shown occurs at a distinct site, so there is no back mutation,
+    and that all mutations on the same branch have the same weight.
+    \textbf{(c)} Each branch is assigned weight equal to the weight that would be assigned
+    to any mutation falling in it (colored lines, with colors matching the mutations of (b)),
+    and then the branch $f_4$ statistic
     is the sum over these weights, multiplied by the length of the branch.
     Remaining branches colored in grey do not contribute,
-    because any mutation falling on these will have either $p_A - p_B = 0$ or $p_C - p_D = 0$.
+    because any mutation falling on these would have either $p_A - p_B = 0$ or $p_C - p_D = 0$.
         \label{fig:branch_site_diagram}
     }
 \end{figure}
@@ -982,6 +989,7 @@ in tree sequences inferred from real data,
 we calculated statistics for chromosome 20
 of the 1000 Genomes dataset~\citep{1k2015global} using dated trees estimated
 by Relate~\citep{speidel2019method}. \revpoint{2}{9}
+(Although Relate does not directly return a tree sequence, its output can be converted to a tree sequence.)
 Specifically, we calculated diversity using the Site statistic
 described in Example~\ref{ex:site_diversity},
 and compared this to the dual Branch statistic (Example~\ref{ex:branch_diversity})

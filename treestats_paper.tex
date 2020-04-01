@@ -226,7 +226,7 @@ summarize these weights on each branch with a ``summary function'',
 and aggregate these summaries to produce statistics.
 \autoref{fig:divergence_diagram} shows a simple example of these procedures
 of propagating weights up a tree and summarizing them,
-used to calculate mean sequence divergence over a short sequence spanned by a single tree.
+used to calculate mean sequence divergence at a segregating site.
 
 \begin{figure}
     \begin{center}
@@ -248,10 +248,6 @@ used to calculate mean sequence divergence over a short sequence spanned by a si
         plus the weight of the node itself, if it is a sample.
         \textbf{(b)} In this example, subtree weights $(a,b)$ record how many red samples ($a$)
         and how many blue samples ($b$) lie in that subtree.
-        The summary function shown is applied to both the weight of the subtree
-        and the remaining weight of each mutation,
-        so for instance the mutation above the node with weights $(2,1)$
-        contributes $f(2,1) + f(1,1) = 1/3 + 1/6 = 1/2$.
         \label{fig:divergence_diagram}
     }
 \end{figure}
@@ -316,16 +312,25 @@ can cause the precise set of samples that inherit from that edge to differ acros
 \begin{definition}[Sample and subtree weights] \label{defn:weights}
     A list of \emph{sample weights} $\iw$ assigns a numeric value $\iw(v)$
     to every sample node.
-    Given these and a tree $T$,
-    the \emph{subtree weight} $\nw_T(u)$ for a node $u$ is the sum of all sample weights
+    Given these weights, on tree $T_k$
+    the \emph{subtree weight} $\nw_k(u)$
+    for a node $u$ is the sum of all sample weights
     of every sample node that is descended from $u$ in the tree (including $u$, if it is a sample):
     \begin{align*}
-        \nw_T(u) = \sum_{v \,:\, v \le_T u} \iw(v) ,
+        \nw_k(u) = \sum_{v \,:\, v \le_{T_k} u} \iw(v) ,
     \end{align*}
-    where $v \le_T u$ if $u$ is on the path from $v$ to root in the tree $T$.
+    where $v \le_{T_k} u$ if $u$ is on the path from $v$ to root in the tree $T_k$.
     The \emph{total weight} is the sum of the weights over all samples:
     $\tiw = \sum_v \iw(v)$.
 \end{definition}
+
+If a given node $u$ is a sample and has no offspring (i.e., it is a leaf),
+then its ``sample weight'' and ``subtree weight'' are the same: $\nw_k(u) = \iw(u)$.
+However, 
+these differ for any samples that are internal nodes in a tree,
+and so we use different notation to distinguish the two concepts.
+Also note that $\tiw$ is the subtree weight of the root of any tree,
+as long as the tree contains all the samples.
 
 We allow vector-valued weights,
 i.e., $\iw(v)$ may be a vector $(\iw_1(v), \ldots, \iw_m(v))$,
@@ -338,13 +343,16 @@ $\bone_S(u) = 1$ if $u \in S$ and $\bone_S(u) = 0$ otherwise.
 
 \begin{definition}[Summary function]
     For a set of $k$-dimensional weights with total weight $\tiw$,
-    a summary function is a real-valued function $f(w_1, \ldots, w_k)$
-    with the property that $f(0) = f(\tiw) = 0$.
+    a summary function is any real-valued function $f(w_1, \ldots, w_k)$.
+    We call the summary function \emph{strict} if $f(0) = f(\tiw) = 0$.
 \end{definition}
 
-The requirement that $f(0) = f(\tiw) = 0$ is for consistency,
-so that statistics do not depend on portions of the tree either not ancestral to any of the samples
+The requirement that $f(0) = f(\tiw) = 0$ ensures
+that statistics do not depend on portions of the tree either not ancestral to any of the samples
 or ancestral to all of them.
+This is desireable because genetic variation within the samples
+cannot inform us about such parts of the tree.
+However, as we will see below it is sometimes useful to use non-strict summary functions.
 % Below, in section XXX, we describe how to efficiently
 % maintain a list of the weights of the subtrees inherit from each node
 % as we iterate through the tree sequence.
@@ -366,7 +374,7 @@ Motivated by this, we define the
 \textbf{node statistic} for node $u$
 associated with summary function $f()$ and sample weights $\iw$
 to be the sum of $f()$ applied to the weight of the subtree inheriting from node $u$
-and to the remaining weight,
+and to the remaining weight of the rest of the tree,
 averaged across the genome:
 \begin{align}
     \node(f, \iw)_u
@@ -400,8 +408,10 @@ and we define a \emph{polarized} node statistic without the second term from our
     that are inherited from (ancestor) $u$.
 \end{example}
 
-Node statistics only make sense in the context of the tree sequence,
-but provide a useful bridge to the next type of statistic,
+Note that the summary function in this last example was not \emph{strict}, since $f(\tiw) \neq 0$.
+Strictness is less important for node statistics than for the remaining classes of statistic,
+because Node statistics only make sense in the context of the tree sequence.
+However, Node statistics provide a useful bridge to the next type of statistic,
 which are defined directly in terms of the genotypes.
 
 
@@ -441,6 +451,7 @@ applied to the weight of every allele, $a$, found at this site:
     &=
     \sum_{a} f(\aw_j(a)).
 \end{align}
+Here, we think of a ``site'' as a single nucleotide position on the genome.
 We often want to summarize statistics across regions of the genome (``windows'').
 To do this, we overload notation somewhat and use a subscript $[i,j)$ to denote an average
 over the corresponding portion of the genome:
@@ -449,9 +460,9 @@ over the corresponding portion of the genome:
     &=
     \frac{1}{j-i} \sum_{k=i}^{j-1} \site(f, \iw)_k
 \end{align}
-Since we have required $f(0) = f(\tiw) = 0$,
-the sum will only be affected by polymorphic sites,
-although the normalization is always by total number of sites, to allow comparison between regions.
+The requirement on strict summary functions that $f(0) = f(\tiw) = 0$
+ensures that the sum is only affected by polymorphic sites,
+although we normalize by total number of sites, to allow comparison between regions.
 
 
 In the definition above we sum over all alleles at each site.
@@ -660,23 +671,24 @@ are equal in expectation, up to a multiplicative factor of the mutation rate.
 
 This makes it natural to define
 a statistic of tree shape by summing these expected contributions across its branches.
-We define the \textbf{branch statistic} of a single tree $T$,
+We define the \textbf{branch statistic} of the $k^\text{th}$ tree $T_k$,
 obtained from summary function $f()$ and sample weights $\iw$,
 to be the sum of the length of each branch
-multiplied by the summary function applied to its subtree weight and its complement:
+multiplied by the summary function applied to its subtree weight
+and the remaining weight not in the subtree:
 \begin{align}\label{eqn:branch_stat_tree}
-    \branch(f, \iw)_T
+    \branch(f, \iw)_k
     &=
-    \sum_{u \in T} \beta_{T}(u) \left( f(\nw_{T}(u)) + f(\tiw - \nw_{T}(u)) \right)  ,
+    \sum_{u \in T_k} \beta_{T_k}(u) \left( f(\nw_{k}(u)) + f(\tiw - \nw_{k}(u)) \right)  .
 \end{align}
-where $\beta_{T}(u)$ is the length of the branch ancestral to node $u$ in tree $T$,
+Here, $\beta_{T_k}(u)$ is the length of the branch between $u$ and its immediate ancestor in tree $T_k$,
 $\tiw = \sum_u \iw(u)$ is the total weight,
-and $\nw_{T}(u)$ is the total weight of the subtree of $T$ inheriting from $u$ (as defined above).
-The term $\tiw - \nw_{T}(u)$ gives the total weight \emph{not} in the subtree of $T$ inheriting from $u$.
+and $\nw_{k}(u)$ is the total weight of the subtree of $T_k$ inheriting from $u$ (as defined above).
+The term $\tiw - \nw_{k}(u)$ gives the total weight \emph{not} in the subtree of $T_k$ inheriting from $u$.
 The value $f(\nw(u))$ is the summary value that would be added to a site statistic
 if a single mutation occurred on the branch ancestral to $u$,
-and $f(\tiw - \nw_{T}(u))$ is the value that would be added due to its complementary allele,
-so $\branch(f, \iw)_T$ gives the expected contribution of the tree $T$ to $\site(f, \iw)$,
+and $f(\tiw - \nw_{k}(u))$ is the value that would be added due to its complementary allele,
+so $\branch(f, \iw)_k$ gives the expected contribution of the tree $T_k$ to $\site(f, \iw)$,
 per unit of sequence length that the tree covers.
 An example of this correspondence between site and branch statistics
 is shown in Figure~\ref{fig:branch_site_diagram}. Here, we
@@ -688,7 +700,9 @@ and how the corresponding branch statistic assigns the same weight to those bran
     \centering
     \includegraphics{figures/branch_site_diagram}
     \caption{
-    Computing the $f_4(A,B;C,D)$ statistic on a tree.
+    Computing the $f_4(A,B;C,D)$ statistic on a tree,
+    for groups of genomes labeled $A$, $B$, $C$, and $D$
+    (only group $A$ has more than one sample).
     \textbf{(a)} Each mutation is given weight equal to $(p_A - p_B)(p_C - p_D)$,
     where $p_X$ is the proportion of the samples inheriting that mutation (colored stars) in set $X$
     (shown in labels at the bottom).
@@ -696,6 +710,8 @@ and how the corresponding branch statistic assigns the same weight to those bran
     \textbf{(b)} Each branch is assigned weight equal to the weight that would be assigned
     to any mutation falling in it (colored lines), and then the branch $f_4$ statistic
     is the sum over these weights, multiplied by the length of the branch.
+    Remaining branches colored in grey do not contribute,
+    because any mutation falling on these will have either $p_A - p_B = 0$ or $p_C - p_D = 0$.
         \label{fig:branch_site_diagram}
     }
 \end{figure}
@@ -708,24 +724,24 @@ with probabilities proportional to the trees' spans:
 \begin{align}
     \branch(f, \iw)_{[i,j)}
     &=
-    \frac{1}{j-i} \sum_{k=1}^{|\treeseq|} \ell_k(i,j) \branch(f, \iw)_{T_k} ,
+    \frac{1}{j-i} \sum_{k=1}^{|\treeseq|} \ell_k(i,j) \branch(f, \iw)_{k} ,
 \end{align}
 where $\ell_k(i,j)$ is the length of the region in $[i,j)$ that the tree $T_k$ covers
-(i.e., if $T$ covers the half-open interval $[a_{k-1},a_k)$,
+(i.e., if $T_k$ covers the half-open interval $[a_{k-1},a_k)$,
 then $\ell_k(i,j) = \max(0, \min(j,a_k) - \max(i,a_{k-1}))$).
 The \emph{polarized} version of a Branch statistic
 is defined analogously to the Node and Site versions:
 \begin{align} \label{eqn:branch_polarised}
     \text{(polarized)} \qquad
-    \branchp(f, \iw)_T
+    \branchp(f, \iw)_k
     &=
-    \sum_{u \in T} \beta_T(u) f(\nw_{T}(u)) ,
+    \sum_{u \in T_k} \beta_{T_k}(u) f(\nw_{k}(u)) ,
 \end{align}
-and $\branchp(f, \iw)_{[i,j)}$ is defined using $\branchp(f, \iw)_T$ as before.
+and $\branchp(f, \iw)_{[i,j)}$ is defined using $\branchp(f, \iw)_k$ as before.
 
 \begin{example}[Mean TMRCA] \label{ex:branch_diversity}
     If we take $\iw$ and $f$ exactly as in the ``Nucleotide diversity'' example above,
-    then $f(u)$ gives the probability that the branch ancestral to $u$
+    then $f(u)$ gives the probability that the branch between $u$ and its ancestor in the tree
     lies on the path from one of two randomly chosen samples from $S$
     on the path up to their most recent common ancestor (MRCA).
     Therefore, $\branch(f, \iw)$
@@ -1125,7 +1141,7 @@ that the index vectors $\indexin$ and $\indexout$ have been precomputed.
 }
 
 \algstep{B1.}{Initialization.}{
-    For $0 \leq u < |\Et|$ set $\beta_u \leftarrow x_u
+    For $0 \leq u < |\Nt|$ set $\beta_u \leftarrow x_u
     \leftarrow F_u \leftarrow 0$ and $\pi_u \leftarrow -1$.
     Then, for $0 \leq j < n$ set $u \leftarrow S_j$,
     $x_u \leftarrow w_j$ and $F_u \leftarrow f(x_j)$. Finally,
@@ -1177,7 +1193,8 @@ that the index vectors $\indexin$ and $\indexout$ have been precomputed.
 
 \end{taocpalg}
 
-Algorithm \algref{B} begins by setting the initial state for $\pi$, $\beta$,
+Algorithm \algref{B} (named ``B'' for ``Branch'')
+begins by setting the initial state for $\pi$, $\beta$,
 $x$ and $F$ for each node in the tree sequence, and then sets the values
 of $x_u$ and $F_u$ for each of the samples $u$ in $S$.
 (The initial state is the ``empty forest'', where no nodes are connected to any others.)
@@ -1549,8 +1566,8 @@ along the genome, across space, and through time.
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Acknowledgments}
-Thanks to Graham Coop, Andrew Kern, Nick Patterson, Kelley Harris,
-Aaron Ragsdale and Konrad Lohse for useful suggestions
+Thanks to Georgia Tsambos, Graham Coop, Andrew Kern, Nick Patterson, Kelley Harris,
+Aaron Ragsdale, Konrad Lohse, and Wilder Wohns for useful suggestions
 and to Leo Speidel for providing the inferred 1000 Genomes tree sequence.
 This work was supported by NSF grant \#1262645 (DBI) to PLR
 and by NIH grant R01-GM115564 to KRT. JK was supported by

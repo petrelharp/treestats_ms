@@ -234,21 +234,25 @@ used to calculate mean sequence divergence over a short sequence spanned by a si
     \end{center}
     \caption{
         \textbf{FIXME:}
-        An example of computing sequence divergence between red nodes and blue nodes
-        from seven mutations at distinct sites in a sequence of length 10 using the tree.
-        The summary function, $f(a,b) = (a/3)(1-b/2)$ gives the probability that
-        an allele found in $a$ of the red nodes and $b$ of the blue nodes is present in
-        a randomly chosen red node but not in a randomly chosen blue node.
+        An example of computing sequence divergence
+        between red samples (triangles) and blue samples (squares)
+        at a single site with a T$\to$G mutation, using the tree.
+        The derived mutation is found in $a=2$ out of the $n_\text{red} = 3$ red samples
+        and in $b=1$ of the $n_\text{blue}=2$ blue samples, and so the probability that a randomly chosen red node carries the derived allele
+        but a randomly chosen blue node does not
+        is given by the summary function, $f(a,b) = f(2, 1) = 2/6$.
+        The complementary value, $f(1, 1) = 1/6$ is the probability that the mutation separates
+        a randomly chosen red and blue pair, but with the blue node carrying the derived allele,
+        so the total probability that a randomly chosen pair
+        differs at this site is $f(2,1) + f(1,1) = 1/2$.
         \textbf{(a)} Weights are assigned to each subtree by adding together the weights of any children,
         plus the weight of the node itself, if it is a sample.
-        \textbf{(b)} In this example, subtree weights $(a,b)$ record how many red nodes ($a$)
-        and how many blue nodes ($b$) lie in that subtree.
-        \textbf{(c)} The summary function shown is applied to both the weight of the subtree
+        \textbf{(b)} In this example, subtree weights $(a,b)$ record how many red samples ($a$)
+        and how many blue samples ($b$) lie in that subtree.
+        The summary function shown is applied to both the weight of the subtree
         and the remaining weight of each mutation,
         so for instance the mutation above the node with weights $(2,1)$
         contributes $f(2,1) + f(1,1) = 1/3 + 1/6 = 1/2$.
-        The final value for divergence is the sum of these values divided by 10,
-        the total number of sites.
         \label{fig:divergence_diagram}
     }
 \end{figure}

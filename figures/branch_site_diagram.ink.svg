@@ -150,9 +150,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="217.17639"
-     inkscape:cy="109.69001"
+     inkscape:zoom="1.979899"
+     inkscape:cx="441.28625"
+     inkscape:cy="142.54258"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -173,7 +173,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -2104,5 +2104,53 @@
        id="path4682"
        d="M 45.735122,33.413643 V 88.872068"
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.26458332;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:0.26458332, 0.52916663;stroke-dashoffset:0;stroke-opacity:1" />
+    <g
+       id="g1960"
+       transform="translate(48.793645,-59.790934)">
+      <g
+         word-spacing="normal"
+         letter-spacing="normal"
+         font-size-adjust="none"
+         font-stretch="normal"
+         font-weight="normal"
+         font-variant="normal"
+         font-style="normal"
+         stroke-miterlimit="10.433"
+         xml:space="preserve"
+         transform="matrix(0.07922632,0,0,-0.07922632,-13.864606,130.52814)"
+         id="g1958"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"><path
+           id="path1954"
+           d="m 477.39,441.67 0.02,0.03 0.01,0.03 0.01,0.03 0.01,0.03 0.01,0.02 0.01,0.03 0.01,0.03 0.01,0.02 0.01,0.05 0.02,0.05 0.02,0.04 0.01,0.05 0.01,0.04 0.01,0.04 0.01,0.03 0.01,0.04 0.01,0.03 0.01,0.03 0.01,0.03 v 0.02 l 0.01,0.03 v 0.02 l 0.01,0.02 v 0.02 0.02 l 0.01,0.02 v 0.01 0.02 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0 c 0,0.55 -0.45,0.99 -1,0.99 -0.34,0 -0.7,-0.14 -0.84,-0.44 l -17.3,-47.48 c -0.25,-0.64 -0.25,-0.85 -0.25,-0.89 0,-0.55 0.46,-1 1,-1 0.66,0 0.8,0.34 1.1,1.18 z"
+           inkscape:connector-curvature="0"
+           style="fill:#000000;stroke-width:0" /><path
+           id="path1956"
+           d="m 499.12,436.34 0.04,0.16 0.04,0.16 0.04,0.15 0.04,0.15 0.04,0.13 0.05,0.13 0.04,0.13 0.06,0.11 0.06,0.12 0.06,0.1 0.07,0.1 0.08,0.09 0.09,0.09 0.1,0.08 0.11,0.08 0.12,0.07 0.14,0.06 0.15,0.06 0.16,0.06 0.17,0.05 0.1,0.02 0.1,0.02 0.1,0.02 0.1,0.02 0.12,0.02 0.11,0.02 0.12,0.02 0.13,0.01 0.13,0.01 0.13,0.02 0.14,0.01 0.15,0.01 0.15,0.01 0.15,0.01 0.17,0.01 0.16,0.01 h 0.18 l 0.18,0.01 h 0.18 l 0.19,0.01 h 0.2 0.2 0.21 0.22 c 1.48,0 1.89,0 1.89,0.96 0,0.59 -0.55,0.59 -0.8,0.59 -1.65,0 -5.73,-0.16 -7.37,-0.16 -1.5,0 -5.14,0.16 -6.63,0.16 -0.36,0 -0.95,0 -0.95,-1 0,-0.55 0.45,-0.55 1.39,-0.55 0.11,0 1.05,0 1.91,-0.09 0.89,-0.11 1.34,-0.16 1.34,-0.8 0,-0.2 -0.06,-0.36 -0.2,-0.95 l -6.68,-26.75 c -0.5,-1.95 -0.6,-2.34 -4.54,-2.34 -0.85,0 -1.35,0 -1.35,-1 0,-0.55 0.46,-0.55 1.35,-0.55 h 23.08 c 1.18,0 1.23,0 1.54,0.84 l 3.92,10.77 c 0.21,0.55 0.21,0.64 0.21,0.7 0,0.19 -0.14,0.55 -0.6,0.55 -0.45,0 -0.5,-0.25 -0.84,-1.05 -1.7,-4.59 -3.89,-10.26 -12.52,-10.26 h -4.67 c -0.7,0 -0.79,0 -1.09,0.04 -0.5,0.05 -0.66,0.1 -0.66,0.5 0,0.14 0,0.25 0.25,1.14 z"
+           inkscape:connector-curvature="0"
+           style="fill:#000000;stroke-width:0" /></g>    </g>
+    <g
+       transform="translate(105.94364,-59.790934)"
+       id="g1974">
+      <g
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-anchor:start;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10.43299961;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="g1972"
+         transform="matrix(0.07922632,0,0,-0.07922632,-13.864606,130.52814)"
+         xml:space="preserve"
+         stroke-miterlimit="10.433"
+         font-style="normal"
+         font-variant="normal"
+         font-weight="normal"
+         font-stretch="normal"
+         font-size-adjust="none"
+         letter-spacing="normal"
+         word-spacing="normal"><path
+           style="fill:#000000;stroke-width:0"
+           inkscape:connector-curvature="0"
+           d="m 477.39,441.67 0.02,0.03 0.01,0.03 0.01,0.03 0.01,0.03 0.01,0.02 0.01,0.03 0.01,0.03 0.01,0.02 0.01,0.05 0.02,0.05 0.02,0.04 0.01,0.05 0.01,0.04 0.01,0.04 0.01,0.03 0.01,0.04 0.01,0.03 0.01,0.03 0.01,0.03 v 0.02 l 0.01,0.03 v 0.02 l 0.01,0.02 v 0.02 0.02 l 0.01,0.02 v 0.01 0.02 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0 c 0,0.55 -0.45,0.99 -1,0.99 -0.34,0 -0.7,-0.14 -0.84,-0.44 l -17.3,-47.48 c -0.25,-0.64 -0.25,-0.85 -0.25,-0.89 0,-0.55 0.46,-1 1,-1 0.66,0 0.8,0.34 1.1,1.18 z"
+           id="path1968" /><path
+           style="fill:#000000;stroke-width:0"
+           inkscape:connector-curvature="0"
+           d="m 499.12,436.34 0.04,0.16 0.04,0.16 0.04,0.15 0.04,0.15 0.04,0.13 0.05,0.13 0.04,0.13 0.06,0.11 0.06,0.12 0.06,0.1 0.07,0.1 0.08,0.09 0.09,0.09 0.1,0.08 0.11,0.08 0.12,0.07 0.14,0.06 0.15,0.06 0.16,0.06 0.17,0.05 0.1,0.02 0.1,0.02 0.1,0.02 0.1,0.02 0.12,0.02 0.11,0.02 0.12,0.02 0.13,0.01 0.13,0.01 0.13,0.02 0.14,0.01 0.15,0.01 0.15,0.01 0.15,0.01 0.17,0.01 0.16,0.01 h 0.18 l 0.18,0.01 h 0.18 l 0.19,0.01 h 0.2 0.2 0.21 0.22 c 1.48,0 1.89,0 1.89,0.96 0,0.59 -0.55,0.59 -0.8,0.59 -1.65,0 -5.73,-0.16 -7.37,-0.16 -1.5,0 -5.14,0.16 -6.63,0.16 -0.36,0 -0.95,0 -0.95,-1 0,-0.55 0.45,-0.55 1.39,-0.55 0.11,0 1.05,0 1.91,-0.09 0.89,-0.11 1.34,-0.16 1.34,-0.8 0,-0.2 -0.06,-0.36 -0.2,-0.95 l -6.68,-26.75 c -0.5,-1.95 -0.6,-2.34 -4.54,-2.34 -0.85,0 -1.35,0 -1.35,-1 0,-0.55 0.46,-0.55 1.35,-0.55 h 23.08 c 1.18,0 1.23,0 1.54,0.84 l 3.92,10.77 c 0.21,0.55 0.21,0.64 0.21,0.7 0,0.19 -0.14,0.55 -0.6,0.55 -0.45,0 -0.5,-0.25 -0.84,-1.05 -1.7,-4.59 -3.89,-10.26 -12.52,-10.26 h -4.67 c -0.7,0 -0.79,0 -1.09,0.04 -0.5,0.05 -0.66,0.1 -0.66,0.5 0,0.14 0,0.25 0.25,1.14 z"
+           id="path1970" /></g>    </g>
   </g>
 </svg>

@@ -26,6 +26,14 @@
 We are writing to submit a revised version of our manuscript, 
 ``Efficiently summarizing relationships in large samples: a general duality between statistics of genealogies and genomes''.
 
+In response to reviewer comments (and feedback from other sources)
+we have substantially rewritten the introductory portions of the manuscript,
+hopefully making it more accessible to a wider audience.
+We think the manuscript is improved, and hope you agree.
+
+In addition to the usual revised manuscript and responses to reviewers (in which page and line numbers
+refer to the revised manuscript),
+we have also uploaded a ``diff'' highlighting changes since the previous submission.
 
 
 \vspace{5em}
@@ -55,6 +63,10 @@ Peter Ralph, Kevin Thornton, and Jerome Kelleher
 It is most important that you address the following in a revised manuscript: thorough revisions of Figures 1 and 2, and the text in lines 80-101.
 \end{quote}
 
+We have thoroughly revised both figures, and added an additional figure,
+to ease the conceptual burden,
+as well as reorganized the introductory section,
+adding a more gentle introduction to the concepts.
 
 
 %%%%%%%%%%%%%%
@@ -68,9 +80,9 @@ As the authors point out, the idea of a duality between genotypic and genealogic
 but this paper presents a unified view that will likely be of interest to the readers of Genetics.
 \end{quote}
 
-Thanks -- we're glad you think it will be useful.
+Thanks -- we're glad you think it will be useful!
 
-\begin{point}{Figure 1:}
+\begin{point}{Figure \ref{fig:divergence_diagram}}
     This is an important figure in the paper. I think the figure (and/or the legend) can be improved, mainly by adding a definition of all quantities being used (at the beginning of the legend or in a box within the figure).
     \begin{itemize}
         \item when first reading the paper, it takes some effort to understand what ``a'' and ``b'' represent in $f(a,b)$
@@ -84,7 +96,10 @@ Thanks -- we're glad you think it will be useful.
 
 \reply{
     We've substantially reworked this figure,
-    simplifying it and providing more description in words.
+    simplifying it and providing more description in words,
+    as well as adding another figure before it
+    to reinforce the same basic intuition.
+    We've also rephrased the undefined phrase ``remaining weight''.
 }
 
 \begin{point}{}
@@ -122,6 +137,15 @@ were not at all understandable to me at that early point in the manuscript. And 
 \end{point}
 
 \reply{
+    Our goal here was to begin with something more familiar to readers --
+    the allele frequency spectrum.
+    We seem to have missed the mark, based on these and other comments we received.
+    (Apologies.)
+    In response, we've rearranged the text, moving the description of Figure \ref{fig:divergence_diagram}
+    later,
+    introducing the concepts with an additional figure (Figure \ref{fig:allele_freqs}),
+    and adding substantial additional text.
+    We hope it is is better motivated now?
 }
 
 \begin{point}{}
@@ -139,7 +163,9 @@ I don't know, but at the very least, if you want to keep that figure more or les
 \reply{
     Apologies that this figure was so confusing!
     We have substantially simplified this figure,
-    and have rewritten the explanation. Hopefully it is more clear now!
+    have rewritten the explanation,
+    and begun with a different, simpler figure.
+    Hopefully it is more clear now!
     A different summary function is a good suggestion, but we actually think that divergence
     is easier to understand than diversity, as it doesn't require sampling without replacement.
 }
@@ -150,7 +176,9 @@ Figure 2 is equally hard to understand as Figure 1, but in that case I could at 
 
 \reply{
     Good suggestion - we've added a genotype matrix and included more explanation
-    of what's going on here.
+    of what's going on here;
+    and now this example also ties in to Figure \ref{fig:allele_freqs},
+    providing additional context.
 }
 
 \begin{point}{Figure 2:}
@@ -158,6 +186,7 @@ There is a problem, by the way, since the figure makes it look as if f4 statisti
 \end{point}
 
 \reply{
+    Good point; we've added division by sequence length ($L$) to the figure and the caption.
 }
 
 
@@ -167,10 +196,15 @@ There is a problem, by the way, since the figure makes it look as if f4 statisti
 \end{point}
 
 \reply{
+    This is true, but aren't these actually the same concept?
+    For instance, the proportion of a group of samples that inherit from West Africa,
+    is equal to the sum of the statistic of Example \ref{ex:ancestry_props}
+    over all ``West African'' ancestors.
+    We'd prefer to keep the name.
 }
 
 \begin{point}{\revref}
-    I think there is a small bug in the notation. You introduce $p_1+\ldots+p_k=1$ as proportions, and then write $f(p_1)+\ldots+f(p_k)$. But $f(x)$ is defined in terms of allele counts $x$, not allele frequencies $p$, or am I misunderstanding? I think it would be more consistent to avoid $p_1,\ldots,p_k$ and instead work with $\bar{x}$ as you already had further above, or so.
+    I think there is a small bug in the notation. You introduce $p_1+\cdots+p_k=1$ as proportions, and then write $f(p_1)+\ldots+f(p_k)$. But $f(x)$ is defined in terms of allele counts $x$, not allele frequencies $p$, or am I misunderstanding? I think it would be more consistent to avoid $p_1,\ldots,p_k$ and instead work with $\bar{x}$ as you already had further above, or so.
 \end{point}
 
 \reply{
@@ -178,7 +212,7 @@ There is a problem, by the way, since the figure makes it look as if f4 statisti
 }
 
 \begin{point}{\revref}
-    Patterson's f4: Is this definition of f4 generalised to k alleles, as is Example 4 (segregating sites)? If so, could this be briefly commented on in a sentence, as I think that would be new over previous definitions.
+    Patterson's $f_4$: Is this definition of $f_4$ generalised to $k$ alleles, as is Example \ref{ex:segregating_sites} (segregating sites)? If so, could this be briefly commented on in a sentence, as I think that would be new over previous definitions.
 \end{point}
 
 \reply{
@@ -190,8 +224,9 @@ There is a problem, by the way, since the figure makes it look as if f4 statisti
 \end{point}
 
 \reply{
-    We think you must have gotten confused by the first names --
-    the references actually \emph{are} ordered alphabetically, by last name of first author (as usual).
+    Unless we've gotten pdfs mixed up,
+    the references actually \emph{are} ordered alphabetically by last name of first author;
+    this might not be obvious because the authors are listed with first name first?
 }
 
 \begin{point}{\revref}
@@ -200,7 +235,8 @@ I was surprised that the authors didn't use ``tsinfer'' on 1000 Genomes to get t
 
 \reply{
     We would love to also! However, at time of writing,
-    tsinfer does not attempt to infer trees with well-calibrated branch lengths.
+    tsinfer does not attempt to infer trees with well-calibrated branch lengths,
+    so we thought it best to not get into this.
 }
 
 \begin{point}{Abstract \revref}
@@ -223,7 +259,7 @@ I was surprised that the authors didn't use ``tsinfer'' on 1000 Genomes to get t
 }
 
 \begin{point}{\revref}
-    ``the genome-wide mean Branch f4 is around -700''. What does that number mean? Shouldn't that be normalised by the number of sites considered? Usually, f4 statistics are reported with a Z-score that gives statistical support for how far away from 0 the statistics is. Is there any way to do that here?
+    ``the genome-wide mean Branch $f_4$ is around -700''. What does that number mean? Shouldn't that be normalised by the number of sites considered? Usually, $f_4$ statistics are reported with a $Z$-score that gives statistical support for how far away from 0 the statistic is. Is there any way to do that here?
 \end{point}
 
 \reply{

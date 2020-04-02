@@ -137,6 +137,7 @@ except:
 
     # unmasked_bdiv = ts.diversity(pop_nodes, windows=windows, mode=mode)
 
+    print(f"Saving to {divfile}.")
     np.savetxt(divfile, bdiv, 
                header="\t".join(pop_names), delimiter="\t")
 

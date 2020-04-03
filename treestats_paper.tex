@@ -386,7 +386,7 @@ can cause the precise set of samples that inherit from that edge to differ acros
 
 If a given node $u$ is a sample and has no offspring (i.e., it is a leaf),
 then its ``sample weight'' and ``subtree weight'' are the same: $\nw_k(u) = \iw(u)$.
-However, 
+However,
 these differ for any samples that are internal nodes in a tree,
 and so we use different notation to distinguish the two concepts.
 Also note that $\tiw$ is the subtree weight of the root of any tree,
@@ -607,7 +607,7 @@ This example corresponds to the calculations shown in \autoref{fig:divergence_di
     to the statistic. \revpoint{2}{6}
     Therefore, $\site(f, \iw)_{[a,b)}$, is the minimum number of derived mutations per unit length,
     which is the density of segregating sites if all sites are biallelic.
-    (The actual number of mutations per unit length will be greater if there have been backmutations.)
+    (The actual number of mutations per unit length will be greater if there have been back mutations.)
 \end{example}
 
 \paragraph{Polyallelic sites}
@@ -696,7 +696,7 @@ against genotype with additional covariates.
 
 Note that we have taken care in all of these definitions
 so that they make sense even with more than two alleles per site.
-For instance, the $f_4$ statistic is defined in \autoref{ex:site_f4} as follows:
+For instance, the $f_4$ statistic is defined in Example~\ref{ex:site_f4} as follows:
 averaged across a random choice of individuals from the four groups of samples,
 let ``BABA'' be the proportion of sites at which samples 1 and 3 agree,
 but differ from samples 2 and 4 (which may differ from each other as well);
@@ -781,8 +781,8 @@ and how the corresponding branch statistic assigns the same weight to those bran
     and then the branch $f_4$ statistic
     is the sum over these weights, multiplied by the length of the branch,
     and divided by $L$, the sequence length.
-    Remaining branches colored in grey do not contribute,
-    because any mutation falling on these would have either $p_A - p_B = 0$ or $p_C - p_D = 0$.
+    Remaining branches do not contribute,
+    because any mutation falling on these have either $p_A - p_B = 0$ or $p_C - p_D = 0$.
         \label{fig:branch_site_diagram}
     }
 \end{figure}
@@ -856,23 +856,24 @@ and the branch statistic of Example \ref{ex:branch_diversity} (mean TMRCA)
 use the same summary function $f(x) = x(n-x)/\left(n(n-1)\right)$.
 These are closely related because under an infinite-sites model of mutation,
 two sequences differ at a site only if there has been a mutation somewhere on the branches going back
-to their most recent common ancestor,
-and so if mutations occur with constant rate,
-the expected value of genetic diversity,
-averaging over mutational noise given the tree sequence,
-is equal to the mutation rate multiplied by the average distance between the two in the trees.
+to their most recent common ancestor.
+Therefore, if mutations occur with constant rate
+the expected value of genetic diversity
+% averaging over mutational noise given the tree sequence,
+is equal to the mutation rate multiplied by the average path distance between
+the two samples in the trees.
 
 This relationship is true more generally.
 In fact, for any region of the genome between $i$ and $j$,
-with $\treeseq_{[i,j)}$ the trees spanning that interval,
+% with $\treeseq_{[i,j)}$ the trees spanning that interval,
 \begin{align}
     \branch(f, \iw)_{[i,j)}
     =
     \frac{1}{\mu}
-    \E\left[ \site(f, \iw)_{[i,j)} \given \treeseq_{[i,j)} \right] ,
+    \E\left[ \site(f, \iw)_{[i,j)} \given \treeseq_{[i,j)} \right].
 \end{align}
-where the expected value leaves the genealogies fixed,
-averaging over infinite-sites mutations
+Here,  the expectation keeps the genealogies fixed
+and averages over infinite-sites mutations
 with rate $\mu$ per unit time and per unit of sequence length.
 Note that the expected product of two site statistics,
 $\E[\site(f, \iw) \site(g, \iw')]$
@@ -1049,11 +1050,14 @@ simplifying assumptions, and, moreover,
 the underlying tree topologies and branch lengths are exactly
 correct (which inference methods can only hope to approximate).
 To evaluate the correspondence between Site and Branch statistics
-in tree sequences inferred from real data,
+in trees inferred from real data,
 we calculated statistics for chromosome 20
 of the 1000 Genomes dataset~\citep{1k2015global} using dated trees estimated
 by Relate~\citep{speidel2019method}. \revpoint{2}{9}
-(Although Relate does not directly return a tree sequence, its output can be converted to a tree sequence.)
+(Although Relate estimates a succession of essentially independent marginal trees rather
+than a succinct tree sequence,
+the output can be converted to a tree sequence, and since the statistics considered
+here are ``single site'' the distinction is not important.)
 Specifically, we calculated diversity using the Site statistic
 described in Example~\ref{ex:site_diversity},
 and compared this to the dual Branch statistic (Example~\ref{ex:branch_diversity})
@@ -1640,7 +1644,7 @@ along the genome, across space, and through time.
 \subsection*{Acknowledgments}
 Thanks to Georgia Tsambos, Graham Coop, Andrew Kern, Nick Patterson, Kelley Harris,
 Aaron Ragsdale, Konrad Lohse, and Wilder Wohns for useful suggestions
-and to Leo Speidel for providing the inferred 1000 Genomes tree sequence.
+and to Leo Speidel for providing the inferred 1000 Genomes trees.
 This work was supported by NSF grant \#1262645 (DBI) to PLR
 and by NIH grant R01-GM115564 to KRT. JK was supported by
 the Robertson Foundation and Wellcome Trust grant 100956/Z/13/Z

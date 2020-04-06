@@ -308,42 +308,42 @@ This is because genetic diversity is defined to be the probability that two rand
 differ at a randomly chosen site,
 and the probability that two randomly chosen genomes differ at a site with allele frequency $p$
 is $p (1-p) + (1-p) p$.
-
 If we know where each mutation has occurred on each marginal genealogical tree,
 we can easily compute statistics of this form
 by finding allele frequencies, applying the function $f( )$ to each,
 and summing up the results.
-\autoref{fig:divergence_diagram} shows a simple example of this procedure
-of propagating weights up a tree and summarizing them,
-used to calculate mean sequence divergence between two groups of samples at a single segregating site.
+
+Our framework is somewhat more general than this, since we also define statistics that are
+\emph{not} functions of the allele frequency spectrum.
+The small but useful generalization we make is to allow the ``weights'' we propagate up the tree
+to be numbers other than zero or one.
+The general procedure is depicted in \autoref{fig:adding_weights}.
+If weights \emph{are} all zero or one, then these weights will count numbers of samples
+in each part of the tree;
+but below we use other weights to compute the correlation between genotype and phenotype.
 
 \begin{figure}
     \begin{center}
-    \includegraphics{figures/divergence_diagram_simple}
+        \includegraphics{figures/adding_weights}
     \end{center}
     \caption{
-        An example of computing sequence divergence
-        between red samples (triangles) and blue samples (squares)
-        at a single site with a T$\to$G mutation, using the tree.
-        The derived mutation is found in $a=2$ out of the $n_\text{red} = 3$ red samples
-        and in $b=1$ of the $n_\text{blue}=2$ blue samples, and so the probability that a randomly chosen red node carries the derived allele
-        but a randomly chosen blue node does not
-        is given by the summary function, $f(a,b) = f(2, 1) = 2/6$.
-        The complementary value, $f(1, 1) = 1/6$ is the probability that the mutation separates
-        a randomly chosen red and blue pair, but with the blue node carrying the derived allele,
-        so the total probability that a randomly chosen pair
-        differs at this site is $f(2,1) + f(1,1) = 1/2$.
-        \textbf{(a)} Weights are assigned to each subtree by adding together the weights of any children,
+        \emph{Subtree weights} are assigned to each node by adding together the weights of any children,
         plus the weight of the node itself, if it is a sample.
-        \textbf{(b)} In this example, subtree weights $(a,b)$ record how many red samples ($a$)
-        and how many blue samples ($b$) lie in that subtree.
-        \label{fig:divergence_diagram}
+        In this example, the samples are the five leaves, and have weights
+        $\iw_1, \ldots, \iw_5$; the total weight -- also the subtree weight of the root --
+        is $\tiw = \iw_1 + \cdots + \iw_5$.
+        This can summarize the tree in many ways:
+        for instance, if all weights were equal to one, then subtree weights would count the number of
+        samples below that node.
+        On the other hand, if $\iw_1 = 1$ but other weights were zero,
+        then subtree weights would indicate whether a node was an ancestor of sample 1.
+        If $\iw_k$ was the value of a phenotype of sample $k$,
+        then the subtree weight of a node
+        would equal the sum of all phenotypes inheriting from that node.
+        \label{fig:adding_weights}
     }
 \end{figure}
 
-Our framework is somewhat more general than this, since we also define statistics that are
-\emph{not} functions of the allele frequency spectrum,
-such as the correlation between genotype and phenotype.
 Before we formally describe the statistics, we need some notation and definitions.
 A tree sequence describes how a set of $n$ sampled chromosomes
 are related to each other along a (linear) genome of length $L$ \citep{kelleher2016efficient,kelleher2018efficient}.
@@ -583,13 +583,39 @@ However, this approach fails with more than two alleles per site.
     so that $\nw_{j}(u)$ gives the number of nodes in $S_j$ inheriting from $u$,
     and define
     \begin{align*}
-        f(x_1, x_2) = \frac{x_1 (n_2 - x_2)}{n_1 n_2} .
+        f(x_1, x_2) = \frac{x_1}{n_1} \left(1 - \frac{x_2}{n_2}\right) .
     \end{align*}
     Then $\site(f, \iw)_{[a,b)}$ is mean nucleotide divergence between the two groups
     in the region between $a$ and $b$.
 \end{example}
 
-This example corresponds to the calculations shown in \autoref{fig:divergence_diagram}.
+The procedure of computing divergence at a single site is shown in \autoref{fig:divergence_diagram};
+divergence over a region of the genome would sum these values across all polymorphic sites
+and divide by the length of the region.
+
+\begin{figure}
+    \begin{center}
+    \includegraphics{figures/divergence_diagram_simple}
+    \end{center}
+    \caption{
+        An example of computing sequence divergence
+        between red samples (triangles) and blue samples (squares)
+        at a single site with a T$\to$G mutation, using the tree.
+        The derived mutation is found in $a=2$ out of the $n_\text{red} = 3$ red samples
+        and in $b=1$ of the $n_\text{blue}=2$ blue samples, and so the probability that a randomly chosen red node carries the derived allele
+        but a randomly chosen blue node does not
+        is given by the summary function, $f(a,b) = f(2, 1) = 2/6$.
+        The complementary value, $f(1, 1) = 1/6$ is the probability that the mutation separates
+        a randomly chosen red and blue pair, but with the blue node carrying the derived allele,
+        so the total probability that a randomly chosen pair
+        differs at this site is $f(2,1) + f(1,1) = 1/2$.
+        In this example, subtree weights $(a,b)$ record how many red samples ($a$)
+        and how many blue samples ($b$) lie in that subtree,
+        and the weights at each node are equal to the sum of the weights of the node's children,
+        as in \autoref{fig:adding_weights}.
+        \label{fig:divergence_diagram}
+    }
+\end{figure}
 
 \begin{example}[Segregating sites] \label{ex:segregating_sites}
     Again, let $\iw = \bone_{S}$ for a group of $n$ samples,
@@ -872,7 +898,8 @@ In fact, for any region of the genome between $i$ and $j$,
     \frac{1}{\mu}
     \E\left[ \site(f, \iw)_{[i,j)} \given \treeseq_{[i,j)} \right].
 \end{align}
-Here,  the expectation keeps the genealogies fixed
+Here, $\treeseq_{[i,j)}$ denotes the tree sequence on the interval $[i,j)$,
+and so the expectation keeps the genealogies fixed
 and averages over infinite-sites mutations
 with rate $\mu$ per unit time and per unit of sequence length.
 Note that the expected product of two site statistics,
@@ -1066,11 +1093,18 @@ All calculations were done only using the portions of the chromosome
 passing the 1000 Genomes Phase 1 ``strict'' mask for sequencing accessibility.
 % from ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase1/analysis_results/supporting/accessible_genome_masks/README.20120515_phase1_pop_gen_mask
 As shown in Figure~\ref{fig:chr20}, the ratio of Site and Branch diversity
-is relatively constant, hovering around typical estimates for the average genome-wide human mutation rate~\citep{narasimhan2017estimating}.
-On the one hand, this is expected ---
-Relate estimates branch lengths in part assuming that mutations fall at a constant rate through time
-(although \citeauthor{speidel2019method} also showed signal of changing mutation rates,
-pointing the way towards a more general method).
+is relatively constant, hovering around $2.5 \times 10^{-8}$.
+This is somewhat higher than
+typical estimates for the average genome-wide human mutation rate~\citep[e.g., $1.45\times 10^{-8}$,][]{narasimhan2017estimating},
+which suggests a mis-calibration in inferred tree times.
+These trees were inferred using Relate with the $N_e$ fixed to 15,000;
+if trees are instead jointly inferred in Relate along with an $N_e$, with mutation rate fixed,
+then indeed the ratio of Site to Branch diversity averages to the (externally specified) mutation rate
+(\autoref{sfig:chr20_GBR}).
+On the one hand, some amount of constancy of this ratio is expected, since
+Relate estimates branch lengths in part assuming that mutations fall at a constant rate through time.
+(But, note that \citeauthor{speidel2019method} also showed signal of changing mutation rates,
+pointing the way towards a more general method.)
 On the other hand,
 since estimated node ages are shared across long regions of the genome,
 a tight agreement may not be possible with poorly inferred trees.
@@ -1088,12 +1122,10 @@ genetic diversity along the genome.
         in 1Mb windows along human chromosome 20 of the 1000 Genomes Project,
         in units of mean number of pairwise differences per nucleotide.
         \textbf{(middle)}
-        The dual Branch statistic as calculated from tree sequences inferred by
+        The dual Branch statistic as calculated from trees inferred by
         Relate~\citep{speidel2019method},
         in units of generations.
-        \textbf{(bottom)} The ratio of the Site statistic to the Branch statistic,
-        which, we note, hovers around typical per-generation estimates of the human mutation
-        rate~\citep{narasimhan2017estimating}.
+        \textbf{(bottom)} The ratio of the Site statistic to the Branch statistic.
         Separate curves are plotted for continental groupings:
         AFR, Africa; AMR, America; EAS, east Asia; EUR, Europe; SAS, south Asia.
         \label{fig:chr20}
@@ -1832,8 +1864,29 @@ however, this would be more involved
     }
 \end{figure}
 
+\begin{figure}[!h]
+    \includegraphics[width=\textwidth]{{figures/intro/introgressed.1000.23.1000000.1e-09.f4}.pdf}
+    \caption{
+        \textbf{(top)} Mean sequence diversity
+        in 1Mb windows along human chromosome 20 of the GBR (Great Britain)
+        sample of the 1000 Genomes Project,
+        in units of mean number of pairwise differences per nucleotide.
+        \textbf{(middle)}
+        The dual Branch statistic as calculated from trees inferred by
+        Relate~\citep{speidel2019method},
+        in units of generations.
+        \textbf{(bottom)} The ratio of the Site statistic to the Branch statistic.
+        This figure differs from \autoref{fig:chr20} in that the trees were inferred 
+        using only GBR samples, and Relate was allowed to co-estimate population size and branch lengths,
+        with mutation rate fixed at $1.45 \times 10^{-8}$ mutations per generation;
+        the trees shown in \autoref{fig:chr20} were inferred with a fixed effective population size
+        of $N_e = 20,000$.
+        \label{fig:fig:chr20_GBR}
+    }
+\end{figure}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%
 \includereviews
 
 

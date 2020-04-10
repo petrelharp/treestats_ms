@@ -2,6 +2,15 @@
 
 treestats_paper.pdf : references.bib macros.tex figures review-responses.tex
 
+treestats_paper_only.pdf : treestats_paper.pdf
+	pdfjam --outfile $@ $< 1-31
+
+cover_letter.pdf : treestats_paper.pdf
+	pdfjam --outfile $@ $< 32
+
+review_responses.pdf : treestats_paper.pdf
+	pdfjam --outfile $@ $< 33-
+
 figures :
 	$(MAKE) -C figures
 

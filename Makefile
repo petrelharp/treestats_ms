@@ -1,6 +1,6 @@
 .PHONY: all, clean, figures
 
-treestats_paper.pdf : references.bib macros.tex figures
+treestats_paper.pdf : references.bib macros.tex figures review-responses.tex
 
 figures :
 	$(MAKE) -C figures
@@ -29,6 +29,11 @@ clean:
 %.pdf : %.ink.svg
 	inkscape $< --export-pdf=$@
 
+treestats_paper-diff%.tex : treestats_paper.tex review-responses.tex
+	latexdiff-git -r $* $<
+
+treestats_paper-diff-to-submission.tex : treestats_paper-diffde01bff8f43713f6038dc45ef44ab1a7c5540eaa.tex
+	mv $< $@
 
 LATEX_MACROS = macros.tex
 PANDOC_OPTS = 

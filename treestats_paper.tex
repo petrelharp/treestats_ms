@@ -11,8 +11,8 @@
 
 \include{macros}
 \newif\ifreviewresponses
-\reviewresponsestrue  % include them
-% \reviewresponsesfalse  % don't include them
+% \reviewresponsestrue  % include them
+\reviewresponsesfalse  % don't include them
 \newcommand{\responsefile}{review-responses.tex}  % name of the review reponses file
 \input{review-response-commands} % for line numbers only for now
 
@@ -265,7 +265,8 @@ and allow us to compute with genetic data far more efficiently than with the gen
         \textbf{(a)} The genotype matrix, showing genotypes of five sequences (``samples'')
         at five separate sites,
         as well as the derived allele frequencies (derived alleles are shown in color,
-        with separate colors for each genotype pattern).
+        with separate colors for each genotype pattern:
+        for example, all green mutations separate samples $s_1$, $s_3$ and $s_5$ from $s_2$ and $s_4$.
         \textbf{(b)} The genealogical tree describing how those five samples are related to each other
         over this segment of genome. The samples are leaves,
         and each mutation is represented as a star on the genealogy,
@@ -1041,7 +1042,7 @@ then after $N$ generations, the second population splits,
 after another $N$ generations, the third population splits again,
 and for the final $N$ generations populations 2 and 3
 have per-capita migration rates of $4/N$ to each other.
-We expect a significantly negative $f_4(1,2;3,4)$ in this situation,
+We expect a negative $f_4(1,2;3,4)$ in this situation,
 which we indeed find
 (the genome-wide mean Branch $f_4$ is around -700 generations, \revpoint{2}{12}
 as is the Site $f_4$ divided by mutation rate;

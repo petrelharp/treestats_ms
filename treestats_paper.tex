@@ -1,20 +1,44 @@
-\documentclass{article}
-\usepackage{fullpage}
-\usepackage{graphicx}
-\usepackage[hidelinks]{hyperref}
+\documentclass[9pt,twocolumn,twoside,lineno]{gsajnl}
+\articletype{inv} % article type
 
-\usepackage{color}
 \usepackage{amsmath,amssymb,amsthm}
-\usepackage{natbib}
 
-\bibliographystyle{plainnat}
+\newcommand{\R}{\mathbb{R}}
+\renewcommand{\P}{\mathbb{P}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\var}{\mathop{\mbox{Var}}}
+\newcommand{\cov}{\mathop{\mbox{cov}}}
+\newcommand{\bone}{\mathbf{1}}
+\newcommand{\st}{\,\colon\,}
 
-\include{macros}
-\newif\ifreviewresponses
-% \reviewresponsestrue  % include them
-\reviewresponsesfalse  % don't include them
-\newcommand{\responsefile}{review-responses.tex}  % name of the review reponses file
-\input{review-response-commands} % for line numbers only for now
+% These macros are borrowed from TAOCPMAC.tex
+\newcommand{\slug}{\hbox{\kern1.5pt\vrule width2.5pt height6pt depth1.5pt\kern1.5pt}}
+\def\xskip{\hskip 7pt plus 3pt minus 4pt}
+\newdimen\algindent
+\newif\ifitempar \itempartrue % normally true unless briefly set false
+\def\algindentset#1{\setbox0\hbox{{\bf #1.\kern.25em}}\algindent=\wd0\relax}
+\def\algbegin #1 #2{\algindentset{#21}\alg #1 #2} % when steps all have 1 digit
+\def\aalgbegin #1 #2{\algindentset{#211}\alg #1 #2} % when 10 or more steps
+\def\alg#1(#2). {\medbreak % Usage: \algbegin Algorithm A (algname). This...
+  \noindent{\bf#1}({\it#2\/}).\xskip\ignorespaces}
+\def\kalgstep#1.{\ifitempar\smallskip\noindent\else\itempartrue
+   \hskip-\parindent\fi
+   \hbox to\algindent{\bf\hfil #1.\kern.25em}%
+   \hangindent=\algindent\hangafter=1\ignorespaces}
+
+\newcommand{\algstep}[3]{\kalgstep #1 [#2] #3 }
+\newenvironment{taocpalg}[3]{%
+\vspace{1em}%
+\algbegin Algorithm #1. ({#2}). #3 }
+{\vspace{1em}}
+
+\newcommand{\algorithmref}[1]{#1}
+
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{cor}{Corollary}
+\newtheorem{theorem}{Theorem}
+\newtheorem{example}{Example}
 
 \newcommand{\tskit}{{\texttt{tskit}}}
 \newcommand{\branch}{\mbox{Branch}} % branch stat
@@ -43,21 +67,26 @@
 \newcommand{\krt}[1]{{\color{green}\textbf{krt:} \it #1}}
 
 
-
-\begin{document}
-
 \title{
     Efficiently summarizing relationships in large samples:
     a general duality between statistics of genealogies and genomes}
-\author{Peter Ralph, Kevin Thornton, and Jerome Kelleher}
-\maketitle
 
-% \emph{Running head:} Genealogies and genomes
+\author[$\ast$,1]{Peter Ralph}
+\author[$\dagger$]{Kevin Thornton}
+\author[$\ddagger$]{Jerome Kelleher}
+
+\affil[$\ast$]{Institute of Evolution and Ecology, Departments of Mathematics and Biology, University of Oregon, Eugene, Oregon}
+\affil[$\dagger$]{Department of Ecology and Evolutionary Biology, University of California, Irvine, California}
+\affil[$\ddagger$]{Big Data Institute, Li Ka Shing Centre for Health Information and Discovery, University of Oxford}
+
+\keywords{genealogy, tree sequence, genotype statistics}
+
+\runningtitle{Genealogies and genomes}
+\runningauthor{Ralph \textit{et al.}}
 
 
 %%%%%%%%%%
-\section*{Abstract}
-
+\begin{abstract}
 As a genetic mutation is passed down across generations,
 it distinguishes those genomes that have inherited it from those that have not,
 providing a glimpse of the genealogical tree relating the genomes to each other at that site.
@@ -76,7 +105,7 @@ under the infinite-sites model of mutation,
 and by \emph{node}, which summarizes the contribution of each ancestor to these statistics.
 We use the framework to implement many currently-defined statistics of genome sequence
 (making the statistics' relationship to the underlying genealogical trees concrete and explicit),
-as well as the corresponding ``branch'' statistics of tree shape. \revpoint{2}{10}
+as well as the corresponding ``branch'' statistics of tree shape.
 We evaluate computational performance using simulated data, and
 show that calculating statistics from tree sequences using this general
 framework is several orders of magnitude more efficient than
@@ -84,43 +113,17 @@ optimized matrix-based methods in terms of both run time and memory requirements
 We also explore how well the duality between site and branch statistics holds
 in practice on trees inferred from the 1000 Genomes Project dataset,
 and discuss ways in which deviations may encode interesting biological signals.
+\end{abstract}
 
-%%% OUTLINE
-% 1. Framework and algorithms for computing general stats
-%
-%     * Framework:
-%
-%         - single-site stats are functions of the genotype vector
-%         - in infinite sites, the genotype vector of a mutation is determined by the nodes below it
-%         - ex: divergence as a sum over trees and branches
-%         - ex: ancestry proportions
-%         - general definition, using summary function of weights propagated up the tree
-%             * recursion relating weights on nodes of two forests that differ by a branch
-%
-%     * Review of tree sequences (quick)
-%
-%     * Algorithms:
-%
-%         - weight propagation across tree differences
-%         - count by node length ("Node Statistics")
-%         - count by branch area ("Branch Statistics")
-%         - count by site ("Site Statistics")
-%         - note on outputs (by node, by site, in windows)
-%
-% 2. Examples: in sections, one of each type of output
-%
-%     - ancestry proportions
-%     - list of standard summary statistics: divergence, Fst, f4, covariance
-%         * performance for one of these
-%     - PCA: Krylov method
-%         * performance
-%
-% 3. Correspondence to tree statistics
-%
-%     - math: in infinite sites, neutral model, E[site] = branch
-%     - plot from simulation showing branch stats are less noisy versions of the site stats
-%     - show time profile of PC1 as computed from rare variants and common variants
+\begin{document}
 
+\maketitle
+\thispagestyle{firststyle}
+\marginmark
+\firstpagefootnote
+
+\correspondingauthoraffiliation{1}{Corresponding author: {plr@uoregon.edu}}
+\vspace{-33pt}% Only used for adjusting extra space in the left column of the first page
 
 
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -228,7 +231,9 @@ will then produce both familiar and novel statistics
 of both genotypes and genealogies.
 
 %%%%%%%%%%%%%%%%%%%%%%%
-\section*{Framework and statistics}
+\section*{Materials and Methods}
+
+\subsection*{Framework and statistics}
 
 Population genetic data is most directly represented as a matrix of genotypes,
 and so summaries of population genetic data usually begin with this data structure.
@@ -428,7 +433,7 @@ However, as we will see below it is sometimes useful to use non-strict summary f
 % \subsection*{Tree sequences}
 
 %%%%%%%%%%%%%%%%%%
-\subsection*{Node statistics}
+\subsubsection*{Node statistics}
 
 Perhaps the most natural way to summarize weights on the tree
 is simply to examine the values at each node.
@@ -469,7 +474,7 @@ and we define a \emph{polarized} node statistic without the second term from our
     \frac{1}{L} \sum_{k=1}^{|\treeseq|} L_k f(\nw_{T_k}(u)) .
 \end{align}
 
-\begin{example}[Ancestry proportions] \label{ex:ancestry_props} \revpoint{2}{5}
+\begin{example}[Ancestry proportions] \label{ex:ancestry_props}
     If $\iw = \bone_S$ are the indicator weights of the set $S$ of $n$ samples,
     then $\nw(u) / n$ is the proportion of the samples in $S$ that inherit from $u$.
     Therefore, if $f(x) = x / n$,
@@ -488,7 +493,7 @@ which are defined directly in terms of the genotypes.
 
 
 %%%%%%%%%%%%%%%%%%
-\subsection*{Site statistics}
+\subsubsection*{Site statistics}
 
 Now we describe how to compute statistics from \emph{genomes} using this framework.
 To do this, we assume that the genetic variation data is embedded in a tree sequence,
@@ -640,7 +645,7 @@ and divide by the length of the region.
     is the number of samples in $S$ that inherit each allele.
     A site with $k$ distinct alleles that segregate in $S$ with counts $x_1 + \cdots + x_k = n$
     contributes $f(x_1) + \cdots + f(x_k) = (1 - x_1/n) + \cdots + (1 - x_k/n) = k - 1$
-    to the statistic. \revpoint{2}{6}
+    to the statistic.
     Therefore, $\site(f, \iw)_{[a,b)}$, is the minimum number of derived mutations per unit length,
     which is the density of segregating sites if all sites are biallelic.
     (The actual number of mutations per unit length will be greater if there have been back mutations.)
@@ -741,11 +746,10 @@ then $f_4$ is BABA minus ABBA.
 In this mnemnonic, B is standing in for a \emph{specific} allele, that must match;
 but A is standing in for ``any allele that is not B''.
 This is more general than previous definitions, but agrees with them for biallelic sites.
-\revpoint{2}{7}
 
 
 %%%%%%%%%%%%%%%%%%
-\subsection*{Branch statistics}
+\subsubsection*{Branch statistics}
 
 Genetic variation is informative about many processes
 precisely because it tells us about the underlying patterns of genealogical relatedness.
@@ -869,7 +873,7 @@ The previous example might be used to leverage local relatedness
 to improve the resolution of association studies.
 Similar strategies were explored by \citet{zollner2005coalescent} and \citet{minichiello2006mapping}.
 
-\begin{example}[Patterson's $f_4$] \label{ex:branch_f4} \revpoint{2}{7}
+\begin{example}[Patterson's $f_4$] \label{ex:branch_f4}
     Suppose that the four subsets each consist of only a single sample.
     The summary function $f(x_1, x_2, x_3, x_4)$ for the $f_4$ statistic
     then assigns weight 1 to any branch that separates $x_1$ and $x_3$ from $x_2$ and $x_4$,
@@ -882,7 +886,7 @@ Similar strategies were explored by \citet{zollner2005coalescent} and \citet{min
 
 
 %%%%%%%%%%%%%%%%%%
-\section*{Duality of site and branch statistics}
+\subsection*{Duality of site and branch statistics}
 
 Under a neutral, infinite-sites model of mutation with constant mutation rate across time,
 the expected number of mutations per branch is proportional to its length.
@@ -1044,7 +1048,7 @@ and for the final $N$ generations populations 2 and 3
 have per-capita migration rates of $4/N$ to each other.
 We expect a negative $f_4(1,2;3,4)$ in this situation,
 which we indeed find
-(the genome-wide mean Branch $f_4$ is around -700 generations, \revpoint{2}{12}
+(the genome-wide mean Branch $f_4$ is around -700 generations,
 as is the Site $f_4$ divided by mutation rate;
 see Supplemental Figure~\ref{fig:introf4} for a plot along the genome).
 Using various sample sizes, mutation rates, and window sizes, we then
@@ -1078,8 +1082,19 @@ so it remains to be seen if the improvement could be made in practice.
 \end{figure}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Data and code availability}
+
+All methods described here are implemented in Python and C in the package \tskit{},
+available from \url{https://github.com/tskit-dev/tskit}
+under the terms of the MIT license.
+All code used to produce the figures in this paper
+is available from \url{https://github.com/petrelharp/treestats_ms}.
+
 %%%%%%%%%%%%%%%%%%
-\section*{Application to 1000 Genomes tree sequences}
+\section*{Results}
+
+\subsection*{Application to 1000 Genomes tree sequences}
 
 We do not know the true genealogies underlying real data,
 but recent methods are available to estimate them at
@@ -1093,7 +1108,7 @@ To evaluate the correspondence between Site and Branch statistics
 in trees inferred from real data,
 we calculated statistics for chromosome 20
 of the 1000 Genomes dataset~\citep{1k2015global} using dated trees estimated
-by Relate~\citep{speidel2019method}. \revpoint{2}{9}
+by Relate~\citep{speidel2019method}.
 (Although Relate estimates a succession of essentially independent marginal trees rather
 than a succinct tree sequence,
 the output can be converted to a tree sequence, and since the statistics considered
@@ -1199,7 +1214,7 @@ but more work needs to be done, particularly on models with large proportions of
 
 
 %%%%%%%%%%%%%%%%%%
-\section*{Algorithm and implementation}
+\subsection*{Algorithm and implementation}
 
 In this section we describe and analyze the algorithm used
 to compute Branch statistics. This is a generalization
@@ -1273,7 +1288,7 @@ that the index vectors $\indexin$ and $\indexout$ have been precomputed.
 }
 
 \algstep{B3.}{Edge removal loop.}{If $k = |\Et|$ or $t_l \neq
-    \Et[\indexout_k]\prop{right}$ go to \algref{B6}.}
+    \Et[\indexout_k]\prop{right}$ go to \algorithmref{B6}.}
 
 \algstep{B4.}{Remove edge.}{Set
     $u \leftarrow \Et[\indexout_k]\prop{child}$,
@@ -1285,11 +1300,11 @@ that the index vectors $\indexin$ and $\indexout$ have been precomputed.
 \algstep{B5.}{Propagate loss.}{While $v \neq -1$, set
     $s \leftarrow s - \beta_v F_v$, $x_v \leftarrow x_v - x_u$,
     $F_v \leftarrow f(x_v)$, $s \leftarrow s + \beta_v F_v$
-    and $v \leftarrow \pi_v$. Afterwards, go to \algref{B3}.
+    and $v \leftarrow \pi_v$. Afterwards, go to \algorithmref{B3}.
 }
 
 \algstep{B6.}{Edge insertion loop.}{If $j = |\Et|$ or $t_l \neq
-    \Et[\indexin_j]\prop{left}$ go to \algref{B9}.}
+    \Et[\indexin_j]\prop{left}$ go to \algorithmref{B9}.}
 
 \algstep{B7.}{Insert edge.}{Set
     $u \leftarrow \Et[\indexin_j]\prop{child}$,
@@ -1302,19 +1317,19 @@ that the index vectors $\indexin$ and $\indexout$ have been precomputed.
 \algstep{B8.}{Propagate gain.}{While $v \neq -1$, set
     $s \leftarrow s - \beta_v F_v$, $x_v \leftarrow x_v + x_u$,
     $F_v \leftarrow f(x_v)$, $s \leftarrow s + \beta_v F_v$
-    and $v \leftarrow \pi_v$. Afterwards, go to \algref{B6}.
+    and $v \leftarrow \pi_v$. Afterwards, go to \algorithmref{B6}.
 }
 
 \algstep{B9.}{Tree loop tail.}{Set $t_r \leftarrow L$.
     If $j < |\Et|$ set $t_r \leftarrow \min(t_r, \Et[\indexin_j]\prop{left})$.
     Then, if $k < |\Et|$ set $t_r \leftarrow \min(t_r, \Et[\indexout_k]\prop{right})$
     Finally, set $\sigma \leftarrow \sigma + (t_r - t_l)s$,  $t_l \leftarrow t_r$
-    and go to \algref{B2}.
+    and go to \algorithmref{B2}.
 }
 
 \end{taocpalg}
 
-Algorithm \algref{B} (named ``B'' for ``Branch'')
+Algorithm \algorithmref{B} (named ``B'' for ``Branch'')
 begins by setting the initial state for $\pi$, $\beta$,
 $x$ and $F$ for each node in the tree sequence, and then sets the values
 of $x_u$ and $F_u$ for each of the samples $u$ in $S$.
@@ -1323,21 +1338,21 @@ Afterwards, we set our ``running sum'' $s$ and output statistic $\sigma$ to zero
 with the ``tree left'' variable $t_l$. The $j$ and $k$ variables are
 used to keep track of our position in the edge insertion and edge
 removal indexes, respectively. After completing initialization in
-\algref{B1}, we enter the main tree loop in \algref{B2} which is
+\algorithmref{B1}, we enter the main tree loop in \algorithmref{B2} which is
 run once for each tree in the sequence. As we are processing each
 tree, we keep track of the edges that need to be processed with
 the $t_l$ variable, which stores the left-most genome coordinate
 in the current tree. The first thing we do for a new tree is to
 remove any edges that were in the previous tree and are not in the
 current tree. These must be the edges in which the right coordinate
-is equal to $t_l$, and so \algref{B3} loops over these edges using
-the edge removal index $\indexout$. Step \algref{B4} then removes
+is equal to $t_l$, and so \algorithmref{B3} loops over these edges using
+the edge removal index $\indexout$. Step \algorithmref{B4} then removes
 the branch $u \mapsto v$ corresponding to a single edge, by
 subtracting its contribution to the running sum $s$, setting the parent of
 $u$ to $-1$ and its branch length to $0$. As shown in
 Figure~\ref{fig:algorithm_example}B, removing an edge will result
 in the subtree rooted at $u$ becoming disconnected from the rest of the
-tree. Step \algref{B5} ensures that the state of the rest of the tree
+tree. Step \algorithmref{B5} ensures that the state of the rest of the tree
 is correctly maintained by propagating the loss of the state $x_u$
 up the tree from $v$. Thus, for each node $v$ that was a
 direct ancestor of $u$ in the previous tree, we first subtract
@@ -1348,40 +1363,40 @@ add the new contribution of $v$ to $s$. (For example, note the changes in $x$
 and $F$ for nodes 7 and 8 in Figure~\ref{fig:algorithm_example}B.)
 
 Once all of the edges with right coordinate equal to $t_l$ have been removed in
-steps \algref{B3--B5}, we then insert edges that start in the current tree
-(i.e., with left coordinate $t_l$) in steps \algref{B6--B8}. We update the
+steps \algorithmref{B3--B5}, we then insert edges that start in the current tree
+(i.e., with left coordinate $t_l$) in steps \algorithmref{B6--B8}. We update the
 state to account for the new branch $u \mapsto v$ by setting the parent of
 $u$ to $v$, computing the branch length of $u$ and adding the new contribution
-of $u$ to $s$ in \algref{B7}. Then, as adding a new edge can connect the
+of $u$ to $s$ in \algorithmref{B7}. Then, as adding a new edge can connect the
 subtree rooted at $u$ to the larger tree at $v$, we propagate the gain of $x_u$
-up the tree in step \algref{B8} (note the symmetry with step \algref{B5}).
+up the tree in step \algorithmref{B8} (note the symmetry with step \algorithmref{B5}).
 Finally, once we have removed and inserted all of the relevant edges, we are
 ready to add the contribution of the current tree to the overall statistic,
-$\sigma$ and move on to the next tree in step \algref{B9}. To do this, we first
+$\sigma$ and move on to the next tree in step \algorithmref{B9}. To do this, we first
 compute the right-hand coordinate of the tree $t_r$ (a process slightly
 complicated by the possible presence of ``gaps'' in the tree sequence, spanned
 by no edges). Then, we add the running sum $s$ weighted by the span of the
-current tree $t_r - t_l$ to $\sigma$, and return to \algref{B2} to process the
+current tree $t_r - t_l$ to $\sigma$, and return to \algorithmref{B2} to process the
 next tree. If we have reached the end of the sequence, we then divide $\sigma$
 by the sequence length to normalize and exit.
 
-To analyze Algorithm~\algref{B} we will assume that the tree sequence has
+To analyze Algorithm~\algorithmref{B} we will assume that the tree sequence has
 been simulated under the standard coalescent with a sample of size
 $n$ and population scaled recombination rate $\rho = 4 N_e r$,
 where $r$ is the mean number of recombinations per chromosome per unit of time.
 Under these conditions, there are $O(n + \rho \log n)$ edges in the tree sequence
 \citep{kelleher2016efficient}.  Clearly, each edge is examined
-exactly once in steps \algref{B6} and \algref{B7} in order to create
-the trees, and at most once in steps \algref{B3} and \algref{B4} (we do
+exactly once in steps \algorithmref{B6} and \algorithmref{B7} in order to create
+the trees, and at most once in steps \algorithmref{B3} and \algorithmref{B4} (we do
 not remove the edges for the final tree). Additionally, each edge that
 we insert or remove after the initial building of the tree
 may incur the cost of traversing up the tree as
-far as the root in steps \algref{B5} and \algref{B8}.
+far as the root in steps \algorithmref{B5} and \algorithmref{B8}.
 As coalescent genealogies are asymptotically
 balanced \citep{li2013coalescent}, the expected number of nodes
 on the path to root is $\log_2 n$.
 Therefore, the overall running time
-of Algorithms~\algref{B} is of order $n + \rho \log(n) \log_2(n)$, which is
+of Algorithms~\algorithmref{B} is of order $n + \rho \log(n) \log_2(n)$, which is
 \begin{equation}\label{eqn:alg_complexity}
     O\left(n + \rho \log(n)^2 \right).
 \end{equation}
@@ -1460,7 +1475,7 @@ An interesting direction for future work is to develop
 parallel versions of tree sequence algorithms such as Algorithm B.
 
 %%%%%%%%%%%%%%%%%%%%%
-\subsection*{Efficiency}
+\subsubsection*{Efficiency}
 
 We used coalescent simulations to compare the performance of calculating Tajima's \citeyearpar{Tajima1989-de} $D$
 statistic from tree sequences to calculating it from integer matrices containing genotypes at all variable positions.
@@ -1524,15 +1539,6 @@ will always be more efficient than decoding the genotype
 matrix, importing it into another package and computing from the matrix.
 
 
-
-%%%%%%%%%%%%%%%%%%%%%%%
-\section*{Data and code accessibility}
-
-All methods described here are implemented in Python and C in the package \tskit{},
-available from \url{https://github.com/tskit-dev/tskit}
-under the terms of the MIT license.
-All code used to produce the figures in this paper
-is available from \url{https://github.com/petrelharp/treestats_ms}.
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \section*{Discussion}
@@ -1899,9 +1905,6 @@ however, this would be more involved
     }
 \end{figure}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%
-\includereviews
 
 
 \end{document}

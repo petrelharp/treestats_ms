@@ -1,5 +1,4 @@
-.PHONY: figs
-
+.PHONY: figs 1kg_figs eps_figs
 
 figs : swept.1000.999.1e-09.diversity.pdf swept.10000.765.1e-09.diversity.pdf divergence_diagram.pdf branch_site_diagram.pdf divergence_diagram_simple.pdf allele_frequency_diagram.pdf adding_weights.pdf
 

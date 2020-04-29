@@ -1,4 +1,4 @@
-.PHONY: all, clean, figures
+.PHONY: all, figures
 
 treestats_paper.pdf : references.bib macros.tex figures review-responses.tex
 
@@ -14,8 +14,7 @@ review_responses.pdf : treestats_paper.pdf
 figures :
 	$(MAKE) -C figures
 
-clean: 
-	rm problem_statement-1_0.pdf problem_statement-1.asy problem_statement-1.pre problem_statement-1.tex problem_statement.aux problem_statement.fdb_latexmk problem_statement.fls problem_statement.log problem_statement.pdf problem_statement.pre
+eps_figs : figures/swept.1000.999.1e-09.diversity.eps figures/swept.10000.765.1e-09.diversity.eps figures/divergence_diagram.eps figures/branch_site_diagram.eps figures/divergence_diagram_simple.eps figures/allele_frequency_diagram.eps figures/adding_weights.eps figures/1kg/relate_chr20.site.1000000.region.diversity.eps figures/1kg/relate_chr20.branch.1000000.region.diversity.eps figures/intro/introgressed.1000.23.10000.1e-09.f4sd.eps figures/1kg/relate_chr20_site_div_branch.1000000.diversity.eps figures/tree_0_init.eps figures/tree_0_out_0.eps tskit_stat_benchmarks/benchmarks_without_copy_longer_genome.eps figures/intro/introgressed.1000.23.1000000.1e-09.f4.eps figures/1kg/relate_chr20_GBR.branch.1000000.site.ratio.eps
 
 %.pdf : %.tex %.bbl
 	while ( pdflatex $<;  grep -q "Rerun to get" $*.log ) do true ; done
@@ -37,6 +36,9 @@ clean:
 
 %.pdf : %.ink.svg
 	inkscape $< --export-pdf=$@
+
+%.eps : %.pdf
+	inkscape --without-gui --export-eps=$@ $<
 
 treestats_paper-diff%.tex : treestats_paper.tex review-responses.tex
 	latexdiff-git -r $* $<

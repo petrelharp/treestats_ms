@@ -231,9 +231,7 @@ will then produce both familiar and novel statistics
 of both genotypes and genealogies.
 
 %%%%%%%%%%%%%%%%%%%%%%%
-\section*{Materials and Methods}
-
-\subsection*{Framework and statistics}
+\section*{Framework and statistics}
 
 Population genetic data is most directly represented as a matrix of genotypes,
 and so summaries of population genetic data usually begin with this data structure.
@@ -433,7 +431,7 @@ However, as we will see below it is sometimes useful to use non-strict summary f
 % \subsection*{Tree sequences}
 
 %%%%%%%%%%%%%%%%%%
-\subsubsection*{Node statistics}
+\subsection*{Node statistics}
 
 Perhaps the most natural way to summarize weights on the tree
 is simply to examine the values at each node.
@@ -493,7 +491,7 @@ which are defined directly in terms of the genotypes.
 
 
 %%%%%%%%%%%%%%%%%%
-\subsubsection*{Site statistics}
+\subsection*{Site statistics}
 
 Now we describe how to compute statistics from \emph{genomes} using this framework.
 To do this, we assume that the genetic variation data is embedded in a tree sequence,
@@ -749,7 +747,7 @@ This is more general than previous definitions, but agrees with them for biallel
 
 
 %%%%%%%%%%%%%%%%%%
-\subsubsection*{Branch statistics}
+\subsection*{Branch statistics}
 
 Genetic variation is informative about many processes
 precisely because it tells us about the underlying patterns of genealogical relatedness.
@@ -886,7 +884,7 @@ Similar strategies were explored by \citet{zollner2005coalescent} and \citet{min
 
 
 %%%%%%%%%%%%%%%%%%
-\subsection*{Duality of site and branch statistics}
+\section*{Duality of site and branch statistics}
 
 Under a neutral, infinite-sites model of mutation with constant mutation rate across time,
 the expected number of mutations per branch is proportional to its length.
@@ -1083,7 +1081,7 @@ so it remains to be seen if the improvement could be made in practice.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%
-\section*{Data and code availability}
+\tion*{Data and code availability}
 
 All methods described here are implemented in Python and C in the package \tskit{},
 available from \url{https://github.com/tskit-dev/tskit}
@@ -1092,9 +1090,7 @@ All code used to produce the figures in this paper
 is available from \url{https://github.com/petrelharp/treestats_ms}.
 
 %%%%%%%%%%%%%%%%%%
-\section*{Results}
-
-\subsection*{Application to 1000 Genomes tree sequences}
+\section*{Application to 1000 Genomes tree sequences}
 
 We do not know the true genealogies underlying real data,
 but recent methods are available to estimate them at
@@ -1214,7 +1210,7 @@ but more work needs to be done, particularly on models with large proportions of
 
 
 %%%%%%%%%%%%%%%%%%
-\subsection*{Algorithm and implementation}
+\section*{Algorithm and implementation}
 
 In this section we describe and analyze the algorithm used
 to compute Branch statistics. This is a generalization
@@ -1475,7 +1471,7 @@ An interesting direction for future work is to develop
 parallel versions of tree sequence algorithms such as Algorithm B.
 
 %%%%%%%%%%%%%%%%%%%%%
-\subsubsection*{Efficiency}
+\subsection*{Efficiency}
 
 We used coalescent simulations to compare the performance of calculating Tajima's \citeyearpar{Tajima1989-de} $D$
 statistic from tree sequences to calculating it from integer matrices containing genotypes at all variable positions.

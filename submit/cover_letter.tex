@@ -22,49 +22,22 @@ plr@uoregon.edu}
 \hspace{\stretch{1}}
 \today
 
-    We are writing to submit our manuscript, entitled
-    \emph{Efficiently summarizing relationships in large samples: a general
-        duality between statistics of genealogies and genomes},
-    for consideration for publication in \textit{Genetics}.
+We are writing with great joy and the final version of our accepted manuscript,
+``Efficiently summarizing relationships in large samples: a general duality between statistics of genealogies and genomes''.
+We have addressed both of Reviewer 2's final suggestions,
+by adding an explanatory note to Figure 1's caption, and deleting the word "significant",
+which didn't add anything to the sentence it was in.
+No other changes have been made,
+other than moving the \LaTeX over to the Genetics template.
 
-    An important part of the paper is that it introduces fast methods for computation
-    of population genetic statistics from large numbers of genomes using tree sequences,
-    available through the tested and validated python package \texttt{tskit}.
-    However, that's not the main point ---
-    if it was, we'd be submitting to a more bioinformatics-focused journal. 
-    It is well-known that population genetics statistics say something about the underlying genealogies,
-    although it is not common for researchers to explicitly discuss this.
-    The bigger point of our manuscript is to describe a general framework that makes it clear
-    precisely what aspect of the underlying genealogies is described by each statistic,
-    under the infinite-sites model of mutation,
-    and to provide methods to compute these statistics of tree shape as well.
-    We think this makes population genetics statistics conceptually cleaner,
-    but has some other possible benefits, besides speed:
-    (1) we make it easy to invent and implement new statistics;
-    (2) the framework allows separation of mutational from demographic noise;
-    and (3) if unbiased tree sequences can be inferred from genomic data,
-    summarizing the trees themselves provides a descriptive method
-    insensitive to variation in substitution rate or perhaps even marker ascertainment.
-    The last is dependent on testing and improvement of tree sequence inference,
-    but would be tremendously useful, if it works out.
+We have not added section titles for ``Materials and Methods'' or ``Results'',
+since we don't feel those are appropriate for our theoretically-oriented paper.
+We hope this is OK with you,
+as we see other fine Genetics papers have not included these section headings
+(e.g., Jain \& Stephan 2017, \url{https://www.genetics.org/content/206/1/389}).
+But, if you'd prefer we'll gladly put them in --- just let us know.
 
-    We have put a lot of effort into making the paper accessible to the readership of \textit{Genetics}.
-    The paper begins with a careful treatment of the theoretical framework and many examples,
-    then illustrates points with simulation and a tree sequence inferred from 1000 Genomes data
-    (by Speidel et al, 2019),
-    and finally describes the fundamental algorithm and compares computational efficiency
-    to other methods.
-    The definitions and framework might seem lengthy,
-    but in our assessment they are necessarily so:
-    there are many false paths that intuition can lead even experienced theoreticians down,
-    and choices we have made in our framework that might seem strange at first
-    turn out to be natural once carefully considered.
-
-    We are enthusiastic about the potential impact of this paper
-    and its interest to the readers of \textit{Genetics}.
-    We hope that you agree.
-
-\closing{Sincerely,}
+\closing{Thanks very much,}
 
 
 \end{document}
